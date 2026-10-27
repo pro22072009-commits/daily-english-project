@@ -16,6 +16,12 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}main,.app,.view,.panel,.ca
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 <link rel="stylesheet" href="./oneui.css">
+<style id="oneui-theme-fallback">
+:root{color-scheme:dark;--ink:#f2f3f8;--muted:#a6adbb;--paper:#15171e;--white:#20232c;--green:#6579db;--green2:#282b3a;--lime:#2b3431;--line:#343844;--purple:#292638;--navy:#2a3043;--shadow:0 10px 28px #0005;--surface:#20232c;--surface-raised:#292d38}
+html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradient(ellipse at 50% -18rem,#2b3043 0,transparent 48rem),var(--paper)}
+.nav,.mobile-nav{background:var(--surface)!important;border-color:var(--line)!important}.nav button,.mobile-nav button{color:var(--muted)}.nav button.active,.mobile-nav button.active{background:#2a2e3c!important;color:#c4ceff!important}
+.hero{background:linear-gradient(135deg,#2b3450,#37446d)!important;box-shadow:0 16px 40px #0003}.panel,.card,.scorecard,.todaytask,.sectioncard,.system-panel,.b2-calendar,.b2-current-task,.b2-today-card,.b2-course-map,.b2-unit-plan,.phase,.callout,.vocab,.speakprompt{background-color:var(--surface)!important;color:var(--ink);border-color:var(--line)!important}.subtle,.headingrow span,.meta,.help,.system-sub{color:var(--muted)!important}
+</style>
 <style>.account-delete{display:none!important}</style>
 </head>
 <body>
