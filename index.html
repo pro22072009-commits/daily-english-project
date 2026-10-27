@@ -1177,6 +1177,26 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     @media(max-width:760px){.b2-unit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.b2-part-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .b2-daily-words{margin:12px 0;padding:14px;border:1px solid var(--line);border-radius:14px}.b2-daily-words-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.b2-daily-words h3{margin:4px 0}.b2-daily-word-list{display:grid;gap:7px}.b2-daily-word{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:10px}.b2-daily-word small{display:block;color:var(--muted);font-size:11px}.b2-daily-word-actions{display:flex;gap:7px;flex-wrap:wrap}.b2-daily-word-actions button:disabled{opacity:.65}.b2-daily-words.compact{margin-top:9px}
     @media(max-width:560px){.b2-course-form{grid-template-columns:1fr}.b2-course-form .wide{grid-column:auto}.b2-task-head{grid-template-columns:20px minmax(0,1fr)}.b2-task-time{grid-column:2}.b2-task-body,.b2-optional{margin-left:29px}.b2-stats{grid-template-columns:1fr 1fr}.b2-week-row{grid-template-columns:55px minmax(0,1fr) auto}.b2-unit-grid{grid-template-columns:1fr}.b2-unit-card select{max-width:115px}.b2-part-fields{grid-template-columns:1fr}.b2-roadmap-row{grid-template-columns:82px minmax(0,1fr)}.b2-roadmap-row small{grid-column:2}.b2-today-title,.b2-textbook-head{align-items:center}.b2-unit-plan>summary{flex-wrap:wrap}.b2-calendar{padding:12px 9px}.b2-calendar-weekdays,.b2-calendar-grid{gap:3px}.b2-calendar-weekdays{font-size:9px}.b2-calendar-day,.b2-calendar-empty{min-height:60px}.b2-calendar-day{padding:3px;text-align:center}.b2-calendar-day b{font-size:9px}.b2-calendar-day span{font-size:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.b2-calendar-day small{display:none}.b2-calendar-day.completed small,.b2-calendar-day.partial small{display:block;font-size:7px}.b2-daily-word{align-items:flex-start;flex-direction:column}.b2-daily-word-actions{justify-content:flex-start}}
+    /* Keep form controls and secondary actions readable against the One UI dark surfaces. */
+    #b2-foundation-panel .b2-unit-dates,
+    #b2-foundation-panel .b2-part-form,
+    #b2-foundation-panel .b2-checkpoint-field,
+    #b2-foundation-panel .b2-error-form,
+    #b2-foundation-panel .b2-course-form { background:#20232c!important; color:#f2f3f8!important; border-color:#343844!important; }
+    #b2-foundation-panel input:not([type="checkbox"]):not([type="radio"]),
+    #b2-foundation-panel select,
+    #b2-foundation-panel textarea { color:#f2f3f8!important; background:#14161c!important; border:1px solid #51586a!important; color-scheme:dark; }
+    #b2-foundation-panel input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(.88); opacity:.9; cursor:pointer; }
+    #b2-foundation-panel button.sys-btn:not(.primary),
+    #b2-foundation-panel .b2-unit-dates button,
+    #b2-foundation-panel .b2-part-form button,
+    #b2-foundation-panel .b2-course-map>summary,
+    #b2-foundation-panel .b2-unit-plan>summary { color:#e2e6f0!important; background:#303544!important; border:1px solid #51586a!important; }
+    #b2-foundation-panel button.sys-btn:not(.primary):hover,
+    #b2-foundation-panel .b2-unit-dates button:hover,
+    #b2-foundation-panel .b2-part-form button:hover { background:#3a4052!important; border-color:#8293e8!important; }
+    #b2-foundation-panel .b2-unit-dates button.primary,
+    #b2-foundation-panel button.sys-btn.primary { color:#fff!important; background:#6579db!important; border-color:#8293e8!important; }
   `;
   document.head.appendChild(css);
 
