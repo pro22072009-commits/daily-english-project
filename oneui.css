@@ -175,6 +175,18 @@ details[open] > :not(summary) { animation: oneui-reveal .26s ease-out both; }
 .b2-daily-word-actions a[href*="cambridge"]:hover,
 .b2-vocabulary-mode a[href*="cambridge"]:hover,
 #b2-cambridge-lookup:hover { background: #414c72 !important; color: #fff !important; }
+#view-textbook .b2-unit-dates,
+#view-textbook .b2-part-form,
+#view-textbook .b2-course-map { background: var(--surface) !important; color: var(--ink) !important; border-color: var(--line) !important; }
+#view-textbook input:not([type="checkbox"]):not([type="radio"]),
+#view-textbook select,
+#view-textbook textarea { color: var(--ink) !important; color-scheme: dark; background: #14161c !important; border: 1px solid #51586a !important; }
+#view-textbook input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.88); opacity: .9; cursor: pointer; }
+#view-textbook button.sys-btn:not(.primary),
+#view-textbook .b2-unit-plan > summary,
+#view-textbook .b2-course-map > summary { color: #e2e6f0 !important; background: #303544 !important; border: 1px solid #51586a !important; }
+#view-textbook button.sys-btn:not(.primary):hover { background: #41485b !important; border-color: #8293e8 !important; }
+#view-textbook button.sys-btn.primary { color: #fff !important; background: #6579db !important; border-color: #8293e8 !important; }
 .b2-card-actions button:active, [data-vocab-review]:active, [data-vocab-again]:active { transform: scale(.97); }
 .view.active { animation: oneui-reveal .28s ease-out both; }
 
