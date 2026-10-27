@@ -1104,7 +1104,8 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   const modePanel = document.createElement('section');
   modePanel.className = 'system-panel b2-mode-panel';
   modePanel.id = 'study-mode-panel';
-  modePanel.innerHTML = `<details class="b2-mode-switch"><summary><span class="b2-kicker">Режим обучения</span><strong data-active-mode>B2 Foundation</strong><span class="b2-mode-change">Изменить</span></summary><div class="b2-mode-content"><div class="mode-row"><button class="mode-btn" data-study-mode="b2">B2 Foundation · до 15 февраля</button><button class="mode-btn" data-study-mode="ielts">IELTS Academic · дополнительно</button></div><p class="system-sub">Основной этап — B2 Foundation. IELTS Academic доступен отдельно в дополнительном режиме.</p></div></details>`;
+  const desktopModeSelector = window.matchMedia('(min-width: 821px) and (pointer: fine)').matches ? 'open' : '';
+  modePanel.innerHTML = `<details class="b2-mode-switch" ${desktopModeSelector}><summary><span class="b2-kicker">План до 15 февраля 2027</span><strong>Выбери учебный режим</strong><span class="b2-active-mode" data-active-mode>Основной: B2 Foundation</span><span class="b2-mode-change">Изменить</span></summary><div class="b2-mode-content"><div class="mode-row"><button class="mode-btn" data-study-mode="b2">B2 Foundation · до 15 февраля</button><button class="mode-btn" data-study-mode="ielts">IELTS Academic · дополнительно</button></div><p class="system-sub">Основной этап — B2 Foundation. IELTS Academic доступен отдельно в дополнительном режиме.</p></div></details>`;
   const b2Panel = document.createElement('section');
   b2Panel.className = 'system-panel b2-foundation-panel';
   b2Panel.id = 'b2-foundation-panel';
@@ -1235,7 +1236,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     }
     document.querySelectorAll('[data-study-mode]').forEach(button => button.classList.toggle('active', button.dataset.studyMode === (isB2 ? 'b2' : 'ielts')));
     const activeModeLabel = modePanel.querySelector('[data-active-mode]');
-    if (activeModeLabel) activeModeLabel.textContent = isB2 ? 'B2 Foundation' : 'IELTS Academic';
+    if (activeModeLabel) activeModeLabel.textContent = isB2 ? 'Основной: B2 Foundation' : 'Текущий режим: IELTS Academic';
     // Keep the full desktop navigation available in both study modes.
     document.querySelectorAll('.nav [data-view]').forEach(button => { button.hidden = false; });
     document.querySelectorAll('.mobile-nav > button[data-view]').forEach(button => { button.hidden = isB2 ? true : !['dashboard','reading','listening'].includes(button.dataset.view); });
