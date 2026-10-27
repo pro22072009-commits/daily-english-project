@@ -781,7 +781,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
 
   // Make progress available as the landing page and label the existing target consistently.
   document.querySelector('#view-dashboard .targetbox h3').textContent='Target: IELTS Academic 6.5';
-  document.querySelectorAll('[data-view="dashboard"]').forEach((b,i)=>{if(i===0)b.textContent='Progress';});
+  document.querySelectorAll('.nav [data-view="dashboard"]').forEach(button=>{button.textContent='Сегодня';});
   document.querySelector('.footer').textContent='Estimated progress only · no official IELTS score · learning materials: IELTS Academic.';
   document.querySelector('#view-writing .headingrow span').textContent='IELTS Academic only';
   document.querySelector('#view-reading .hero p').textContent='Начни с B1, постепенно переходи к B1+, B2 и заданиям IELTS Academic. Отдельно тренируй точность, скорость и стратегии чтения.';
@@ -1220,7 +1220,9 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     document.querySelectorAll('[data-study-mode]').forEach(button => button.classList.toggle('active', button.dataset.studyMode === (isB2 ? 'b2' : 'ielts')));
     const activeModeLabel = modePanel.querySelector('[data-active-mode]');
     if (activeModeLabel) activeModeLabel.textContent = isB2 ? 'B2 Foundation' : 'IELTS Academic';
-    document.querySelectorAll('.nav [data-view]').forEach(button => { button.hidden = isB2; });
+    // Keep the full desktop navigation available in both study modes.
+    // B2/IELTS mode-specific shortcuts remain controlled by the mobile navigation below.
+    document.querySelectorAll('.nav [data-view]').forEach(button => { button.hidden = false; });
     document.querySelectorAll('.mobile-nav > button[data-view]').forEach(button => { button.hidden = isB2 ? true : !['dashboard','reading','listening'].includes(button.dataset.view); });
     document.querySelectorAll('.mobile-more-panel [data-view]').forEach(button => { button.hidden = isB2; });
     document.querySelectorAll('[data-mobile-more-b2]').forEach(group => { group.hidden = !isB2; });
