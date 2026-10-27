@@ -155,6 +155,20 @@ details[open] > :not(summary) { animation: oneui-reveal .26s ease-out both; }
 .b2-vocab-bank + .b2-error-form label { min-width: 0; }
 .b2-vocab-bank + .b2-error-form .system-sub { display: inline-block; margin: 8px; }
 .b2-vocab-bank + .b2-error-form #b2-vocab-form-status { margin-left: 8px; }
+.b2-vocabulary-mode .b2-error-form,
+.b2-vocabulary-mode .b2-vocab-card,
+.b2-vocabulary-mode .b2-vocab-bank,
+.b2-vocabulary-mode .b2-word-result { background: var(--surface) !important; color: var(--ink) !important; border-color: var(--line) !important; }
+.b2-vocabulary-mode input:not([type="checkbox"]):not([type="radio"]),
+.b2-vocabulary-mode select,
+.b2-vocabulary-mode textarea { color: var(--ink) !important; color-scheme: dark; background: #14161c !important; border: 1px solid #51586a !important; }
+.b2-vocabulary-mode .b2-card-actions button:not(.primary),
+.b2-vocabulary-mode .b2-word-actions .sys-btn,
+.b2-vocabulary-mode a.sys-btn { color: #e2e6f0 !important; background: #303544 !important; border: 1px solid #51586a !important; }
+.b2-vocabulary-mode .b2-card-actions button.primary,
+.b2-vocabulary-mode .b2-word-actions button.primary,
+.b2-vocabulary-mode .b2-error-form button.primary { color: #fff !important; background: #6579db !important; border-color: #8293e8 !important; }
+.b2-vocabulary-mode .b2-card-actions button:disabled { opacity: .62; cursor: default; }
 .b2-card-actions button:active, [data-vocab-review]:active, [data-vocab-again]:active { transform: scale(.97); }
 .view.active { animation: oneui-reveal .28s ease-out both; }
 
