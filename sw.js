@@ -1,4 +1,4 @@
-const CACHE = 'daily-english-pages-v5';
+const CACHE = 'daily-english-pages-v6';
 const BASE = new URL('./', self.registration.scope);
 const page = name => new URL(name, BASE).toString();
 const CORE = ['', 'index.html', 'oneui.css', 'empower-b1-wordlist.js', 'github-config.js', 'storage-service.js', 'account-ui.js', 'manifest.webmanifest', 'icon.svg', 'offline.html'].map(page);
