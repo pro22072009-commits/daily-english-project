@@ -169,6 +169,12 @@ details[open] > :not(summary) { animation: oneui-reveal .26s ease-out both; }
 .b2-vocabulary-mode .b2-word-actions button.primary,
 .b2-vocabulary-mode .b2-error-form button.primary { color: #fff !important; background: #6579db !important; border-color: #8293e8 !important; }
 .b2-vocabulary-mode .b2-card-actions button:disabled { opacity: .62; cursor: default; }
+.b2-daily-word-actions a[href*="cambridge"],
+.b2-vocabulary-mode a[href*="cambridge"],
+#b2-cambridge-lookup { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 12px; border: 1px solid #8293e8 !important; border-radius: 11px; background: #303956 !important; color: #e7ebff !important; font-weight: 800; text-decoration: none; }
+.b2-daily-word-actions a[href*="cambridge"]:hover,
+.b2-vocabulary-mode a[href*="cambridge"]:hover,
+#b2-cambridge-lookup:hover { background: #414c72 !important; color: #fff !important; }
 .b2-card-actions button:active, [data-vocab-review]:active, [data-vocab-again]:active { transform: scale(.97); }
 .view.active { animation: oneui-reveal .28s ease-out both; }
 
