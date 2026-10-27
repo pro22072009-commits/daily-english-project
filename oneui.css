@@ -96,6 +96,10 @@ a { color: #b4c0ff; }
   animation: oneui-flame 1.65s ease-in-out infinite;
 }
 .streak b { color: #fff1db; }
+.streak[data-streak-level="0"] { animation: none; opacity: .78; }
+.streak[data-streak-level="3"], .streak[data-streak-level="7"], .streak[data-streak-level="14"] { border-color: #a86431; box-shadow: 0 0 22px #ff9a3b42; }
+.streak[data-streak-level="7"] { color: #ffd17a !important; }
+.streak[data-streak-level="14"] { color: #ffe29b !important; border-color: #d69c4a; box-shadow: 0 0 27px #ffbb4d66; animation-duration: 1.25s; }
 .progressbar, .b2-week-progress { overflow: hidden; border-radius: 99px; }
 .progressbar i, .b2-week-progress i, .skill-progress i { transition: width .7s cubic-bezier(.2,.75,.25,1); }
 .b2-calendar { border-radius: 26px; padding: 20px; }
