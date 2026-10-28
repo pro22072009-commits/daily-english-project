@@ -875,6 +875,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   b2.vocabulary ||= [];
   b2.skillChecks ||= [];
   b2.calendarDate ||= '';
+  b2.calendarDatePinned ??= false;
   b2.calendarMonth ||= (/^\d{4}-\d{2}-\d{2}$/.test(b2.calendarDate) ? b2.calendarDate.slice(0, 7) : isoDate(today).slice(0, 7));
   const empowerUnits = [
     ['Communicating', 7, 16], ['Travel and tourism', 18, 27], ['Money', 28, 37],
@@ -1325,40 +1326,83 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     const assignedBlocks = todayAssignment ? orderedAssignmentBlocks(todayAssignment, dayKey).map(([skill,ref])=>`<li><strong>${escapeHtml(skill)}:</strong> ${escapeHtml(ref)}</li>`).join('') : '';
     const gapNote = !selectedDay.rest && !preparationWeek && expectedLow < 90 ? `<p class="b2-incomplete-note">Нижняя граница плана — ${expected} минут, меньше ориентира 90 минут. Не добавляю выдуманные упражнения: выполни только подтверждённый объём и при желании продолжи работу по книге самостоятельно.</p>` : '';
     const saturdayTestNote = selectedDay.short === 'Сб' ? '<p class="b2-incomplete-note"><strong>Weekly Test:</strong> готовое задание в доступных материалах сайта не подтверждено и не назначено. Сегодня только повторение; результат можно записать лишь после реально пройденного теста.</p>' : '';
-    const scheduledVocabularyCard = (date, compact = false) => {
-      const dateValue = new Date(`${date}T12:00:00`);
+    const vocabularyPageRanges = empowerUnits.map(([, start, end]) => [start, end]);
+    const eligibleEmpowerWords = empowerB1Words.map((entry, index) => ({ entry, index }))
+      .filter(({ entry }) => {
+        const range = vocabularyPageRanges[Number(entry.unit) - 1];
+        const pages = String(entry.page || '').match(/\d+/g)?.map(Number) || [];
+        return Boolean(range && pages.some(page => page >= range[0] && page <= range[1]));
+      });
+    const eligibleVocabularyTermCount = new Set(eligibleEmpowerWords.map(({ entry }) => String(entry.term || '').trim().toLocaleLowerCase()).filter(Boolean)).size;
+    const vocabularyAssignments = new Map();
+    const vocabularyStart = roadmap.find(week => week.unit)?.start || dayKey;
+    const vocabularyStartDate = new Date(`${vocabularyStart}T12:00:00`);
+    const vocabularyEndKey = b2.calendarDatePinned && /^\d{4}-\d{2}-\d{2}$/.test(b2.calendarDate) && b2.calendarDate >= roadmap[0].start && b2.calendarDate <= '2027-02-15' ? b2.calendarDate : (dayKey <= '2027-02-15' ? dayKey : '2027-02-15');
+    const vocabularyEndDate = new Date(`${vocabularyEndKey}T12:00:00`);
+    const usedVocabularyTerms = new Set();
+    for (let dateValue = new Date(vocabularyStartDate); dateValue <= vocabularyEndDate; dateValue.setDate(dateValue.getDate() + 1)) {
+      const dateKey = isoDate(dateValue);
       const dateDay = days[(dateValue.getDay() + 6) % 7];
-      if (dateDay.rest) return `<section class="b2-extra b2-daily-words"><span class="b2-kicker">${escapeHtml(heading)}</span><h3>Rest Day</h3><p class="system-sub">Новые слова не назначены. Отдыхай; при желании можно открыть свои карточки на повторение.</p></section>`;
-      const unit = scheduledUnitForDate(date) || unitForDate(date);
-      const assignment = assignmentForDay(date);
-      const weekPlan = roadmapWeekForDate(date);
-      const heading = `${dateDay.name} · ${dateValue.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}`;
-      if (!assignment || weekPlan?.buffer) return `<section class="b2-extra b2-daily-words"><span class="b2-kicker">Лексика по плану</span><h3>${escapeHtml(heading)}</h3><p class="system-sub">На этот день новых слов из Student’s Book не назначено. Используй резерв для повторения своих слов, если они есть.</p></section>`;
-      if (dateDay.short === 'Сб') return `<section class="b2-extra b2-daily-words"><span class="b2-kicker">Vocabulary review · Unit ${unit}</span><h3>${escapeHtml(heading)}</h3><p class="system-sub">Сегодня повторение слов пройденного Unit; новый список слов не добавляется. Открой «Мои слова и повторение» ниже.</p></section>`;
-      const pageRefs = Object.values(assignment.blocks || {}).join(' ');
+      if (dateDay.rest) continue;
+      b2.vocabulary.forEach(item => {
+        if (item.addedAt && item.addedAt < dateKey) usedVocabularyTerms.add(String(item.term || '').trim().toLocaleLowerCase());
+      });
+      const unit = scheduledUnitForDate(dateKey) || unitForDate(dateKey);
+      const assignment = assignmentForDay(dateKey);
+      const pageRefs = Object.values(assignment?.blocks || {}).join(' ');
       const scheduledPages = new Set();
       for (const match of pageRefs.matchAll(/\bpp?\.?\s*(\d{1,3})(?:\s*[–—-]\s*(\d{1,3}))?/gi)) {
         const start = Number(match[1]);
         const end = Number(match[2] || match[1]);
         for (let page = start; page <= end; page++) scheduledPages.add(page);
       }
-      const unitWords = empowerB1Words.map((entry, index) => ({ entry, index })).filter(({ entry }) => Number(entry.unit) === Number(unit));
-      const exactPageWords = unitWords.filter(({ entry }) => String(entry.page || '').match(/\d+/g)?.some(page => scheduledPages.has(Number(page))));
-      const selectedWords = [...exactPageWords.slice(0, 10), ...unitWords.filter(item => !exactPageWords.some(exact => exact.index === item.index)).slice(0, Math.max(0, 10 - Math.min(10, exactPageWords.length)))];
-      const rows = selectedWords.map(({ entry, index }) => {
-        const sourceRef = `Cambridge Empower B1 · Unit ${entry.unit} · Student’s Book p. ${entry.page}`;
+      const termKey = entry => String(entry.term || '').trim().toLocaleLowerCase();
+      const dayTerms = new Set();
+      const availableCandidates = (entries, sourceLabel) => entries.flatMap(item => {
+          const { entry } = item;
+          const key = termKey(entry);
+          if (!key || usedVocabularyTerms.has(key) || dayTerms.has(key)) return [];
+          dayTerms.add(key);
+          return [{ ...item, sourceLabel: typeof sourceLabel === 'function' ? sourceLabel(entry) : sourceLabel }];
+        });
+      const unitWords = eligibleEmpowerWords.filter(({ entry }) => Number(entry.unit) === Number(unit));
+      const lessonWords = unitWords.filter(({ entry }) => String(entry.page || '').match(/\d+/g)?.some(page => scheduledPages.has(Number(page))));
+      const laterUnitWords = eligibleEmpowerWords.filter(({ entry }) => Number(entry.unit) > Number(unit));
+      const otherUnitWords = eligibleEmpowerWords.filter(({ entry }) => Number(entry.unit) < Number(unit));
+      const selectedWords = [
+        ...availableCandidates(lessonWords, 'со страницы урока'),
+        ...availableCandidates(unitWords, `дополнительно из Unit ${unit}`),
+        ...availableCandidates(laterUnitWords, entry => `из следующего Unit ${entry.unit}`),
+        ...availableCandidates(otherUnitWords, entry => `из другого Unit ${entry.unit}`)
+      ].slice(0, 10);
+      selectedWords.forEach(({ entry }) => usedVocabularyTerms.add(termKey(entry)));
+      vocabularyAssignments.set(dateKey, selectedWords);
+    }
+    const scheduledVocabularyCard = (date, compact = false) => {
+      const dateValue = new Date(`${date}T12:00:00`);
+      const dateDay = days[(dateValue.getDay() + 6) % 7];
+      const heading = `${dateDay.name} · ${dateValue.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}`;
+      if (dateDay.rest) return `<section class="b2-extra b2-daily-words"><span class="b2-kicker">${escapeHtml(heading)}</span><h3>Rest Day</h3><p class="system-sub">Полный выходной. Новые слова не назначены.</p></section>`;
+      const unit = scheduledUnitForDate(date) || unitForDate(date);
+      const assignment = assignmentForDay(date);
+      const selectedWords = vocabularyAssignments.get(date) || [];
+      const rows = selectedWords.map(({ entry, index, sourceLabel }) => {
         const alreadyAdded = b2.vocabulary.some(item => item.term?.toLowerCase() === entry.term.toLowerCase());
-        const pageMatch = String(entry.page || '').match(/\d+/g)?.some(page => scheduledPages.has(Number(page)));
-        return `<article class="b2-daily-word"><div><strong>${escapeHtml(entry.term)}</strong><small>${pageMatch ? 'по страницам урока' : 'дополнительно из того же Unit'} · p. ${escapeHtml(entry.page)} · ${escapeHtml(entry.pos)}</small></div><div class="b2-daily-word-actions"><a class="sys-btn" href="${cambridgeEntryUrl(entry.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-scheduled-word="${index}" ${alreadyAdded ? 'disabled' : ''}>${alreadyAdded ? 'Уже в моих словах ✓' : 'Добавить на повторение'}</button></div></article>`;
+        return `<article class="b2-daily-word"><div><strong>${escapeHtml(entry.term)}</strong><small>${escapeHtml(sourceLabel)} · Unit ${entry.unit} · p. ${escapeHtml(entry.page)} · ${escapeHtml(entry.pos)}</small></div><div class="b2-daily-word-actions"><a class="sys-btn" href="${cambridgeEntryUrl(entry.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-scheduled-word="${index}" ${alreadyAdded ? 'disabled' : ''}>${alreadyAdded ? 'Уже в моих словах ✓' : 'Добавить на повторение'}</button></div></article>`;
       }).join('');
-      const empty = '<p class="system-sub">В загруженном словаре нет слов, подтверждённых для этого Unit. Добавь слово из урока вручную после проверки в Cambridge.</p>';
-      return `<section class="b2-extra b2-daily-words ${compact ? 'compact' : ''}"><div class="b2-daily-words-head"><div><span class="b2-kicker">Unit ${unit} · Lesson ${escapeHtml(assignment.lesson)}</span><h3>Новые слова к уроку</h3></div><span class="b2-day-badge">${selectedWords.length} / 10</span></div><p class="system-sub">Сначала слова со страниц урока; недостающие позиции дополнены только из словаря Cambridge Empower этого Unit. Открой Cambridge для перевода и объяснения, затем добавь слово на интервальное повторение.</p><div class="b2-daily-word-list">${rows || empty}</div></section>`;
+      const shortage = selectedWords.length < 10 ? `<p class="b2-incomplete-note"><strong>Не хватает ${10 - selectedWords.length} новых слов.</strong> В загруженном словаре Empower B1 больше нет неиспользованных слов с подтверждённых страниц курса. Не подменяю их повторными или словами из исключённых приложений.</p>` : '';
+      const assignmentTitle = assignment ? `Unit ${unit} · Lesson ${escapeHtml(assignment.lesson)}` : `Unit ${unit} · vocabulary practice`;
+      return `<section class="b2-extra b2-daily-words ${compact ? 'compact' : ''}"><div class="b2-daily-words-head"><div><span class="b2-kicker">${escapeHtml(assignmentTitle)}</span><h3>Новые слова на день</h3></div><span class="b2-day-badge">${selectedWords.length} / 10</span></div><p class="system-sub">Подборка привязана к выбранной календарной дате. Слова со страниц текущего урока идут первыми; затем используются новые слова Unit и следующих Units. Уже назначенные в предыдущие дни слова не повторяются. Добавляй изученное на интервальное повторение.</p><div class="b2-daily-word-list">${rows || '<p class="system-sub">В словаре Empower B1 не осталось новых слов для назначения.</p>'}</div>${shortage}</section>`;
     };
     const todayCard = `<section class="b2-today-card"><div class="b2-today-title"><div><span class="b2-kicker">${selectedDay.name} · ${new Date(`${dayKey}T12:00:00`).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</span><h3>Что делать сегодня</h3></div><strong>${nDone}/${todayTaskList.length} действий выполнено</strong></div>${selectedDay.rest ? '<div class="b2-today-book"><strong>Rest Day — полный выходной.</strong> Обязательных заданий нет.</div>' : preparationWeek ? '<div class="b2-today-book"><strong>Подготовительная неделя.</strong> Unit 1 начинается в понедельник, 26 октября. Сегодня обязательных заданий нет.</div>' : `<div class="b2-today-book"><b>План:</b> ${escapeHtml(selectedDay.name)} · ${expected} минут по текущей оценке<br><b>Unit ${currentUnit} · ${escapeHtml(unitTopic)}</b> · Student’s Book pp. ${unitPageStart}–${unitPageEnd}<br><b>Lesson:</b> ${escapeHtml(todayAssignment?.lesson || activePart?.lesson || 'не подтверждён')} · <b>Тема:</b> ${escapeHtml(todayAssignment?.topic || activePart?.topic || 'не подтверждена')}<br>${todayAssignment ? `<b>Действия по книге в порядке:</b><ol>${assignedBlocks}</ol>` : '<b>Точные упражнения на эту неделю:</b> не заданы в подтверждённом плане; смотри сохранённые записи Textbook Plan.'}<b>Выполнено / осталось:</b> ${nDone} / ${todayTaskList.length - nDone}<br><b>Срок Unit:</b> ${displayDate(unitPlan.start || unitWeek.start)}–${displayDate(unitPlan.end || unitWeek.end)} · ${unitStatusLabel[unitStatus(currentUnit, { start: unitPlan.start || unitWeek.start, end: unitPlan.end || unitWeek.end })]}</div>${gapNote}${saturdayTestNote}`}${plannedWeek.buffer && !preparationWeek ? `<p class="b2-extension-note"><strong>Гибкая неделя:</strong> ${escapeHtml(plannedWeek.buffer)}. Используй её для повторения пройденного; новые упражнения не назначены.</p>` : ''}${carried.length?`<p class="b2-extension-note"><strong>Перенесено с прошлой недели:</strong> ${carried.map(escapeHtml).join(' · ')}</p>`:''}</section>`;
     const calendarStartKey = roadmap[0].start;
     const calendarEndKey = '2027-02-15';
     const calendarEndDate = new Date(`${calendarEndKey}T12:00:00`);
-    const requestedCalendarDate = /^\d{4}-\d{2}-\d{2}$/.test(b2.calendarDate) && b2.calendarDate >= calendarStartKey && b2.calendarDate <= calendarEndKey ? b2.calendarDate : (dayKey <= calendarEndKey ? dayKey : calendarEndKey);
+    if (!b2.calendarDatePinned) {
+      b2.calendarDate = dayKey;
+      b2.calendarMonth = dayKey.slice(0, 7);
+    }
+    const requestedCalendarDate = b2.calendarDatePinned && /^\d{4}-\d{2}-\d{2}$/.test(b2.calendarDate) && b2.calendarDate >= calendarStartKey && b2.calendarDate <= calendarEndKey ? b2.calendarDate : (dayKey <= calendarEndKey ? dayKey : calendarEndKey);
     const selectedVocabularyCard = scheduledVocabularyCard(requestedCalendarDate);
     const calendarDate = new Date(`${requestedCalendarDate}T12:00:00`);
     const calendarDay = days[(calendarDate.getDay() + 6) % 7];
@@ -1452,7 +1496,10 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     const calendarSection = document.getElementById('b2-calendar-section');
     if (calendarSection) calendarSection.open = b2CalendarWasOpen;
 
-    if (b2VocabularyView) b2VocabularyView.innerHTML = `<div class="b2-vocabulary-mode"><div class="hero"><div class="kicker">B2 Foundation · Cambridge Empower</div><h1>Лексика к выбранному дню</h1><p>Выбери дату в календаре на вкладке «Сегодня», чтобы увидеть слова к соответствующему уроку. Список слов берётся из Empower B1 word list и привязан к Unit и страницам назначения.</p></div>${selectedVocabularyCard}${vocabularyHtml}</div>`;
+    let vocabularyDaysRemaining = 0;
+    for (let checkDate = new Date(`${dayKey}T12:00:00`); checkDate <= calendarEndDate; checkDate.setDate(checkDate.getDate() + 1)) if (checkDate.getDay() !== 0) vocabularyDaysRemaining++;
+    const vocabularyCoverageNote = `В словаре сейчас ${eligibleVocabularyTermCount} уникальных слов с подтверждённых страниц Empower. Для 10 новых слов в каждый учебный день до 15 февраля нужно около ${vocabularyDaysRemaining * 10}; источник пока не покрывает весь срок. Слова не будут повторяться под видом новых — после исчерпания списка сайт покажет фактическое количество.`;
+    if (b2VocabularyView) b2VocabularyView.innerHTML = `<div class="b2-vocabulary-mode"><div class="hero"><div class="kicker">B2 Foundation · Cambridge Empower</div><h1>Лексика к выбранному дню</h1><p>По умолчанию здесь подборка на сегодня; если выбрать дату в календаре, покажутся слова того дня. Для каждого дня используются отдельные слова: сначала страницы его урока, затем ещё не назначенные слова Empower B1. ${escapeHtml(vocabularyCoverageNote)}</p></div>${selectedVocabularyCard}${vocabularyHtml}</div>`;
 
     const wordSearch = document.getElementById('b2-wordbank-search');
     const wordUnit = document.getElementById('b2-wordbank-unit');
@@ -1510,11 +1557,13 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     document.querySelectorAll('[data-calendar-date]').forEach(button => button.onclick = () => {
       b2.calendarDate = button.dataset.calendarDate || dayKey;
       b2.calendarMonth = b2.calendarDate.slice(0, 7);
+      b2.calendarDatePinned = true;
       save(); render();
     });
     document.querySelector('[data-calendar-today]')?.addEventListener('click', () => {
       b2.calendarDate = dayKey;
       b2.calendarMonth = dayKey.slice(0, 7);
+      b2.calendarDatePinned = false;
       save(); render();
     });
     document.querySelectorAll('[data-calendar-shift]').forEach(button => button.onclick = () => {
@@ -1524,11 +1573,13 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       const firstVisibleDate = `${month}-01`;
       const earliestDate = calendarStartKey;
       b2.calendarDate = firstVisibleDate < earliestDate ? earliestDate : firstVisibleDate > calendarEndKey ? calendarEndKey : firstVisibleDate;
+      b2.calendarDatePinned = true;
       save(); render();
     });
     document.getElementById('b2-calendar-picker').onchange = event => {
       b2.calendarDate = event.currentTarget.value || dayKey;
       b2.calendarMonth = b2.calendarDate.slice(0, 7);
+      b2.calendarDatePinned = true;
       save(); render();
     };
     document.querySelectorAll('[data-carry-forward]').forEach(button => button.onclick = () => {
