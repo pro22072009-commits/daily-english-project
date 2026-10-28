@@ -4,6 +4,10 @@
   const KEYS = ['dailyEnglishProgressV1', 'dailyEnglishAcademicDraftsV2', 'dailyEnglishBandsV1', 'dailyEnglishSystemV2'];
   const META_KEY = 'dailyEnglishStorageMetaV1';
   const BACKUP_KEY = 'dailyEnglishMigrationBackupV1';
+  const SAFETY_BACKUPS_KEY = 'dailyEnglishSafetyBackupsV1';
+  const BUILD_KEY = 'dailyEnglishAppBuildV1';
+  // Bump this value on every published app update. The previous local data is snapshotted before app scripts run.
+  const BUILD_VERSION = '2026-10-29.1';
   const MIGRATION_KEY = 'dailyEnglishMigrationVersion';
   const SESSION_KEY = 'dailyEnglishCloudSessionV1';
   const QUEUE_KEY = 'dailyEnglishOfflineQueueV1';
@@ -14,11 +18,22 @@
     dailyEnglishBandsV1: 'IELTS estimated bands',
     dailyEnglishSystemV2: 'B2 Foundation, календарь и прогресс курса'
   };
-  const state = { config: null, session: null, profile: null, status: 'Гостевой режим · данные хранятся на этом устройстве', error: '', conflicts: [], lastSync: '', busy: false, listeners: new Set(), syncTimer: 0, writeTimers: new Map(), migrationWarning: '', migrationBlockedKeys: [] };
+  const state = { config: null, session: null, profile: null, status: 'Гостевой режим · данные хранятся на этом устройстве', error: '', conflicts: [], lastSync: '', busy: false, startupSyncPending: false, userInteracted: false, initialLocalKeys: [], listeners: new Set(), syncTimer: 0, writeTimers: new Map(), migrationWarning: '', migrationBlockedKeys: [] };
 
   const parse = (value, fallback) => { try { return value == null ? fallback : JSON.parse(value); } catch { return fallback; } };
   const stamp = () => new Date().toISOString();
   const localGet = key => { try { return localStorage.getItem(key); } catch { return null; } };
+  function currentLocalData() { return Object.fromEntries(KEYS.map(key => [key, localGet(key)]).filter(([, value]) => value !== null)); }
+  function saveSafetySnapshot(source, data, details = {}) {
+    const entry = { version: 1, appBuild: BUILD_VERSION, createdAt: stamp(), source, details, data };
+    const existing = parse(localGet(SAFETY_BACKUPS_KEY), []);
+    const snapshots = [entry, ...(Array.isArray(existing) ? existing : [])].slice(0, 3);
+    try { localStorage.setItem(SAFETY_BACKUPS_KEY, JSON.stringify(snapshots)); state.migrationWarning = ''; return true; }
+    catch (error) {
+      try { localStorage.setItem(SAFETY_BACKUPS_KEY, JSON.stringify([entry, ...(Array.isArray(existing) ? existing : []).slice(0, 1)])); state.migrationWarning = ''; return true; }
+      catch (retryError) { state.migrationWarning = 'Резервная копия не поместилась в хранилище. Прогресс не перезаписан; скачай резервную копию и освободи место.'; console.warn(error, retryError); return false; }
+    }
+  }
   state.lastSync = localGet(LAST_SYNC_KEY) || '';
   const emit = () => state.listeners.forEach(fn => { try { fn(api.getState()); } catch (error) { console.warn(error); } });
   function metadata() { return parse(localGet(META_KEY), {}); }
@@ -37,14 +52,26 @@
     try { localStorage.setItem(key, raw); } catch (error) { state.error = 'Не удалось сохранить данные на устройстве: возможно, закончилось место.'; emit(); throw error; }
     if (!KEYS.includes(key)) return;
     const meta = metadata();
-    if (!options.preserveTimestamp) meta[key] = options.updatedAt || stamp();
+    const deferStartupWrite = state.startupSyncPending && !state.userInteracted && options.queue !== false;
+    if (!options.preserveTimestamp && !deferStartupWrite) meta[key] = options.updatedAt || stamp();
     writeMetadata(meta);
-    if (options.queue !== false && state.session) queueOfflineChange(key, parse(raw, raw), meta[key]);
-    if (options.queue !== false && state.session) scheduleSync();
+    if (options.queue !== false && state.session && !deferStartupWrite) queueOfflineChange(key, parse(raw, raw), meta[key]);
+    if (options.queue !== false && state.session && !deferStartupWrite) scheduleSync();
     else if (!state.session) state.status = navigator.onLine ? 'Сохранено на устройстве' : 'Нет соединения · изменения сохранены на устройстве';
     emit();
   }
   function migrateLocalData() {
+    const previousBuild = localGet(BUILD_KEY);
+    if (previousBuild !== BUILD_VERSION) {
+      const existingData = currentLocalData();
+      if (Object.keys(existingData).length && !saveSafetySnapshot('before-app-update', existingData, { previousBuild: previousBuild || 'unknown' })) {
+        state.migrationBlockedKeys = Object.keys(existingData);
+        emit();
+        return;
+      }
+      try { localStorage.setItem(BUILD_KEY, BUILD_VERSION); }
+      catch (error) { state.migrationWarning = 'Не удалось записать версию приложения. Старые данные сохранены; обновление прогресса остановлено.'; state.migrationBlockedKeys = Object.keys(existingData); console.warn(error); return; }
+    }
     if (localGet(MIGRATION_KEY) === '1') return;
     const backup = {};
     const invalid = [];
@@ -67,7 +94,7 @@
   async function loadConfig() {
     const config = global.DAILY_ENGLISH_SUPABASE_CONFIG;
     state.config = config && config.configured && config.url && config.publishableKey ? config : null;
-    if (!state.config) state.status = navigator.onLine ? 'Настройка Supabase не найдена. Проверьте конфигурацию GitHub Pages.' : 'Вы офлайн. Данные сохраняются на этом устройстве.';
+    if (!state.config) { state.startupSyncPending = false; state.status = navigator.onLine ? 'Настройка Supabase не найдена. Проверьте конфигурацию GitHub Pages.' : 'Вы офлайн. Данные сохраняются на этом устройстве.'; }
     emit();
   }
   function authHeaders(token = state.session?.access_token) {
@@ -84,6 +111,7 @@
   }
   async function setSession(session) {
     state.session = session?.access_token ? session : null;
+    state.startupSyncPending = Boolean(state.session);
     try { if (state.session) localStorage.setItem(SESSION_KEY, JSON.stringify(state.session)); else localStorage.removeItem(SESSION_KEY); } catch { state.error = 'Сессию не удалось сохранить. Не закрывай страницу до завершения работы.'; }
     emit();
   }
@@ -114,8 +142,8 @@
     state.syncTimer = setTimeout(() => { if (navigator.onLine) syncWithCloud().catch(error => setStatus('Не удалось синхронизировать', error.message)); }, 800);
   }
   async function syncWithCloud() {
-    if (!state.session || !state.config) return { synced: false, reason: 'not-configured' };
-    if (!navigator.onLine) { setStatus('Нет соединения · изменения сохранены на устройстве'); return { synced: false, reason: 'offline' }; }
+    if (!state.session || !state.config) { state.startupSyncPending = false; return { synced: false, reason: 'not-configured' }; }
+    if (!navigator.onLine) { state.startupSyncPending = false; setStatus('Нет соединения · изменения сохранены на устройстве'); return { synced: false, reason: 'offline' }; }
     if (state.busy) return { synced: false, reason: 'busy' };
     state.busy = true; setStatus('Синхронизируется');
     try {
@@ -128,6 +156,15 @@
         const localRaw = localGet(key);
         const row = remote.get(key);
         if (localRaw === null && row) { setLocal(key, JSON.stringify(row.payload), { queue: false, preserveTimestamp: true, updatedAt: row.updated_at }); meta[key] = row.updated_at; continue; }
+        if (localRaw !== null && row && !state.initialLocalKeys.includes(key) && !state.userInteracted) {
+          if (saveSafetySnapshot('before-cloud-first-load', { key, side: 'local', value: localRaw, remoteValue: row.payload, updatedAt: row.updated_at }, { entity: key })) {
+            setLocal(key, JSON.stringify(row.payload), { queue: false, preserveTimestamp: true, updatedAt: row.updated_at });
+            meta[key] = row.updated_at;
+            continue;
+          }
+          conflicts.push({ key, localValue: parse(localRaw, localRaw), remoteValue: row.payload, updatedAt: row.updated_at });
+          continue;
+        }
         if (localRaw !== null && !row) { cloudWrites.push([key, parse(localRaw, localRaw), meta[key] || stamp()]); continue; }
         if (localRaw === null || !row) continue;
         const localValue = parse(localRaw, localRaw);
@@ -135,8 +172,13 @@
         const localTime = Date.parse(meta[key] || '');
         const remoteTime = Date.parse(row.updated_at || '');
         if (Number.isFinite(localTime) && Number.isFinite(remoteTime)) {
-          if (localTime > remoteTime) cloudWrites.push([key, localValue, meta[key]]);
-          else { setLocal(key, JSON.stringify(row.payload), { queue: false, preserveTimestamp: true, updatedAt: row.updated_at }); meta[key] = row.updated_at; }
+          if (localTime > remoteTime) {
+            if (saveSafetySnapshot('before-cloud-overwrite', { key, side: 'cloud', value: row.payload, updatedAt: row.updated_at }, { entity: key })) cloudWrites.push([key, localValue, meta[key]]);
+            else conflicts.push({ key, localValue, remoteValue: row.payload, updatedAt: row.updated_at });
+          } else {
+            if (!saveSafetySnapshot('before-cloud-restore', { key, side: 'local', value: localRaw, updatedAt: meta[key] }, { entity: key })) { conflicts.push({ key, localValue, remoteValue: row.payload, updatedAt: row.updated_at }); continue; }
+            setLocal(key, JSON.stringify(row.payload), { queue: false, preserveTimestamp: true, updatedAt: row.updated_at }); meta[key] = row.updated_at;
+          }
         } else conflicts.push({ key, localValue, remoteValue: row.payload, updatedAt: row.updated_at });
       }
       writeMetadata(meta);
@@ -159,7 +201,7 @@
       setStatus(conflicts.length ? `Нужно разрешить конфликт данных · ${conflicts.length}` : 'Сохранено и синхронизировано');
       return { synced: true, conflicts: conflicts.length };
     } catch (error) { setStatus(navigator.onLine ? 'Не удалось синхронизировать' : 'Нет соединения · изменения сохранены на устройстве', error.message); throw error; }
-    finally { state.busy = false; emit(); }
+    finally { state.busy = false; state.startupSyncPending = false; emit(); }
   }
   async function loadProfile() {
     if (!state.session || !state.config) return null;
@@ -185,6 +227,7 @@
   function resolveConflict(key, choice) {
     const conflict = state.conflicts.find(item => item.key === key);
     if (!conflict) return;
+    if (!saveSafetySnapshot('before-manual-conflict-resolution', { key, localValue: conflict.localValue, remoteValue: conflict.remoteValue, updatedAt: conflict.updatedAt }, { entity: key, choice })) { emit(); return; }
     const meta = metadata();
     if (choice === 'cloud') {
       setLocal(key, JSON.stringify(conflict.remoteValue), { queue: false, preserveTimestamp: true, updatedAt: conflict.updatedAt });
@@ -198,6 +241,37 @@
     if (!state.conflicts.length) syncWithCloud().catch(error => setStatus('Ошибка синхронизации', error.message));
     else emit();
   }
+  function createBackup() {
+    return { format: 'daily-english-progress-backup', version: 1, appBuild: BUILD_VERSION, createdAt: stamp(), data: currentLocalData(), recoverySnapshots: parse(localGet(SAFETY_BACKUPS_KEY), []) };
+  }
+  async function restoreBackup(backup) {
+    if (!backup || backup.format !== 'daily-english-progress-backup' || !backup.data || typeof backup.data !== 'object') throw new Error('Это не резервная копия Daily English.');
+    const entries = KEYS.filter(key => typeof backup.data[key] === 'string');
+    if (!entries.length) throw new Error('В копии не найдены данные прогресса.');
+    for (const key of entries) { try { JSON.parse(backup.data[key]); } catch { throw new Error(`В копии повреждён раздел «${FRIENDLY[key]}». Ничего не восстановлено.`); } }
+    if (!saveSafetySnapshot('before-manual-restore', currentLocalData(), { backupCreatedAt: backup.createdAt || '' })) throw new Error('Не удалось сохранить текущие данные перед восстановлением. Освободи место и повтори попытку.');
+    const meta = metadata();
+    for (const key of entries) {
+      setLocal(key, backup.data[key], { queue: false });
+      meta[key] = stamp();
+    }
+    writeMetadata(meta);
+    if (state.session) {
+      for (const key of entries) queueOfflineChange(key, parse(backup.data[key], backup.data[key]), meta[key]);
+      scheduleSync();
+    }
+    return { restored: entries.length };
+  }
+  function getRecoveryBackups() {
+    const snapshots = parse(localGet(SAFETY_BACKUPS_KEY), []);
+    return (Array.isArray(snapshots) ? snapshots : []).map((item, index) => ({ item, index })).filter(({ item }) => ['before-app-update', 'before-manual-restore'].includes(item.source) && item.data && KEYS.some(key => typeof item.data[key] === 'string')).map(({ item, index }) => ({ index, createdAt: item.createdAt, previousBuild: item.source === 'before-manual-restore' ? 'до восстановления' : item.details?.previousBuild || 'предыдущая версия' }));
+  }
+  async function restoreRecoveryBackup(index) {
+    const snapshots = parse(localGet(SAFETY_BACKUPS_KEY), []);
+    const item = Array.isArray(snapshots) ? snapshots[Number(index)] : null;
+    if (!item || !['before-app-update', 'before-manual-restore'].includes(item.source) || !item.data) throw new Error('Автоматическая копия не найдена.');
+    return restoreBackup({ format: 'daily-english-progress-backup', version: 1, createdAt: item.createdAt, data: item.data });
+  }
   function clearLocalData() { for (const key of KEYS) localStorage.removeItem(key); localStorage.removeItem(META_KEY); localStorage.removeItem(QUEUE_KEY); }
   function getState() { return { configured: Boolean(state.config), session: state.session, profile: state.profile, status: state.status, error: state.error, conflicts: state.conflicts, lastSync: state.lastSync, migrationWarning: state.migrationWarning }; }
   function subscribe(listener) { state.listeners.add(listener); listener(getState()); return () => state.listeners.delete(listener); }
@@ -209,12 +283,15 @@
     saveProgress(value) { setLocal('dailyEnglishProgressV1', JSON.stringify(value)); },
     loadDrafts() { return parse(localGet('dailyEnglishAcademicDraftsV2'), {}); },
     saveDraft(key, value) { const drafts = api.loadDrafts(); drafts[key] = value; api.setItemDebounced('dailyEnglishAcademicDraftsV2', JSON.stringify(drafts)); },
-    loadProfile, syncWithCloud, migrateLocalData, clearLocalData, queueOfflineChange, signUp, signIn, signOut, saveProfile, resolveConflict, subscribe, getState,
+    loadProfile, syncWithCloud, migrateLocalData, clearLocalData, queueOfflineChange, signUp, signIn, signOut, saveProfile, resolveConflict, createBackup, restoreBackup, getRecoveryBackups, restoreRecoveryBackup, subscribe, getState,
     setStatus
   };
   global.storageService = api;
   migrateLocalData();
+  state.initialLocalKeys = KEYS.filter(key => localGet(key) !== null);
   state.session = parse(localGet(SESSION_KEY), null);
+  state.startupSyncPending = Boolean(state.session);
+  for (const eventName of ['pointerdown', 'keydown', 'input', 'change', 'submit']) global.addEventListener(eventName, () => { state.userInteracted = true; }, { capture: true, once: true });
   if (state.session) localStorage.setItem(SESSION_KEY, JSON.stringify(state.session));
   loadConfig().then(async () => {
     if (!state.session || !state.config) return;

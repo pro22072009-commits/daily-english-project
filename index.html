@@ -53,6 +53,7 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
  <nav class="mobile-nav" aria-label="Навигация"><button class="active" data-view="dashboard"><span>◷</span>Сегодня</button><button data-view="textbook" data-b2-only-view><span>📚</span>Учебник</button><button data-view="reading"><span>📖</span>Reading</button><button data-view="writing"><span>✍</span>Writing</button><button data-view="listening"><span>🎧</span>Listening</button><button data-view="speaking"><span>🗣</span>Speaking</button><button data-view="vocabulary"><span>🔤</span>Лексика</button></nav>
 <div class="toast" id="toast" role="status"></div>
 <script src="./empower-b1-wordlist.js"></script>
+<script src="./sourced-vocabulary.js"></script>
 <script src="./github-config.js"></script><script src="./storage-service.js"></script>
 <script src="account-ui.js"></script>
 <script>
@@ -150,12 +151,25 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     try { latest = JSON.parse(storageService.getItem(KEY) || '{}'); } catch { latest = {}; }
     const latestStats = latest.stats || {};
     const localStats = data.stats || {};
+    const savedStreak = Math.max(Number(latestStats.streak) || 0, Number(localStats.streak) || 0);
+    const activeDate = [latestStats.lastActive, localStats.lastActive].filter(value => /^\d{4}-\d{2}-\d{2}$/.test(value || '')).sort().at(-1) || (savedStreak ? dateKey() : '');
+    const activeStreaks = [latestStats, localStats].filter(item => item.lastActive === activeDate);
+    const legacyStreak = activeStreaks.length ? activeStreaks.reduce((longest, item) => Math.max(longest, Number(item.streak) || 0), 0) : savedStreak;
     const stats = { ...latestStats, ...localStats,
+      lastActive: activeDate || localStats.lastActive || latestStats.lastActive || '',
+      streak: legacyStreak,
       plans: { ...(latestStats.plans || {}), ...(localStats.plans || {}) },
       activityDates: { ...(latestStats.activityDates || {}), ...(localStats.activityDates || {}) }
     };
     stats.activityDates ||= {};
     if (stats.lastActive) stats.activityDates[stats.lastActive] = true;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(stats.lastActive) && stats.streak > 0) {
+      const legacyDay = new Date(`${stats.lastActive}T12:00:00`);
+      for (let index = 0; index < Math.min(3650, Math.floor(stats.streak)); index++) {
+        stats.activityDates[dateKey(legacyDay)] = true;
+        legacyDay.setDate(legacyDay.getDate() - 1);
+      }
+    }
     for (const [date, record] of Object.entries(stats.plans || {})) {
       if (/^\d{4}-\d{2}-\d{2}$/.test(date) && record && Object.values(record).some(Boolean)) stats.activityDates[date] = true;
     }
@@ -642,10 +656,13 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     rows.forEach(([word,translation,collocation,synonym])=>allWords.push({topic,word,translation,collocation,synonym}));
   });
   const intervals = [1,2,4,7,14,30];
-  function exampleFor(item) { return extraExamples[item.word] || `In practice, communities can ${item.collocation}.`; }
+  function exampleFor(item) { return item.example || extraExamples[item.word] || `In practice, communities can ${item.collocation}.`; }
   function vocabButton(item, learned) {
     const synonym=synonyms[item.word]||item.synonym||'related term: '+item.collocation;
-    return `<div class="word-card"><div><strong>${item.word}</strong><small>${item.translation} · collocation: <i>${item.collocation}</i></small><div class="word-extra">Synonym: ${synonym}<br>Example: <i>${exampleFor(item)}</i></div></div><div><button class="audio" aria-label="Прослушать ${item.word}" data-say="${item.word}">🔊</button><br><button class="sys-btn" data-learn="${item.word}">${learned?'Добавлено ✓':'Выучил — повторять'}</button></div></div>`;
+    const level=item.level?` · ${item.level}`:'';
+    const definition=item.definition?`<br>Meaning: ${item.definition}`:'';
+    const source=item.sourceUrl?`<br>Source: <a href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer">Oxford entry</a> · <a href="${item.levelUrl||'https://www.oxfordlearnersdictionaries.com/us/wordlists/oxford3000-5000'}" target="_blank" rel="noopener noreferrer">CEFR list${item.level?' · '+item.level:''}</a> · <a href="${item.checkUrl||'https://dictionary.cambridge.org/dictionary/learner-english/'}" target="_blank" rel="noopener noreferrer">Cambridge check</a>`:'';
+    return `<div class="word-card"><div><strong>${item.word}</strong><small>${item.translation}${level}${item.pos?' · '+item.pos:''} · collocation: <i>${item.collocation}</i></small><div class="word-extra">${definition}<br>Synonym: ${synonym}<br>Example: <i>${exampleFor(item)}</i>${source}</div></div><div><button class="audio" aria-label="Прослушать ${item.word}" data-say="${item.word}">🔊</button><br><button class="sys-btn" data-learn="${item.word}">${learned?'Добавлено ✓':'Выучил — повторять'}</button></div></div>`;
   }
   function dateDue(offset) { return dateKey(new Date(Date.now()+offset*DAY)); }
   function addToReview(item) {
@@ -854,6 +871,87 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   const isoDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const empowerB1Words = Array.isArray(window.EMPOWER_B1_WORDS) ? window.EMPOWER_B1_WORDS : [];
+  const sourcedVocabulary = Array.isArray(window.DAILY_SOURCE_WORDS) ? window.DAILY_SOURCE_WORDS : [];
+  const normalizeTerm = value => String(value || '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase();
+  const excludedOxfordTerms = new Set([
+    ...empowerB1Words.map(item => normalizeTerm(item.term)),
+    ...sourcedVocabulary.map(item => normalizeTerm(item.word))
+  ].filter(Boolean));
+  const OXFORD_3000_PDF_URL = 'https://www.oxfordlearnersdictionaries.com/us/external/pdf/wordlists/oxford-3000-5000/The_Oxford_3000_by_CEFR_level.pdf';
+  const OXFORD_5000_PDF_URL = 'https://www.oxfordlearnersdictionaries.com/us/external/pdf/wordlists/oxford-3000-5000/The_Oxford_5000_by_CEFR_level.pdf';
+  let pdfjsModulePromise;
+  async function loadPdfJs() {
+    if (!pdfjsModulePromise) pdfjsModulePromise = import(new URL('./vendor/pdfjs/pdf.min.mjs', document.baseURI).href).then(module => {
+      module.GlobalWorkerOptions.workerSrc = new URL('./vendor/pdfjs/pdf.worker.min.mjs', document.baseURI).href;
+      return module;
+    });
+    return pdfjsModulePromise;
+  }
+  const oxfordPosPattern = '(?:(?:auxiliary\\s+v|modal\\s+v|indefinite\\s+article|n|v|adj|adv|prep|pron|det|conj|exclam)\\.?|number)';
+  function parseOxfordEntryLine(line, level, source) {
+    const pattern = new RegExp(`^(.+?)\\s+(${oxfordPosPattern}(?:\\s*[,/]\\s*${oxfordPosPattern})*)$`, 'i');
+    const match = String(line || '').replace(/™|®/g, '').replace(/\u00a0/g, ' ').trim().match(pattern);
+    if (!match) return null;
+    const term = match[1].trim().replace(/\s+/g, ' ');
+    if (!term || term.length > 70 || /Oxford University Press|Oxford 3000|Oxford 5000/i.test(term)) return null;
+    return { term, pos: match[2].trim(), level, source };
+  }
+  async function parseOxfordPdf(file) {
+    if (!file || (!/\.pdf$/i.test(file.name || '') && file.type !== 'application/pdf')) throw new Error('Выбери официальный PDF Oxford 3000 или Oxford 5000 by CEFR level.');
+    if (file.size > 20 * 1024 * 1024) throw new Error('Файл больше 20 МБ. Скачай официальный Oxford PDF по CEFR.');
+    const pdfjs = await loadPdfJs();
+    const document = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false }).promise;
+    if (document.numPages > 40) throw new Error('Похоже, это не официальный файл Oxford 3000/5000 by CEFR (ожидается не больше 40 страниц).');
+    const parsed = [];
+    let listName = '';
+    let currentLevel = '';
+    for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber++) {
+      const page = await document.getPage(pageNumber);
+      const width = page.getViewport({ scale: 1 }).width;
+      const content = await page.getTextContent();
+      if (pageNumber === 1) {
+        const title = content.items.map(item => item.str || '').join(' ');
+        listName = /The Oxford 3000/i.test(title) ? 'Oxford 3000' : /The Oxford 5000/i.test(title) ? 'Oxford 5000' : '';
+        if (!listName) throw new Error('В файле не найден официальный заголовок Oxford 3000/5000 by CEFR level.');
+      }
+      const columns = [new Map(), new Map(), new Map(), new Map()];
+      const columnStart = width * 0.0714;
+      const columnWidth = width * 0.2193;
+      for (const item of content.items) {
+        if (!item.str || !item.str.trim() || !item.transform) continue;
+        const x = item.transform[4];
+        const y = item.transform[5];
+        const column = Math.max(0, Math.min(3, Math.floor((x - columnStart) / columnWidth)));
+        const yKey = Math.round(y * 2) / 2;
+        const row = columns[column].get(yKey) || [];
+        row.push({ x, text: item.str });
+        columns[column].set(yKey, row);
+      }
+      for (const column of columns) {
+        const lines = [...column.entries()].sort((a, b) => b[0] - a[0]);
+        for (const [, items] of lines) {
+          const line = items.sort((a, b) => a.x - b.x).map(item => item.text).join(' ').replace(/\s+/g, ' ').trim();
+          const levelMatch = line.match(/^(A1|A2|B1|B2|C1)$/i);
+          if (levelMatch) { currentLevel = levelMatch[1].toUpperCase(); continue; }
+          const eligibleLevel = listName === 'Oxford 3000' ? currentLevel === 'B1' || currentLevel === 'B2' : currentLevel === 'B2';
+          if (!eligibleLevel) continue;
+          const entry = parseOxfordEntryLine(line, currentLevel, `${listName} by CEFR level`);
+          if (entry) parsed.push(entry);
+        }
+      }
+    }
+    const unique = new Map();
+    for (const entry of parsed) {
+      const key = normalizeTerm(entry.term);
+      const old = unique.get(key);
+      if (!old || (old.level === 'B2' && entry.level === 'B1')) unique.set(key, entry);
+    }
+    const result = [...unique.values()];
+    const levels = new Set(result.map(item => item.level));
+    const validList = listName === 'Oxford 3000' ? result.length >= 1100 && levels.has('B1') && levels.has('B2') : result.length >= 600 && levels.has('B2');
+    if (!validList) throw new Error(`Не получилось надёжно прочитать ${listName || 'Oxford PDF'}: найдено ${result.length} подходящих строк. Проверь, что это официальный текстовый PDF, а не фото/скан.`);
+    return result;
+  }
   const cambridgeEntryUrl = term => `https://dictionary.cambridge.org/dictionary/english-russian/${encodeURIComponent(String(term || '').trim().toLowerCase().replace(/\s+/g, '_'))}`;
   const readData = () => { try { return JSON.parse(storageService.getItem(KEY) || '{}'); } catch { return {}; } };
   const data = readData();
@@ -873,6 +971,8 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   b2.companion ||= {};
   b2.carryForward ||= {};
   b2.vocabulary ||= [];
+  b2.oxfordDaily ||= {};
+  b2.oxfordImportedAt ||= '';
   b2.skillChecks ||= [];
   b2.calendarDate ||= '';
   b2.calendarDatePinned ??= false;
@@ -898,6 +998,51 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     data.stats = mergedStats;
     data.b2Foundation = b2;
     storageService.setItem(KEY, JSON.stringify(data));
+  }
+  function ensureOxfordWordsForDate(targetDate) {
+    const pool = Array.isArray(b2.oxfordWords) ? b2.oxfordWords : [];
+    if (!pool.length || !b2.oxfordImportedAt || targetDate < b2.oxfordImportedAt) return b2.oxfordDaily[targetDate] || [];
+    const used = new Set([
+      ...empowerB1Words.map(item => normalizeTerm(item.term)),
+      ...b2.vocabulary.map(item => normalizeTerm(item.term)),
+      ...sourcedVocabulary.map(item => normalizeTerm(item.word))
+    ].filter(Boolean));
+    const startDate = new Date(`${b2.oxfordImportedAt}T12:00:00`);
+    const endDate = new Date(`${targetDate}T12:00:00`);
+    let changed = false;
+    for (const date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+      const key = isoDate(date);
+      if (date.getDay() === 0) continue;
+      const assigned = b2.oxfordDaily[key];
+      if (Array.isArray(assigned)) {
+        assigned.forEach(item => used.add(normalizeTerm(item.term)));
+        continue;
+      }
+      const offsetDays = Math.max(0, Math.floor((date - startDate) / 86400000));
+      const b2Target = Math.min(7, Math.floor(offsetDays / 7));
+      const picked = [];
+      const pickLevel = (level, amount) => {
+        const options = pool.filter(item => item.level === level);
+        if (!options.length || amount <= 0) return;
+        const start = (offsetDays * 10) % options.length;
+        for (let n = 0; n < options.length && picked.length < 10 && amount > 0; n++) {
+          const item = options[(start + n) % options.length];
+          const wordKey = normalizeTerm(item.term);
+          if (!wordKey || used.has(wordKey)) continue;
+          picked.push(item); used.add(wordKey); amount--;
+        }
+      };
+      pickLevel('B1', 10 - b2Target);
+      pickLevel('B2', b2Target);
+      if (picked.length < 10) {
+        pickLevel('B1', 10 - picked.length);
+        pickLevel('B2', 10 - picked.length);
+      }
+      b2.oxfordDaily[key] = picked;
+      changed = true;
+    }
+    if (changed) save();
+    return b2.oxfordDaily[targetDate] || [];
   }
   const reviewIntervals = [1, 2, 4, 7, 14, 30];
   const addDays = (date, amount) => { const value = new Date(`${date}T12:00:00`); value.setDate(value.getDate() + amount); return isoDate(value); };
@@ -1404,6 +1549,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     }
     const requestedCalendarDate = b2.calendarDatePinned && /^\d{4}-\d{2}-\d{2}$/.test(b2.calendarDate) && b2.calendarDate >= calendarStartKey && b2.calendarDate <= calendarEndKey ? b2.calendarDate : (dayKey <= calendarEndKey ? dayKey : calendarEndKey);
     const selectedVocabularyCard = scheduledVocabularyCard(requestedCalendarDate);
+    const oxfordDailyWords = ensureOxfordWordsForDate(requestedCalendarDate);
     const calendarDate = new Date(`${requestedCalendarDate}T12:00:00`);
     const calendarDay = days[(calendarDate.getDay() + 6) % 7];
     const calendarAssignment = calendarDay.rest ? null : assignmentForDay(requestedCalendarDate);
@@ -1499,7 +1645,13 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     let vocabularyDaysRemaining = 0;
     for (let checkDate = new Date(`${dayKey}T12:00:00`); checkDate <= calendarEndDate; checkDate.setDate(checkDate.getDate() + 1)) if (checkDate.getDay() !== 0) vocabularyDaysRemaining++;
     const vocabularyCoverageNote = `В словаре сейчас ${eligibleVocabularyTermCount} уникальных слов с подтверждённых страниц Empower. Для 10 новых слов в каждый учебный день до 15 февраля нужно около ${vocabularyDaysRemaining * 10}; источник пока не покрывает весь срок. Слова не будут повторяться под видом новых — после исчерпания списка сайт покажет фактическое количество.`;
-    if (b2VocabularyView) b2VocabularyView.innerHTML = `<div class="b2-vocabulary-mode"><div class="hero"><div class="kicker">B2 Foundation · Cambridge Empower</div><h1>Лексика к выбранному дню</h1><p>По умолчанию здесь подборка на сегодня; если выбрать дату в календаре, покажутся слова того дня. Для каждого дня используются отдельные слова: сначала страницы его урока, затем ещё не назначенные слова Empower B1. ${escapeHtml(vocabularyCoverageNote)}</p></div>${selectedVocabularyCard}${vocabularyHtml}</div>`;
+    const oxfordDailyCardsHtml = oxfordDailyWords.map((item,index)=>{const alreadyAdded=b2.vocabulary.some(saved=>normalizeTerm(saved.term)===normalizeTerm(item.term));const isFiveThousand=String(item.source||'').includes('5000');const sourceUrl=isFiveThousand?OXFORD_5000_PDF_URL:OXFORD_3000_PDF_URL;return `<article class="b2-daily-word"><div><strong>${escapeHtml(item.term)}</strong><small>${isFiveThousand?'Oxford 5000':'Oxford 3000'} · ${escapeHtml(item.level)} · ${escapeHtml(item.pos)}</small><div class="b2-vocab-meta">Уровень и часть речи взяты из официального Oxford PDF. Значение, перевод и пример открой в Cambridge и добавь в карточку для интервального повторения.</div></div><div class="b2-daily-word-actions"><a class="sys-btn" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Oxford PDF ↗</a><a class="sys-btn" href="${cambridgeEntryUrl(item.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-oxford-word="${index}" ${alreadyAdded?'disabled':''}>${alreadyAdded?'Уже добавлено ✓':'Добавить на повторение'}</button></div></article>`}).join('');
+    const starterVocabularyHtml = sourcedVocabulary.map((item,index)=>{const alreadyAdded=b2.vocabulary.some(saved=>normalizeTerm(saved.term)===normalizeTerm(item.word));return `<article class="b2-daily-word"><div><strong>${escapeHtml(item.word)}</strong><small>${escapeHtml(item.level)} · ${escapeHtml(item.pos)} · ${escapeHtml(item.topic)}</small><div class="b2-vocab-meta"><b>Explanation in English:</b> ${escapeHtml(item.definition)}</div><div class="b2-vocab-meta"><b>Перевод:</b> ${escapeHtml(item.translation)} · <b>Collocation:</b> ${escapeHtml(item.collocation)}</div><div class="b2-vocab-meta">Example: <i>${escapeHtml(item.example)}</i></div></div><div class="b2-daily-word-actions"><a class="sys-btn" href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer">Oxford ↗</a><a class="sys-btn" href="${item.checkUrl}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-sourced-word="${index}" ${alreadyAdded?'disabled':''}>${alreadyAdded?'Уже добавлено ✓':'Добавить на повторение'}</button></div></article>`}).join('');
+    const importedOxfordCount = Array.isArray(b2.oxfordWords) ? b2.oxfordWords.length : 0;
+    const oxfordImportStatus = importedOxfordCount ? `Список загружен: ${importedOxfordCount} уникальных слов B1–B2 из Oxford 3000/5000. Совпадения с Empower и стартовой подборкой исключены; назначения по датам сохраняются.` : 'Скачай PDF Oxford 3000 (B1–B2) или Oxford 5000 (только B2), выбери его и нажми «Импортировать». Импортируй оба файла по очереди: списки объединятся.';
+    const oxfordDailyNote = new Date(`${requestedCalendarDate}T12:00:00`).getDay() === 0 ? 'Воскресенье — полный выходной: новые слова на этот день не назначаются.' : importedOxfordCount ? `${oxfordDailyWords.length} / 10 новых слов на ${new Date(`${requestedCalendarDate}T12:00:00`).toLocaleDateString('ru-RU', { day:'numeric', month:'long' })}. ${oxfordDailyWords.length < 10 ? 'В официальном списке не осталось столько подходящих уникальных слов; повторы не подставляются.' : 'Сначала идут B1, доля B2 постепенно растёт.'}` : 'После импорта сайт будет выбирать слова для выбранного дня. Пока импорт не выполнен, показывается только стартовая подборка.';
+    const sourcedVocabularyHtml = `<section class="b2-extra b2-sourced-words" id="b2-sourced-words"><h3>Слова из Oxford 3000 + 5000 · B1–B2</h3><p class="system-sub">Основной источник — Oxford 3000 (B1–B2); из Oxford 5000 импортируются только слова B2, раздел C1 пропускается. Импортируй PDF по очереди, если хочешь оба списка. Совпадения с Empower и стартовыми словами отфильтровываются. Этот блок следует за словами Student’s Book текущего дня. Значения и переводы проверяй в Cambridge Learner’s Dictionary и сохраняй в личном словаре.</p><div class="b2-oxford-import"><a class="sys-btn" href="${OXFORD_3000_PDF_URL}" target="_blank" rel="noopener noreferrer">Скачать Oxford 3000 · B1–B2 ↗</a><a class="sys-btn" href="${OXFORD_5000_PDF_URL}" target="_blank" rel="noopener noreferrer">Скачать Oxford 5000 · B2 ↗</a><label class="b2-oxford-file">Выбрать PDF<input id="b2-oxford-pdf" type="file" accept="application/pdf,.pdf"></label><button type="button" class="sys-btn primary" id="b2-import-oxford">Импортировать список</button><p class="system-sub" id="b2-oxford-import-status" aria-live="polite">${escapeHtml(oxfordImportStatus)}</p></div><p class="system-sub">${escapeHtml(oxfordDailyNote)}</p>${oxfordDailyCardsHtml || (importedOxfordCount ? '<p class="system-sub">На эту дату новых слов нет: это выходной, дата раньше импорта или пул уже исчерпан.</p>' : '')}${sourcedVocabulary.length ? `<details class="b2-extra"><summary>Стартовая проверенная подборка · ${sourcedVocabulary.length} слов</summary>${starterVocabularyHtml}</details>` : ''}</section>`;
+    if (b2VocabularyView) b2VocabularyView.innerHTML = `<div class="b2-vocabulary-mode"><div class="hero"><div class="kicker">B2 Foundation · Cambridge Empower</div><h1>Лексика к выбранному дню</h1><p>По умолчанию здесь подборка на сегодня; если выбрать дату в календаре, покажутся слова того дня. Для каждого дня используются отдельные слова: сначала страницы его урока, затем ещё не назначённые слова Empower B1. ${escapeHtml(vocabularyCoverageNote)}</p></div>${selectedVocabularyCard}${sourcedVocabularyHtml}${vocabularyHtml}</div>`;
 
     const wordSearch = document.getElementById('b2-wordbank-search');
     const wordUnit = document.getElementById('b2-wordbank-unit');
@@ -1545,6 +1697,66 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       form.scrollIntoView({ behavior: 'smooth', block: 'center' });
       form.elements.definition.focus({ preventScroll: true });
     });
+    b2VocabularyView?.querySelectorAll('[data-sourced-word]').forEach(button => button.onclick = () => {
+      const item = sourcedVocabulary[Number(button.dataset.sourcedWord)];
+      if (!item) return;
+      const form = document.getElementById('b2-vocabulary-form');
+      form.elements.term.value = item.word;
+      form.elements.definition.value = item.definition;
+      form.elements.meaning.value = item.translation;
+      form.elements.pos.value = `${item.level} · ${item.pos}`;
+      form.elements.pronunciation.value = '';
+      form.elements.example.value = `${item.collocation} — ${item.example}`;
+      form.elements.sourceRef.value = `${item.sourceLabel} · ${item.level}; Cambridge Learner’s Dictionary`;
+      document.getElementById('b2-cambridge-lookup').href = item.checkUrl;
+      document.getElementById('b2-vocab-form-status').textContent = 'Проверь карточку и нажми «Добавить на повторение».';
+      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      form.elements.term.focus({ preventScroll: true });
+    });
+    b2VocabularyView?.querySelectorAll('[data-oxford-word]').forEach(button => button.onclick = () => {
+      const item = oxfordDailyWords[Number(button.dataset.oxfordWord)];
+      if (!item) return;
+      const form = document.getElementById('b2-vocabulary-form');
+      form.elements.term.value = item.term;
+      form.elements.definition.value = '';
+      form.elements.meaning.value = '';
+      form.elements.pos.value = `${item.level} · ${item.pos}`;
+      form.elements.pronunciation.value = '';
+      form.elements.example.value = '';
+      form.elements.sourceRef.value = `${item.source || 'Oxford by CEFR level'} · ${item.level} · ${item.pos}`;
+      document.getElementById('b2-cambridge-lookup').href = cambridgeEntryUrl(item.term);
+      document.getElementById('b2-vocab-form-status').textContent = 'Открой Cambridge, заполни Explanation in English и перевод на русский, затем сохрани для интервального повторения.';
+      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      form.elements.definition.focus({ preventScroll: true });
+    });
+    const oxfordFileInput = b2VocabularyView?.querySelector('#b2-oxford-pdf');
+    const oxfordImportButton = b2VocabularyView?.querySelector('#b2-import-oxford');
+    const oxfordImportStatusElement = b2VocabularyView?.querySelector('#b2-oxford-import-status');
+    if (oxfordImportButton && oxfordFileInput) oxfordImportButton.onclick = async () => {
+      const file = oxfordFileInput.files?.[0];
+      if (!file) { oxfordImportStatusElement.textContent = 'Сначала выбери официальный PDF Oxford 3000 или Oxford 5000 by CEFR.'; return; }
+      oxfordImportButton.disabled = true;
+      oxfordImportButton.textContent = 'Читаю PDF…';
+      oxfordImportStatusElement.textContent = 'Разбираю файл в браузере. Его содержимое не отправляется на сервер.';
+      try {
+        const imported = await parseOxfordPdf(file);
+        const merged = new Map();
+        for (const entry of [...(b2.oxfordWords || []), ...imported]) {
+          const key = normalizeTerm(entry.term);
+          if (!key || excludedOxfordTerms.has(key)) continue;
+          const previous = merged.get(key);
+          if (!previous || (previous.level === 'B2' && entry.level === 'B1')) merged.set(key, entry);
+        }
+        b2.oxfordWords = [...merged.values()];
+        b2.oxfordImportedAt ||= isoDate(new Date());
+        save();
+        render();
+      } catch (error) {
+        oxfordImportStatusElement.textContent = error?.message || 'Не удалось разобрать PDF. Скачай официальный текстовый Oxford PDF by CEFR и попробуй ещё раз.';
+        oxfordImportButton.disabled = false;
+        oxfordImportButton.textContent = 'Импортировать список';
+      }
+    };
     const vocabularyForm = document.getElementById('b2-vocabulary-form');
     vocabularyForm.elements.term.oninput = () => { document.getElementById('b2-cambridge-lookup').href = cambridgeEntryUrl(vocabularyForm.elements.term.value); };
     const form = document.getElementById('b2-course-form');

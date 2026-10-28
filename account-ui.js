@@ -7,6 +7,11 @@
   const safe = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const parse = key => { try { return JSON.parse(service.getItem(key) || '{}'); } catch { return {}; } };
   const labels = { dailyEnglishProgressV1: 'Упражнения, результаты и streak', dailyEnglishAcademicDraftsV2: 'Черновики Writing', dailyEnglishBandsV1: 'IELTS estimated bands', dailyEnglishSystemV2: 'B2 Foundation и календарь' };
+  function backupControls() {
+    const snapshots = service.getRecoveryBackups();
+    const recovery = snapshots.length ? `<details class="account-conflicts"><summary>Автоматические копии прошлых версий · ${snapshots.length}</summary>${snapshots.map(item => `<article><strong>${safe(new Date(item.createdAt).toLocaleString('ru-RU'))} · до ${safe(item.previousBuild)}</strong><div><button type="button" class="account-small" data-restore-safety-backup="${item.index}">Восстановить эту версию</button></div></article>`).join('')}</details>` : '';
+    return `<section class="account-note"><strong>Резервная копия всего прогресса</strong><p>Сохраняет упражнения, календарь, огонёк, слова, IELTS и черновики в файл на устройстве.</p><div class="account-actions"><button class="account-secondary" id="downloadProgressBackup" type="button">Скачать копию</button><button class="account-secondary" id="chooseProgressBackup" type="button">Восстановить копию</button><input id="progressBackupFile" type="file" accept="application/json,.json" hidden></div>${recovery}</section>`;
+  }
   const headerMeta = document.querySelector('.topbar .meta');
   document.querySelector('.app')?.insertAdjacentHTML('afterbegin', '<div class="global-storage-status" id="storageStatus" role="status" aria-live="polite"></div>');
   headerMeta?.insertAdjacentHTML('beforeend', '<button class="account-trigger" id="accountButton" type="button" aria-label="Открыть профиль и настройки аккаунта">Войти</button>');
@@ -15,7 +20,6 @@
   const modal = backdrop.querySelector('.account-dialog');
   const status = el('accountStatus');
   const content = el('accountContent');
-  let deleteMode = false;
   let installPrompt = null;
   function stats() {
     const progress = parse('dailyEnglishProgressV1');
@@ -25,7 +29,7 @@
     const overall = values.length ? (Math.round(values.reduce((sum, value) => sum + value, 0) / values.length * 2) / 2).toFixed(1) : '—';
     const start = 4;
     const progressPercent = overall === '—' ? '—' : `${Math.max(0, Math.min(100, Math.round((Number(overall) - start) / Math.max(0.5, 6.5 - start) * 100)))}%`;
-    return { overall, skillBands: Object.fromEntries(['Listening', 'Reading', 'Writing', 'Speaking'].map(name => [name, Number(bands[name] || 4).toFixed(1)])), progressPercent, streak: progress.stats?.streak ?? system.stats?.streak ?? 0, exercises: progress.stats?.completedExercises ?? system.stats?.completedExercises ?? 0, mode: system.studyMode === 'ielts' ? 'IELTS Academic' : 'B2 Foundation' };
+    return { overall, skillBands: Object.fromEntries(['Listening', 'Reading', 'Writing', 'Speaking'].map(name => [name, Number(bands[name] || 4).toFixed(1)])), progressPercent, streak: Math.max(Number(progress.stats?.streak) || 0, Number(system.stats?.streak) || 0), exercises: Math.max(Number(progress.stats?.completedExercises) || 0, Number(system.stats?.completedExercises) || 0), mode: system.studyMode === 'ielts' ? 'IELTS Academic' : 'B2 Foundation' };
   }
   function render() {
     const state = service.getState();
@@ -42,9 +46,9 @@
     const cloudNotice = state.configured ? '' : '<p class="account-note">Облачная база пока не настроена. Сайт работает в гостевом режиме; прогресс остаётся на этом устройстве.</p>';
     const conflictMarkup = state.conflicts.length ? `<section class="account-conflicts"><h3>Нужно выбрать версию данных</h3><p>Локальная запись и облачная запись отличаются, а надёжной даты одной из них нет. Выбери вручную; резервная копия локальных данных сохранена.</p>${state.conflicts.map(item => `<article><strong>${safe(labels[item.key] || item.key)}</strong><div><button type="button" class="account-small" data-conflict="${safe(item.key)}" data-choice="local">Оставить на этом устройстве</button><button type="button" class="account-small" data-conflict="${safe(item.key)}" data-choice="cloud">Взять из облака</button></div></article>`).join('')}</section>` : '';
     if (!user) {
-      content.innerHTML = `${cloudNotice}<form id="accountForm" class="account-form"><label>Имя (для регистрации)<input name="displayName" autocomplete="name" maxlength="80" placeholder="Как к тебе обращаться"></label><label>Email<input name="email" type="email" required autocomplete="email" inputmode="email"></label><label>Пароль<input name="password" type="password" required minlength="8" autocomplete="current-password"></label><div class="account-actions"><button class="account-primary" type="submit" data-auth="signin" ${state.configured ? '' : 'disabled'}>Войти</button><button class="account-secondary" type="submit" data-auth="signup" ${state.configured ? '' : 'disabled'}>Создать аккаунт</button></div></form><p class="account-note">При регистрации с подтверждением по почте данные синхронизируются после перехода по ссылке. Пароль сайт не сохраняет.</p>${conflictMarkup}`;
+      content.innerHTML = `${cloudNotice}${backupControls()}<form id="accountForm" class="account-form"><label>Имя (для регистрации)<input name="displayName" autocomplete="name" maxlength="80" placeholder="Как к тебе обращаться"></label><label>Email<input name="email" type="email" required autocomplete="email" inputmode="email"></label><label>Пароль<input name="password" type="password" required minlength="8" autocomplete="current-password"></label><div class="account-actions"><button class="account-primary" type="submit" data-auth="signin" ${state.configured ? '' : 'disabled'}>Войти</button><button class="account-secondary" type="submit" data-auth="signup" ${state.configured ? '' : 'disabled'}>Создать аккаунт</button></div></form><p class="account-note">При регистрации с подтверждением по почте данные синхронизируются после перехода по ссылке. Пароль сайт не сохраняет.</p>${conflictMarkup}`;
     } else {
-      content.innerHTML = `<div class="account-identity">${state.profile?.avatar_url ? `<img src="${safe(state.profile.avatar_url)}" alt="">` : '<span aria-hidden="true">👤</span>'}<div><strong>${safe(state.profile?.display_name || user.user_metadata?.display_name || 'Мой профиль')}</strong><small>${safe(state.profile?.email || user.email)}</small></div></div><div class="account-metrics"><div><small>Режим</small><strong>${safe(s.mode)}</strong></div><div><small>Estimated overall</small><strong>${safe(s.overall)} / 9.0</strong></div><div><small>Цель и прогресс</small><strong>6.5 · ${safe(s.progressPercent)}</strong></div><div><small>Listening</small><strong>${safe(s.skillBands.Listening)}</strong></div><div><small>Reading</small><strong>${safe(s.skillBands.Reading)}</strong></div><div><small>Writing</small><strong>${safe(s.skillBands.Writing)}</strong></div><div><small>Speaking</small><strong>${safe(s.skillBands.Speaking)}</strong></div><div><small>Streak</small><strong>${safe(s.streak)} дней</strong></div><div><small>Упражнения</small><strong>${safe(s.exercises)}</strong></div><div><small>Синхронизация</small><strong>${state.lastSync ? safe(new Date(state.lastSync).toLocaleString('ru-RU')) : 'пока не выполнялась'}</strong></div></div><div class="account-actions"><button class="account-primary" id="syncNow" type="button" ${syncing ? 'aria-busy="true" disabled' : ''}>Синхронизировать</button><button class="account-secondary" id="signOut" type="button">Выйти</button></div>${installPrompt ? '<button class="account-secondary account-install" id="installApp" type="button">Установить приложение</button>' : ''}${conflictMarkup}<details class="account-delete"><summary>Удалить аккаунт</summary><p>Аккаунт и облачные данные будут удалены. Локальная копия останется на этом устройстве как гостевые данные.</p>${deleteMode ? '<label>Для подтверждения введи УДАЛИТЬ<input id="deleteConfirm" autocomplete="off"></label><button class="account-danger" id="deleteAccount" type="button">Удалить аккаунт и облачные данные</button>' : '<button class="account-danger" id="prepareDelete" type="button">Начать удаление аккаунта</button>'}</details>`;
+      content.innerHTML = `<div class="account-identity">${state.profile?.avatar_url ? `<img src="${safe(state.profile.avatar_url)}" alt="">` : '<span aria-hidden="true">👤</span>'}<div><strong>${safe(state.profile?.display_name || user.user_metadata?.display_name || 'Мой профиль')}</strong><small>${safe(state.profile?.email || user.email)}</small></div></div><div class="account-metrics"><div><small>Режим</small><strong>${safe(s.mode)}</strong></div><div><small>Estimated overall</small><strong>${safe(s.overall)} / 9.0</strong></div><div><small>Цель и прогресс</small><strong>6.5 · ${safe(s.progressPercent)}</strong></div><div><small>Listening</small><strong>${safe(s.skillBands.Listening)}</strong></div><div><small>Reading</small><strong>${safe(s.skillBands.Reading)}</strong></div><div><small>Writing</small><strong>${safe(s.skillBands.Writing)}</strong></div><div><small>Speaking</small><strong>${safe(s.skillBands.Speaking)}</strong></div><div><small>Streak</small><strong>${safe(s.streak)} дней</strong></div><div><small>Упражнения</small><strong>${safe(s.exercises)}</strong></div><div><small>Синхронизация</small><strong>${state.lastSync ? safe(new Date(state.lastSync).toLocaleString('ru-RU')) : 'пока не выполнялась'}</strong></div></div>${backupControls()}<div class="account-actions"><button class="account-primary" id="syncNow" type="button" ${syncing ? 'aria-busy="true" disabled' : ''}>Синхронизировать</button><button class="account-secondary" id="signOut" type="button">Выйти</button></div>${installPrompt ? '<button class="account-secondary account-install" id="installApp" type="button">Установить приложение</button>' : ''}${conflictMarkup}`;
     }
   }
   function show() { backdrop.hidden = false; document.body.classList.add('account-open'); render(); modal.focus(); }
@@ -76,23 +80,45 @@
     } catch (error) { service.setStatus('Не удалось выполнить запрос', error.message); }
   });
   content.addEventListener('click', async event => {
-    if (event.target.id === 'prepareDelete' || event.target.id === 'deleteAccount') return;
+    const recovery = event.target.closest('[data-restore-safety-backup]');
+    if (recovery) {
+      if (!global.confirm('Текущие данные будут сохранены в автоматическую копию, затем заменены выбранной версией. Продолжить?')) return;
+      try { await service.restoreRecoveryBackup(recovery.dataset.restoreSafetyBackup); global.location.reload(); }
+      catch (error) { status.textContent = error.message || 'Не удалось восстановить автоматическую копию.'; }
+      return;
+    }
+    if (event.target.id === 'downloadProgressBackup') {
+      const backup = service.createBackup();
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `daily-english-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      status.textContent = 'Резервная копия скачана. Сохрани файл отдельно от сайта.';
+      return;
+    }
+    if (event.target.id === 'chooseProgressBackup') { el('progressBackupFile')?.click(); return; }
+
     const conflict = event.target.closest('[data-conflict]');
     if (conflict) { service.resolveConflict(conflict.dataset.conflict, conflict.dataset.choice); return; }
     if (event.target.id === 'syncNow') { try { await service.syncWithCloud(); } catch {} }
     if (event.target.id === 'signOut') await service.signOut();
-    if (event.target.id === 'prepareDelete') { deleteMode = true; render(); el('deleteConfirm')?.focus(); }
-    if (event.target.id === 'deleteAccount') {
-      if (el('deleteConfirm')?.value !== 'УДАЛИТЬ') { status.textContent = 'Введи слово УДАЛИТЬ, чтобы подтвердить действие.'; return; }
-      if (!globalThis.confirm('Удалить аккаунт и облачные данные без возможности восстановления? Локальные данные останутся на устройстве.')) return;
-      status.textContent = 'Удаляю аккаунт…';
-      if (mobileLayout()) {
-        status.setAttribute('aria-busy', 'true');
-        event.target.setAttribute('aria-busy', 'true');
-      }
-      try { await service.deleteAccount(); deleteMode = false; } catch (error) { service.setStatus('Не удалось удалить аккаунт', error.message); }
-    }
     if (event.target.id === 'installApp' && installPrompt) { installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; render(); }
+  });
+  content.addEventListener('change', async event => {
+    if (event.target.id !== 'progressBackupFile' || !event.target.files?.[0]) return;
+    const file = event.target.files[0];
+    try {
+      const backup = JSON.parse(await file.text());
+      if (!global.confirm('Текущие данные будут сохранены в автоматическую копию, затем заменены данными из выбранного файла. Продолжить?')) return;
+      status.textContent = 'Сохраняю текущий прогресс и восстанавливаю копию…';
+      await service.restoreBackup(backup);
+      status.textContent = 'Копия восстановлена. Перезагружаю сайт…';
+      setTimeout(() => global.location.reload(), 250);
+    } catch (error) { status.textContent = error.message || 'Не удалось восстановить резервную копию.'; }
+    finally { event.target.value = ''; }
   });
   service.subscribe(render);
   global.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt = event; render(); });

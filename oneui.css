@@ -175,6 +175,12 @@ details[open] > :not(summary) { animation: oneui-reveal .26s ease-out both; }
 .b2-daily-word-actions a[href*="cambridge"]:hover,
 .b2-vocabulary-mode a[href*="cambridge"]:hover,
 #b2-cambridge-lookup:hover { background: #414c72 !important; color: #fff !important; }
+.b2-oxford-import { display:flex; align-items:end; gap:10px; flex-wrap:wrap; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--surface); }
+.b2-oxford-import > .system-sub { flex-basis:100%; margin:0; }
+.b2-oxford-file { display:grid; gap:5px; min-width:200px; color:var(--muted); font-size:12px; font-weight:700; }
+.b2-oxford-file input { max-width:100%; min-height:42px; }
+.b2-vocabulary-mode .b2-oxford-import button.primary { min-height:44px; color:#fff !important; background:#6579db !important; border-color:#8293e8 !important; }
+@media (max-width:600px) { .b2-oxford-import { align-items:stretch; flex-direction:column; } .b2-oxford-file { min-width:0; } .b2-oxford-import .sys-btn { justify-content:center; min-height:44px; } }
 #view-textbook .b2-unit-dates,
 #view-textbook .b2-part-form,
 #view-textbook .b2-course-map { background: var(--surface) !important; color: var(--ink) !important; border-color: var(--line) !important; }
