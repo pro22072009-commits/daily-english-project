@@ -1,4 +1,4 @@
-const CACHE = 'daily-english-redesign-v2';
+const CACHE = 'daily-english-redesign-v3';
 const BASE = new URL('./', self.registration.scope);
 const page = name => new URL(name, BASE).toString();
 const CORE = ['', 'index.html', 'oneui.css', 'redesign.css', 'redesign.js', 'empower-b1-wordlist.js', 'sourced-vocabulary.js', 'github-config.js', 'storage-service.js', 'account-ui.js', 'manifest.webmanifest', 'icon.svg', 'offline.html', 'vendor/pdfjs/pdf.min.mjs', 'vendor/pdfjs/pdf.worker.min.mjs', 'vendor/pdfjs/LICENSE'].map(page);
