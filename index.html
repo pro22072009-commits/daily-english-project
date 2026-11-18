@@ -60,10 +60,7 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 // Cloud data arrives asynchronously. Rebuild the screen once after a safe
 // startup restore so app modules never continue showing their empty defaults.
 window.addEventListener('dailyEnglishCloudRestored', () => {
-  if (!sessionStorage.getItem('dailyEnglishCloudRestoreReloadedV1')) {
-    sessionStorage.setItem('dailyEnglishCloudRestoreReloadedV1', '1');
-    window.location.reload();
-  }
+  window.location.reload();
 });
 const storeKey='dailyEnglishProgressV1',draftKey='dailyEnglishAcademicDraftsV2';let saved={};try{saved=JSON.parse(storageService.getItem(draftKey)||'{}')}catch{saved={}};
 const skills=[['Listening','🎧'],['Reading','📖'],['Writing','✍️'],['Speaking','🗣️']],bandOptions=Array.from({length:13},(_,i)=>(3+i*.5).toFixed(1));let bandState={};try{bandState=JSON.parse(storageService.getItem('dailyEnglishBandsV1')||'{}')}catch{};skills.forEach(([s])=>{if(!bandState[s])bandState[s]='4.0'});

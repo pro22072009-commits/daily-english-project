@@ -7,7 +7,7 @@
   const SAFETY_BACKUPS_KEY = 'dailyEnglishSafetyBackupsV1';
   const BUILD_KEY = 'dailyEnglishAppBuildV1';
   // Bump this value on every published app update. The previous local data is snapshotted before app scripts run.
-  const BUILD_VERSION = '2026-11-18.2';
+  const BUILD_VERSION = '2026-11-18.3';
   const MIGRATION_KEY = 'dailyEnglishMigrationVersion';
   const SESSION_KEY = 'dailyEnglishCloudSessionV1';
   const QUEUE_KEY = 'dailyEnglishOfflineQueueV1';
@@ -76,6 +76,12 @@
     state.deferredWrites.clear();
     for (const [key, entry] of pending) setLocal(key, entry.raw, entry.options);
   }
+  function discardStartupDefaults() {
+    // A failed cloud read cannot authorize replacing saved progress with
+    // automatic module defaults. Real user writes have already been saved.
+    state.deferredWrites.clear();
+    state.startupSyncPending = false;
+  }
   function migrateLocalData() {
     const previousBuild = localGet(BUILD_KEY);
     if (previousBuild !== BUILD_VERSION) {
@@ -110,7 +116,7 @@
   async function loadConfig() {
     const config = global.DAILY_ENGLISH_SUPABASE_CONFIG;
     state.config = config && config.configured && config.url && config.publishableKey ? config : null;
-    if (!state.config) { state.startupSyncPending = false; flushDeferredWrites(); state.status = navigator.onLine ? 'Настройка Supabase не найдена. Проверьте конфигурацию GitHub Pages.' : 'Вы офлайн. Данные сохраняются на этом устройстве.'; }
+    if (!state.config) { discardStartupDefaults(); state.status = navigator.onLine ? 'Настройка Supabase не найдена. Проверьте конфигурацию GitHub Pages.' : 'Вы офлайн. Данные сохраняются на этом устройстве.'; }
     emit();
   }
   function authHeaders(token = state.session?.access_token) {
@@ -144,8 +150,7 @@
     } catch (error) {
       // Only an explicit invalid-token response ends a session; outages do not.
       if (error.status === 400 || error.status === 401) await setSession(null);
-      state.startupSyncPending = false;
-      flushDeferredWrites();
+      discardStartupDefaults();
       setStatus(state.session ? 'Не удалось обновить сессию · повтори синхронизацию' : 'Сессия истекла · войди снова', error.message);
       return false;
     }
@@ -173,8 +178,8 @@
     state.syncTimer = setTimeout(() => { if (navigator.onLine) syncWithCloud().catch(error => setStatus('Не удалось синхронизировать', error.message)); }, 800);
   }
   async function syncWithCloud() {
-    if (!state.session || !state.config) { state.startupSyncPending = false; flushDeferredWrites(); return { synced: false, reason: 'not-configured' }; }
-    if (!navigator.onLine) { state.startupSyncPending = false; flushDeferredWrites(); setStatus('Нет соединения · изменения сохранены на устройстве'); return { synced: false, reason: 'offline' }; }
+    if (!state.session || !state.config) { discardStartupDefaults(); return { synced: false, reason: 'not-configured' }; }
+    if (!navigator.onLine) { discardStartupDefaults(); setStatus('Нет соединения · изменения сохранены на устройстве'); return { synced: false, reason: 'offline' }; }
     if (state.busy) return { synced: false, reason: 'busy' };
     if (state.session.expires_at && state.session.expires_at * 1000 < Date.now() + 60000 && !await refreshSession()) return { synced: false, reason: 'session-refresh-failed' };
     state.busy = true; let restoredFromCloud = false; setStatus('Синхронизируется');
@@ -188,7 +193,11 @@
         const localRaw = localGet(key);
         const row = remote.get(key);
         if (localRaw === null && row) { state.deferredWrites.delete(key); setLocal(key, JSON.stringify(row.payload), { queue: false, preserveTimestamp: true, updatedAt: row.updated_at }); meta[key] = row.updated_at; restoredFromCloud = true; continue; }
-        if (localRaw !== null && row && !state.initialLocalKeys.includes(key) && !state.userInteracted) {
+        if (localRaw !== null && row && !state.initialLocalKeys.includes(key)) {
+          if (state.userInteracted) {
+            conflicts.push({ key, localValue: parse(localRaw, localRaw), remoteValue: row.payload, updatedAt: row.updated_at });
+            continue;
+          }
           if (saveSafetySnapshot('before-cloud-first-load', { key, side: 'local', value: localRaw, remoteValue: row.payload, updatedAt: row.updated_at }, { entity: key })) {
             state.deferredWrites.delete(key); setLocal(key, JSON.stringify(row.payload), { queue: false, preserveTimestamp: true, updatedAt: row.updated_at });
             meta[key] = row.updated_at;
@@ -235,10 +244,10 @@
       state.lastSync = stamp();
       localStorage.setItem(LAST_SYNC_KEY, state.lastSync);
       setStatus(conflicts.length ? `Нужно разрешить конфликт данных · ${conflicts.length}` : 'Сохранено и синхронизировано');
-      if (restoredFromCloud && !state.userInteracted) global.dispatchEvent(new CustomEvent('dailyEnglishCloudRestored'));
+      state.initialLocalKeys = [...new Set([...state.initialLocalKeys, ...KEYS.filter(key => localGet(key) !== null && !conflicts.some(conflict => conflict.key === key))])];
       return { synced: true, conflicts: conflicts.length };
     } catch (error) { setStatus(navigator.onLine ? 'Не удалось синхронизировать' : 'Нет соединения · изменения сохранены на устройстве', error.message); throw error; }
-    finally { state.busy = false; state.startupSyncPending = false; flushDeferredWrites(); emit(); }
+    finally { state.busy = false; discardStartupDefaults(); emit(); if (restoredFromCloud) global.dispatchEvent(new CustomEvent('dailyEnglishCloudRestored')); }
   }
   async function loadProfile() {
     if (!state.session || !state.config) return null;
@@ -274,6 +283,7 @@
       queueOfflineChange(key, conflict.localValue, meta[key]);
     }
     writeMetadata(meta);
+    if (!state.initialLocalKeys.includes(key)) state.initialLocalKeys.push(key);
     state.conflicts = state.conflicts.filter(item => item.key !== key);
     if (!state.conflicts.length) syncWithCloud().catch(error => setStatus('Ошибка синхронизации', error.message));
     else emit();
