@@ -82,8 +82,8 @@
   content.addEventListener('click', async event => {
     const recovery = event.target.closest('[data-restore-safety-backup]');
     if (recovery) {
-      if (!global.confirm('Текущие данные будут сохранены в автоматическую копию, затем заменены выбранной версией. Продолжить?')) return;
-      try { await service.restoreRecoveryBackup(recovery.dataset.restoreSafetyBackup); global.location.reload(); }
+      if (!window.confirm('Текущие данные будут сохранены в автоматическую копию, затем заменены выбранной версией. Продолжить?')) return;
+      try { await service.restoreRecoveryBackup(recovery.dataset.restoreSafetyBackup); window.location.reload(); }
       catch (error) { status.textContent = error.message || 'Не удалось восстановить автоматическую копию.'; }
       return;
     }
@@ -112,16 +112,16 @@
     const file = event.target.files[0];
     try {
       const backup = JSON.parse(await file.text());
-      if (!global.confirm('Текущие данные будут сохранены в автоматическую копию, затем заменены данными из выбранного файла. Продолжить?')) return;
+      if (!window.confirm('Текущие данные будут сохранены в автоматическую копию, затем заменены данными из выбранного файла. Продолжить?')) return;
       status.textContent = 'Сохраняю текущий прогресс и восстанавливаю копию…';
       await service.restoreBackup(backup);
       status.textContent = 'Копия восстановлена. Перезагружаю сайт…';
-      setTimeout(() => global.location.reload(), 250);
+      setTimeout(() => window.location.reload(), 250);
     } catch (error) { status.textContent = error.message || 'Не удалось восстановить резервную копию.'; }
     finally { event.target.value = ''; }
   });
   service.subscribe(render);
-  global.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt = event; render(); });
-  global.addEventListener('appinstalled', () => { installPrompt = null; render(); });
+  window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt = event; render(); });
+  window.addEventListener('appinstalled', () => { installPrompt = null; render(); });
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register(new URL('./sw.js', location.href)).catch(error => console.warn('PWA registration failed', error));
 })();
