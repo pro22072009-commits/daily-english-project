@@ -40,7 +40,9 @@ The branch retains real account/cloud functionality. Opening a local copy is a d
 
 ## Deployment
 
-The user authorized publication after retaining the old version and ten verification rounds. The workflow has an explicit main-only guard. New redesign assets are included in service-worker cache daily-english-redesign-v2. The previous production version is retained as tag stable-before-redesign-2026-11-19 (448fe16e34ef803af537742e08bf3700cd752503) and as a local source archive in outputs/versions/stable-before-redesign-2026-11-19/source.zip. Restoring code must not restore or clear personal progress.
+The user authorized publication after retaining the old version and ten verification rounds. The workflow has an explicit main-only guard. New redesign assets are included in service-worker cache daily-english-redesign-v3. The previous production version is retained as tag stable-before-redesign-2026-11-19 (448fe16e34ef803af537742e08bf3700cd752503) and as a local source archive in outputs/versions/stable-before-redesign-2026-11-19/source.zip. Restoring code must not restore or clear personal progress.
+
+The first live asset comparison detected Windows PowerShell pipeline encoding damage to Russian UI labels. Publication was corrected to send UTF-8 JSON directly through Node to the GitHub CLI, and the service-worker cache was advanced to v3 so affected cached files are replaced. Live files are compared with the tested local release before handoff.
 
 ## Ten verification rounds
 
