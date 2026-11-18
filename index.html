@@ -1236,7 +1236,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   }
   function tasksForDate(date, dayDefinition) {
     if (dayDefinition.rest || roadmapWeekForDate(date)?.buffer) return [];
-    if (!scheduledUnitForDate(date)) return dayDefinition.items;
+    if (!scheduledUnitForDate(date)) return [];
     const assignment = assignmentForDay(date);
     if (!assignment) return [];
     return dayDefinition.items.filter(task => Object.prototype.hasOwnProperty.call(assignment.blocks, task.skill));
@@ -1480,6 +1480,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     const preparationWeek = Boolean(roadmapWeekForDate(dayKey)?.buffer?.startsWith('Подготовительная неделя'));
     const bufferWeek = roadmapWeekForDate(dayKey)?.buffer || '';
     const reviewOnlyWeek = Boolean(bufferWeek && !preparationWeek);
+    const unscheduledDay = !selectedDay.rest && !bufferWeek && !todaySchedule;
     const todayTaskList = (selectedDay.rest || preparationWeek) ? [] : tasksForDate(dayKey, selectedDay);
     const expected = (selectedDay.rest || preparationWeek) ? 0 : (todaySchedule?.minutes || todayTaskList.reduce((n, t) => n + t.mins, 0));
     const expectedLow = Number(String(expected).match(/\d+/)?.[0] || 0);
@@ -1497,8 +1498,8 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     const todayAssignment = todaySchedule;
     const carried = (b2.carryForward[weekKey] || []).slice(0, 8);
     const assignedBlocks = todayAssignment ? orderedAssignmentBlocks(todayAssignment, dayKey).map(([skill,ref])=>`<li><strong>${escapeHtml(skill)}:</strong> ${escapeHtml(ref)}</li>`).join('') : '';
-    const gapNote = !selectedDay.rest && !preparationWeek && !reviewOnlyWeek && expectedLow < 90 ? `<p class="b2-incomplete-note">Нижняя граница плана — ${expected} минут, меньше ориентира 90 минут. Не добавляю выдуманные упражнения: выполни только подтверждённый объём и при желании продолжи работу по книге самостоятельно.</p>` : '';
-    const saturdayTestNote = selectedDay.short === 'Сб' && !reviewOnlyWeek ? '<p class="b2-incomplete-note"><strong>Weekly Test:</strong> готовое задание в доступных материалах сайта не подтверждено и не назначено. Сегодня только повторение; результат можно записать лишь после реально пройденного теста.</p>' : '';
+    const gapNote = !selectedDay.rest && !preparationWeek && !reviewOnlyWeek && !unscheduledDay && expectedLow < 90 ? `<p class="b2-incomplete-note">Нижняя граница плана — ${expected} минут, меньше ориентира 90 минут. Не добавляю выдуманные упражнения: выполни только подтверждённый объём и при желании продолжи работу по книге самостоятельно.</p>` : '';
+    const saturdayTestNote = selectedDay.short === 'Сб' && !reviewOnlyWeek && !unscheduledDay ? '<p class="b2-incomplete-note"><strong>Weekly Test:</strong> готовое задание в доступных материалах сайта не подтверждено и не назначено. Сегодня только повторение; результат можно записать лишь после реально пройденного теста.</p>' : '';
     const vocabularyPageRanges = empowerUnits.map(([, start, end]) => [start, end]);
     const eligibleEmpowerWords = empowerB1Words.map((entry, index) => ({ entry, index }))
       .filter(({ entry }) => {
@@ -1561,14 +1562,14 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       const assignment = assignmentForDay(date);
       const selectedWords = vocabularyAssignments.get(date) || [];
       const rows = selectedWords.map(({ entry, index, sourceLabel }) => {
-        const alreadyAdded = b2.vocabulary.some(item => item.term?.toLowerCase() === entry.term.toLowerCase());
+        const alreadyAdded = b2.vocabulary.some(item => normalizeTerm(item.term) === normalizeTerm(entry.term));
         return `<article class="b2-daily-word"><div><strong>${escapeHtml(entry.term)}</strong><small>${escapeHtml(sourceLabel)} · Unit ${entry.unit} · p. ${escapeHtml(entry.page)} · ${escapeHtml(entry.pos)}</small></div><div class="b2-daily-word-actions"><a class="sys-btn" href="${cambridgeEntryUrl(entry.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-scheduled-word="${index}" ${alreadyAdded ? 'disabled' : ''}>${alreadyAdded ? 'Уже в моих словах ✓' : 'Добавить на повторение'}</button></div></article>`;
       }).join('');
       const shortage = selectedWords.length < 10 ? `<p class="b2-incomplete-note"><strong>Не хватает ${10 - selectedWords.length} новых слов.</strong> В загруженном словаре Empower B1 больше нет неиспользованных слов с подтверждённых страниц курса. Не подменяю их повторными или словами из исключённых приложений.</p>` : '';
       const assignmentTitle = assignment ? `Unit ${unit} · Lesson ${escapeHtml(assignment.lesson)}` : `Unit ${unit} · vocabulary practice`;
       return `<section class="b2-extra b2-daily-words ${compact ? 'compact' : ''}"><div class="b2-daily-words-head"><div><span class="b2-kicker">${escapeHtml(assignmentTitle)}</span><h3>Новые слова на день</h3></div><span class="b2-day-badge">${selectedWords.length} / 10</span></div><p class="system-sub">Подборка привязана к выбранной календарной дате. Слова со страниц текущего урока идут первыми; затем используются новые слова Unit и следующих Units. Уже назначенные в предыдущие дни слова не повторяются. Добавляй изученное на интервальное повторение.</p><div class="b2-daily-word-list">${rows || '<p class="system-sub">В словаре Empower B1 не осталось новых слов для назначения.</p>'}</div>${shortage}</section>`;
     };
-    const todayCard = `<section class="b2-today-card"><div class="b2-today-title"><div><span class="b2-kicker">${selectedDay.name} · ${new Date(`${dayKey}T12:00:00`).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</span><h3>Что делать сегодня</h3></div><strong>${nDone}/${todayTaskList.length} действий выполнено</strong></div>${selectedDay.rest ? '<div class="b2-today-book"><strong>Rest Day — полный выходной.</strong> Обязательных заданий нет.</div>' : preparationWeek ? '<div class="b2-today-book"><strong>Подготовительная неделя.</strong> Unit 1 начинается в понедельник, 26 октября. Сегодня обязательных заданий нет.</div>' : reviewOnlyWeek ? `<div class="b2-today-book"><strong>${escapeHtml(bufferWeek)}</strong><br>Новые упражнения не назначены. Выполненные занятия сохранены на фактических датах.</div>` : `<div class="b2-today-book"><b>План:</b> ${escapeHtml(selectedDay.name)} · ${expected} минут по текущей оценке<br><b>Unit ${currentUnit} · ${escapeHtml(unitTopic)}</b> · Student’s Book pp. ${unitPageStart}–${unitPageEnd}<br><b>Lesson:</b> ${escapeHtml(todayAssignment?.lesson || activePart?.lesson || 'не подтверждён')} · <b>Тема:</b> ${escapeHtml(todayAssignment?.topic || activePart?.topic || 'не подтверждена')}<br>${todayAssignment ? `<b>Действия по книге в порядке:</b><ol>${assignedBlocks}</ol>` : '<b>Точные упражнения на эту неделю:</b> не заданы в подтверждённом плане; смотри сохранённые записи Textbook Plan.'}<b>Выполнено / осталось:</b> ${nDone} / ${todayTaskList.length - nDone}<br><b>Срок Unit:</b> ${displayDate(unitPlan.start || unitWeek.start)}–${displayDate(unitPlan.end || unitWeek.end)} · ${unitStatusLabel[unitStatus(currentUnit, { start: unitPlan.start || unitWeek.start, end: unitPlan.end || unitWeek.end })]}</div>${gapNote}${saturdayTestNote}`}${plannedWeek.buffer && !preparationWeek ? `<p class="b2-extension-note"><strong>Гибкая неделя:</strong> ${escapeHtml(plannedWeek.buffer)}. Используй её для повторения пройденного; новые упражнения не назначены.</p>` : ''}${carried.length?`<p class="b2-extension-note"><strong>Перенесено с прошлой недели:</strong> ${carried.map(escapeHtml).join(' · ')}</p>`:''}</section>`;
+    const todayCard = `<section class="b2-today-card"><div class="b2-today-title"><div><span class="b2-kicker">${selectedDay.name} · ${new Date(`${dayKey}T12:00:00`).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</span><h3>Что делать сегодня</h3></div><strong>${nDone}/${todayTaskList.length} действий выполнено</strong></div>${selectedDay.rest ? '<div class="b2-today-book"><strong>Rest Day — полный выходной.</strong> Обязательных заданий нет.</div>' : preparationWeek ? '<div class="b2-today-book"><strong>Подготовительная неделя.</strong> Unit 1 начинается в понедельник, 26 октября. Сегодня обязательных заданий нет.</div>' : unscheduledDay ? `<div class="b2-today-book"><strong>${dayKey === '2027-02-15' ? 'B2 Checkpoint · 15 февраля 2027' : 'Нет подтверждённых заданий на эту дату'}</strong><br>Новые упражнения не назначены. Проверь календарь и запиши фактические результаты в разделе B2 Checkpoint.</div>` : reviewOnlyWeek ? `<div class="b2-today-book"><strong>${escapeHtml(bufferWeek)}</strong><br>Новые упражнения не назначены. Выполненные занятия сохранены на фактических датах.</div>` : `<div class="b2-today-book"><b>План:</b> ${escapeHtml(selectedDay.name)} · ${expected} минут по текущей оценке<br><b>Unit ${currentUnit} · ${escapeHtml(unitTopic)}</b> · Student’s Book pp. ${unitPageStart}–${unitPageEnd}<br><b>Lesson:</b> ${escapeHtml(todayAssignment?.lesson || activePart?.lesson || 'не подтверждён')} · <b>Тема:</b> ${escapeHtml(todayAssignment?.topic || activePart?.topic || 'не подтверждена')}<br>${todayAssignment ? `<b>Действия по книге в порядке:</b><ol>${assignedBlocks}</ol>` : '<b>Точные упражнения на эту неделю:</b> не заданы в подтверждённом плане; смотри сохранённые записи Textbook Plan.'}<b>Выполнено / осталось:</b> ${nDone} / ${todayTaskList.length - nDone}<br><b>Срок Unit:</b> ${displayDate(unitPlan.start || unitWeek.start)}–${displayDate(unitPlan.end || unitWeek.end)} · ${unitStatusLabel[unitStatus(currentUnit, { start: unitPlan.start || unitWeek.start, end: unitPlan.end || unitWeek.end })]}</div>${gapNote}${saturdayTestNote}`}${plannedWeek.buffer && !preparationWeek ? `<p class="b2-extension-note"><strong>Гибкая неделя:</strong> ${escapeHtml(plannedWeek.buffer)}. Используй её для повторения пройденного; новые упражнения не назначены.</p>` : ''}${carried.length?`<p class="b2-extension-note"><strong>Перенесено с прошлой недели:</strong> ${carried.map(escapeHtml).join(' · ')}</p>`:''}</section>`;
     const calendarStartKey = roadmap[0].start;
     const calendarEndKey = '2027-02-15';
     const calendarEndDate = new Date(`${calendarEndKey}T12:00:00`);
@@ -1591,7 +1592,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     const calendarFullyDone = legacyPlanDone || (calendarTasks.length > 0 && calendarDoneCount === calendarTasks.length);
     const calendarProgress = legacyPlanDone ? '<p class="b2-calendar-progress">✓ План этого дня выполнен</p>' : calendarTasks.length ? `<p class="b2-calendar-progress">${calendarDoneCount}/${calendarTasks.length} заданий отмечено${calendarFullyDone ? ' · день выполнен' : ''}</p>` : '';
     const calendarDurationNote = calendarAssignment && !calendarAssignment.minutes ? `<p class="b2-incomplete-note">${calendarMinutes < 90 ? `Оценка блоков сайта — ${calendarMinutes} минут, меньше ориентира 90 минут. ` : ''}Фактическое время выполнения этих упражнений Student’s Book отдельно не проверено; сайт не добавляет задания ради длительности.</p>` : '';
-    const calendarPreview = calendarDay.rest ? '<strong>Rest Day — полный выходной.</strong> Обязательных заданий нет.' : calendarRoadmap?.buffer ? `<strong>${escapeHtml(calendarRoadmap.buffer)}</strong><br>Новые задания не назначены. Используй время для повторения, отставаний или отдыха.` : calendarAssignment ? `<strong>Unit ${scheduledUnitForDate(requestedCalendarDate)} · ${escapeHtml(calendarAssignment.lesson)}</strong> · ${escapeHtml(calendarAssignment.topic)}<br><strong>${calendarAssignment.minutes ? 'Оценка времени' : 'Ориентир по блокам сайта'}:</strong> ${escapeHtml(calendarMinutes)} минут<ol>${orderedAssignmentBlocks(calendarAssignment, requestedCalendarDate).map(([skill, value]) => `<li><strong>${escapeHtml(skill)}:</strong> ${escapeHtml(value)}</li>`).join('')}</ol>${calendarDurationNote}` : '<strong>Точные задания пока не назначены.</strong> Проверь данные курса или план Unit.';
+    const calendarPreview = calendarDay.rest ? '<strong>Rest Day — полный выходной.</strong> Обязательных заданий нет.' : calendarRoadmap?.buffer ? `<strong>${escapeHtml(calendarRoadmap.buffer)}</strong><br>Новые задания не назначены. Используй время для повторения, отставаний или отдыха.` : calendarAssignment ? `<strong>Unit ${scheduledUnitForDate(requestedCalendarDate)} · ${escapeHtml(calendarAssignment.lesson)}</strong> · ${escapeHtml(calendarAssignment.topic)}<br><strong>${calendarAssignment.minutes ? 'Оценка времени' : 'Ориентир по блокам сайта'}:</strong> ${escapeHtml(calendarMinutes)} минут<ol>${orderedAssignmentBlocks(calendarAssignment, requestedCalendarDate).map(([skill, value]) => `<li><strong>${escapeHtml(skill)}:</strong> ${escapeHtml(value)}</li>`).join('')}</ol>${calendarDurationNote}` : requestedCalendarDate === '2027-02-15' ? '<strong>B2 Checkpoint · контрольная дата.</strong> Запиши фактические результаты в разделе B2 Checkpoint. Новые упражнения не назначены.' : '<strong>Точные задания пока не назначены.</strong> Проверь данные курса или план Unit.';
     const firstCalendarMonth = calendarStartKey.slice(0, 7);
     const lastCalendarMonth = calendarEndKey.slice(0, 7);
     const monthCandidate = /^\d{4}-\d{2}$/.test(b2.calendarMonth) ? b2.calendarMonth : requestedCalendarDate.slice(0, 7);
@@ -1659,7 +1660,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       ${weeklyReview}
       <div class="b2-course-summary"><strong>Основной курс:</strong> ${escapeHtml(summary)}<br><strong>Расписание недели:</strong> ${escapeHtml(plannedWeek.unit ? `Unit ${plannedWeek.unit} · ${empowerUnits[plannedWeek.unit-1][0]}` : plannedWeek.buffer)}${cfg.exerciseRef ? `<br><strong>Твоя заметка:</strong> ${escapeHtml(cfg.exerciseRef)}` : ''}</div>
       ${courseForm}
-      ${selectedDay.rest ? `<div class="b2-rest"><h3>Полный выходной</h3><p>Сегодня нет обязательных заданий. План вернётся в понедельник.</p></div>` : preparationWeek ? `<div class="b2-rest"><h3>Старт программы — 26 октября</h3><p>На этой неделе нет обязательных заданий по Empower.</p></div>` : reviewOnlyWeek ? `<div class="b2-rest"><h3>${escapeHtml(bufferWeek)}</h3><p>Новых обязательных заданий нет. Повторяй пройденное по необходимости.</p></div>` : `<div class="b2-stats"><div class="b2-stat"><strong>${nDone}/${todayTaskList.length}</strong><small>действий сегодня выполнено</small></div><div class="b2-stat"><strong>${expected} мин</strong><small>запланировано сегодня</small></div><div class="b2-stat"><strong>${week.done}/${week.total}</strong><small>действий недели выполнено</small></div></div><div class="b2-week-progress"><i style="width:${week.total ? Math.round(week.done / week.total * 100) : 0}%"></i></div>${tasksHtml}<p class="subtle" id="b2-today-status">${nDone === todayTaskList.length ? 'План на сегодня выполнен.' : `Осталось отметить ${todayTaskList.length - nDone} действий.`}</p>`}
+      ${selectedDay.rest ? `<div class="b2-rest"><h3>Полный выходной</h3><p>Сегодня нет обязательных заданий. План вернётся в понедельник.</p></div>` : preparationWeek ? `<div class="b2-rest"><h3>Старт программы — 26 октября</h3><p>На этой неделе нет обязательных заданий по Empower.</p></div>` : unscheduledDay ? `<div class="b2-rest"><h3>Новых обязательных заданий нет</h3><p>Для контрольной даты используй раздел B2 Checkpoint.</p></div>` : reviewOnlyWeek ? `<div class="b2-rest"><h3>${escapeHtml(bufferWeek)}</h3><p>Новых обязательных заданий нет. Повторяй пройденное по необходимости.</p></div>` : `<div class="b2-stats"><div class="b2-stat"><strong>${nDone}/${todayTaskList.length}</strong><small>действий сегодня выполнено</small></div><div class="b2-stat"><strong>${expected} мин</strong><small>запланировано сегодня</small></div><div class="b2-stat"><strong>${week.done}/${week.total}</strong><small>действий недели выполнено</small></div></div><div class="b2-week-progress"><i style="width:${week.total ? Math.round(week.done / week.total * 100) : 0}%"></i></div>${tasksHtml}<p class="subtle" id="b2-today-status">${nDone === todayTaskList.length ? 'План на сегодня выполнен.' : `Осталось отметить ${todayTaskList.length - nDone} действий.`}</p>`}
       ${b2CalendarSection}
       <details class="b2-week-details"><summary>Weekly Study Plan · 6 учебных дней + 1 Rest Day</summary><div>${week.rows}</div></details>
       <details class="b2-optional"><summary>Как распределены учебные материалы</summary><p><strong>Cambridge Empower:</strong> новый материал и основные упражнения — только по данным твоего учебника. <strong>British Council:</strong> дополнительная практика навыка, если Empower не даёт подходящего упражнения или нужно больше практики. Ссылка ведёт в тематический раздел уровня; сайт не выбирает упражнение автоматически. <strong>English Grammar in Use:</strong> точечная помощь с грамматикой, которая осталась трудной после Empower. <strong>Daily English Project:</strong> план, журнал ошибок, повторение и отметки выполнения. Одно упражнение не назначается сразу в нескольких ресурсах.</p></details>
@@ -1875,12 +1876,12 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     document.getElementById('b2-vocabulary-form').onsubmit = event => {
       event.preventDefault();
       const fd = new FormData(event.currentTarget);
-      const term = String(fd.get('term') || '').trim();
+      const term = String(fd.get('term') || '').normalize('NFKC').trim().replace(/\s+/g, ' ');
       const meaning = String(fd.get('meaning') || '').trim();
       const definition = String(fd.get('definition') || '').trim();
       const sourceRef = String(fd.get('sourceRef') || '').trim();
       if (!term || !meaning || !definition) return;
-      const duplicate = b2.vocabulary.some(item => item.term.toLowerCase() === term.toLowerCase() && String(item.sourceRef || '') === sourceRef);
+      const duplicate = b2.vocabulary.some(item => normalizeTerm(item.term) === normalizeTerm(term));
       if (duplicate) { document.getElementById('b2-vocab-form-status').textContent = 'Это слово уже есть в личном списке.'; return; }
       b2.vocabulary.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,7)}`, term, definition, meaning, pos: String(fd.get('pos') || '').trim(), pronunciation: String(fd.get('pronunciation') || '').trim(), example: String(fd.get('example') || '').trim(), sourceRef, addedAt: dayKey, nextReview: addDays(dayKey, reviewIntervals[0]), stage: 0 });
       save();
@@ -1889,11 +1890,11 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     };
     document.querySelectorAll('[data-vocab-review]').forEach(button => button.onclick = () => {
       const item = b2.vocabulary.find(word => word.id === button.dataset.vocabReview);
-      if (!item) return;
-      const stage = Math.min((Number(item.stage) || 0) + 1, reviewIntervals.length - 1);
+      if (!item || !item.nextReview || item.nextReview > dayKey) return;
+      const stage = Math.min((Number(item.stage) || 0) + 1, reviewIntervals.length);
       item.stage = stage;
       item.lastReviewed = dayKey;
-      item.nextReview = stage >= reviewIntervals.length - 1 ? '' : addDays(item.addedAt || dayKey, reviewIntervals[stage + 1]);
+      item.nextReview = stage >= reviewIntervals.length ? '' : addDays(dayKey, reviewIntervals[stage] - reviewIntervals[stage - 1]);
       save();
       if (window.dailyEnglishRecordActivity) { data.stats = window.dailyEnglishRecordActivity(); save(); }
       render();
@@ -1934,6 +1935,24 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   render();
 })();
 
+</script>
+<script>
+// Rebuild date-bound modules after local midnight, including a return from sleep.
+(function () {
+  const dateKey = date => [date.getFullYear(), date.getMonth(), date.getDate()].join('-');
+  const openedOn = dateKey(new Date());
+  function refreshForNewDay() {
+    if (dateKey(new Date()) !== openedOn) window.location.reload();
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') refreshForNewDay();
+  });
+  window.addEventListener('focus', refreshForNewDay);
+  window.addEventListener('pageshow', refreshForNewDay);
+  const now = new Date();
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  setTimeout(refreshForNewDay, midnight.getTime() - now.getTime() + 100);
+})();
 </script>
 </body>
 </html>

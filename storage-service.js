@@ -7,7 +7,7 @@
   const SAFETY_BACKUPS_KEY = 'dailyEnglishSafetyBackupsV1';
   const BUILD_KEY = 'dailyEnglishAppBuildV1';
   // Bump this value on every published app update. The previous local data is snapshotted before app scripts run.
-  const BUILD_VERSION = '2026-11-18.1';
+  const BUILD_VERSION = '2026-11-18.2';
   const MIGRATION_KEY = 'dailyEnglishMigrationVersion';
   const SESSION_KEY = 'dailyEnglishCloudSessionV1';
   const QUEUE_KEY = 'dailyEnglishOfflineQueueV1';
@@ -44,6 +44,8 @@
     try { localStorage.setItem(QUEUE_KEY, JSON.stringify(queue)); } catch (error) { state.error = 'Не удалось сохранить очередь синхронизации на устройстве.'; console.warn(error); }
   }
   function setLocal(key, raw, options = {}) {
+    // Re-rendering unchanged data is not a new edit and must not win a cloud conflict.
+    if (options.queue !== false && localGet(key) === raw) return true;
     if (KEYS.includes(key) && state.migrationBlockedKeys.includes(key) && localGet(key) !== null) {
       state.error = 'Изменение не сохранено: сначала нужна резервная копия старых данных. Освободи место в браузере и обнови страницу.';
       emit();
@@ -120,7 +122,11 @@
     if (path === 'signup') endpoint.searchParams.set('redirect_to', location.origin + location.pathname);
     const response = await fetch(endpoint.toString(), { method: 'POST', headers: authHeaders(null), body: JSON.stringify(body) });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(result.msg || result.message || result.error_description || result.error || 'Ошибка авторизации.');
+    if (!response.ok) {
+      const error = new Error(result.msg || result.message || result.error_description || result.error || 'Ошибка авторизации.');
+      error.status = response.status;
+      throw error;
+    }
     return result;
   }
   async function setSession(session) {
@@ -131,7 +137,18 @@
   }
   async function refreshSession() {
     if (!state.session?.refresh_token) return false;
-    try { const next = await authRequest('token?grant_type=refresh_token', { refresh_token: state.session.refresh_token }); await setSession(next); return true; } catch { await setSession(null); return false; }
+    try {
+      if (!navigator.onLine) throw new Error('Нет соединения.');
+      const next = await authRequest('token?grant_type=refresh_token', { refresh_token: state.session.refresh_token });
+      await setSession(next); return true;
+    } catch (error) {
+      // Only an explicit invalid-token response ends a session; outages do not.
+      if (error.status === 400 || error.status === 401) await setSession(null);
+      state.startupSyncPending = false;
+      flushDeferredWrites();
+      setStatus(state.session ? 'Не удалось обновить сессию · повтори синхронизацию' : 'Сессия истекла · войди снова', error.message);
+      return false;
+    }
   }
   async function apiFetch(path, init = {}, retried = false) {
     if (!state.config || !state.session) throw new Error('Нет подключённой облачной сессии.');
@@ -159,6 +176,7 @@
     if (!state.session || !state.config) { state.startupSyncPending = false; flushDeferredWrites(); return { synced: false, reason: 'not-configured' }; }
     if (!navigator.onLine) { state.startupSyncPending = false; flushDeferredWrites(); setStatus('Нет соединения · изменения сохранены на устройстве'); return { synced: false, reason: 'offline' }; }
     if (state.busy) return { synced: false, reason: 'busy' };
+    if (state.session.expires_at && state.session.expires_at * 1000 < Date.now() + 60000 && !await refreshSession()) return { synced: false, reason: 'session-refresh-failed' };
     state.busy = true; let restoredFromCloud = false; setStatus('Синхронизируется');
     try {
       const remote = await fetchRemote();
@@ -190,14 +208,15 @@
           if (localTime > remoteTime) {
             if (saveSafetySnapshot('before-cloud-overwrite', { key, side: 'cloud', value: row.payload, updatedAt: row.updated_at }, { entity: key })) cloudWrites.push([key, localValue, meta[key]]);
             else conflicts.push({ key, localValue, remoteValue: row.payload, updatedAt: row.updated_at });
-          } else {
+          } else if (localTime < remoteTime) {
             if (!saveSafetySnapshot('before-cloud-restore', { key, side: 'local', value: localRaw, updatedAt: meta[key] }, { entity: key })) { conflicts.push({ key, localValue, remoteValue: row.payload, updatedAt: row.updated_at }); continue; }
             state.deferredWrites.delete(key); setLocal(key, JSON.stringify(row.payload), { queue: false, preserveTimestamp: true, updatedAt: row.updated_at }); meta[key] = row.updated_at; restoredFromCloud = true;
-          }
+          } else conflicts.push({ key, localValue, remoteValue: row.payload, updatedAt: row.updated_at });
         } else conflicts.push({ key, localValue, remoteValue: row.payload, updatedAt: row.updated_at });
       }
       writeMetadata(meta);
       state.conflicts = conflicts;
+      for (const conflict of conflicts) state.deferredWrites.delete(conflict.key);
       state.startupSyncPending = false;
       flushDeferredWrites();
       for (const [key, payload, updatedAt] of cloudWrites) await upsert(key, payload, updatedAt);
@@ -280,15 +299,27 @@
     }
     return { restored: entries.length };
   }
+  function recoveryData(item) {
+    if (!item?.data || !String(item.source || '').startsWith('before-')) return null;
+    const full = Object.fromEntries(KEYS.filter(key => typeof item.data[key] === 'string').map(key => [key, item.data[key]]));
+    if (Object.keys(full).length) return full;
+    // Sync safety copies hold a single entity, unlike full update backups.
+    const { key } = item.data;
+    if (!KEYS.includes(key)) return null;
+    const value = Object.prototype.hasOwnProperty.call(item.data, 'localValue') ? item.data.localValue : item.data.value;
+    if (value === undefined) return null;
+    return { [key]: typeof value === 'string' ? value : JSON.stringify(value) };
+  }
   function getRecoveryBackups() {
     const snapshots = parse(localGet(SAFETY_BACKUPS_KEY), []);
-    return (Array.isArray(snapshots) ? snapshots : []).map((item, index) => ({ item, index })).filter(({ item }) => ['before-app-update', 'before-manual-restore'].includes(item.source) && item.data && KEYS.some(key => typeof item.data[key] === 'string')).map(({ item, index }) => ({ index, createdAt: item.createdAt, previousBuild: item.source === 'before-manual-restore' ? 'до восстановления' : item.details?.previousBuild || 'предыдущая версия' }));
+    return (Array.isArray(snapshots) ? snapshots : []).map((item, index) => ({ item, index })).filter(({ item }) => recoveryData(item)).map(({ item, index }) => ({ index, createdAt: item.createdAt, previousBuild: item.source === 'before-manual-restore' ? 'восстановления' : item.source.startsWith('before-cloud-') ? 'синхронизации' : item.source === 'before-manual-conflict-resolution' ? 'разрешения конфликта' : item.details?.previousBuild || 'предыдущей версии' }));
   }
   async function restoreRecoveryBackup(index) {
     const snapshots = parse(localGet(SAFETY_BACKUPS_KEY), []);
     const item = Array.isArray(snapshots) ? snapshots[Number(index)] : null;
-    if (!item || !['before-app-update', 'before-manual-restore'].includes(item.source) || !item.data) throw new Error('Автоматическая копия не найдена.');
-    return restoreBackup({ format: 'daily-english-progress-backup', version: 1, createdAt: item.createdAt, data: item.data });
+    const data = recoveryData(item);
+    if (!data) throw new Error('Автоматическая копия не найдена.');
+    return restoreBackup({ format: 'daily-english-progress-backup', version: 1, createdAt: item.createdAt, data });
   }
   function clearLocalData() { for (const key of KEYS) localStorage.removeItem(key); localStorage.removeItem(META_KEY); localStorage.removeItem(QUEUE_KEY); }
   function getState() { return { configured: Boolean(state.config), session: state.session, profile: state.profile, status: state.status, error: state.error, conflicts: state.conflicts, lastSync: state.lastSync, migrationWarning: state.migrationWarning }; }
@@ -296,7 +327,9 @@
   const api = {
     getItem: localGet,
     setItem: setLocal,
-    setItemDebounced(key, raw, delay = 400) { clearTimeout(state.writeTimers.get(key)); state.writeTimers.set(key, setTimeout(() => setLocal(key, raw), delay)); },
+    // Persist immediately so refresh/close cannot discard the last keystrokes.
+    // scheduleSync already debounces network writes independently.
+    setItemDebounced(key, raw, delay = 400) { setLocal(key, raw); },
     loadProgress() { return localGet('dailyEnglishProgressV1'); },
     saveProgress(value) { setLocal('dailyEnglishProgressV1', JSON.stringify(value)); },
     loadDrafts() { return parse(localGet('dailyEnglishAcademicDraftsV2'), {}); },
