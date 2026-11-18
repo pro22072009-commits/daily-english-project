@@ -42,6 +42,7 @@
     }
     move(document.getElementById('b2-calendar-section'),home);
     const calendar=document.getElementById('b2-calendar-section');if(calendar&&home.firstElementChild!==calendar)home.prepend(calendar);
+    const calendarTitle=calendar?.querySelector('.b2-calendar-head h3');if(calendarTitle&&calendarTitle.textContent!=='Учебный календарь')calendarTitle.textContent='Учебный календарь';
     move(document.getElementById('study-mode-panel'),home);
     move(document.getElementById('selected-day-plan'),home);
     if(home.lastElementChild!==useful)home.append(useful);
