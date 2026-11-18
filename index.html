@@ -54,7 +54,8 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 <div class="toast" id="toast" role="status"></div>
 <script src="./empower-b1-wordlist.js"></script>
 <script src="./sourced-vocabulary.js"></script>
-<script src="./preview-storage.js"></script>
+<script src="./github-config.js"></script><script src="./storage-service.js"></script>
+<script src="account-ui.js"></script>
 <script>
 // Cloud data arrives asynchronously. Rebuild the screen once after a safe
 // startup restore so app modules never continue showing their empty defaults.
@@ -998,7 +999,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       plans: { ...(latestStats.plans || {}), ...(localStats.plans || {}) },
       activityDates: { ...(latestStats.activityDates || {}), ...(localStats.activityDates || {}) }
     };
-    Object.assign(data, latest, data);
+    Object.assign(data, { ...latest, ...data });
     data.stats = mergedStats;
     data.b2Foundation = b2;
     storageService.setItem(KEY, JSON.stringify(data));
@@ -1432,6 +1433,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     return { rows, total, done };
   }
   function render() {
+    window.dailyEnglishBeforeRender?.();
     const b2CalendarWasOpen = Boolean(document.getElementById('b2-calendar-section')?.open);
     const isB2 = data.studyMode !== 'ielts';
     modePanel.hidden = false;
@@ -1468,7 +1470,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       if (labels.length) labels[labels.length - 1].textContent = 'Сегодня';
       else nav.textContent = 'Сегодня';
     });
-    if (!isB2) return;
+    // Render the shared calendar in both modes; retain each mode's own tasks.
 
     const cfg = b2.course;
     const summary = courseName();
@@ -1507,7 +1509,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     const vocabularyAssignments = new Map();
     const vocabularyStart = roadmap.find(week => week.unit)?.start || dayKey;
     const vocabularyStartDate = new Date(`${vocabularyStart}T12:00:00`);
-    const vocabularyEndKey = b2.calendarDatePinned && /^\d{4}-\d{2}-\d{2}$/.test(b2.calendarDate) && b2.calendarDate >= roadmap[0].start && b2.calendarDate <= '2027-02-15' ? b2.calendarDate : (dayKey <= '2027-02-15' ? dayKey : '2027-02-15');
+    const vocabularyEndKey = window.dailyEnglishCalendarSelectionActive && b2.calendarDatePinned && /^\d{4}-\d{2}-\d{2}$/.test(b2.calendarDate) && b2.calendarDate >= roadmap[0].start && b2.calendarDate <= '2027-02-15' ? b2.calendarDate : (dayKey <= '2027-02-15' ? dayKey : '2027-02-15');
     const vocabularyEndDate = new Date(`${vocabularyEndKey}T12:00:00`);
     const usedVocabularyTerms = new Set();
     for (let dateValue = new Date(vocabularyStartDate); dateValue <= vocabularyEndDate; dateValue.setDate(dateValue.getDate() + 1)) {
@@ -1573,7 +1575,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       b2.calendarDate = dayKey;
       b2.calendarMonth = dayKey.slice(0, 7);
     }
-    const requestedCalendarDate = b2.calendarDatePinned && /^\d{4}-\d{2}-\d{2}$/.test(b2.calendarDate) && b2.calendarDate >= calendarStartKey && b2.calendarDate <= calendarEndKey ? b2.calendarDate : (dayKey <= calendarEndKey ? dayKey : calendarEndKey);
+    const requestedCalendarDate = window.dailyEnglishCalendarSelectionActive && b2.calendarDatePinned && /^\d{4}-\d{2}-\d{2}$/.test(b2.calendarDate) && b2.calendarDate >= calendarStartKey && b2.calendarDate <= calendarEndKey ? b2.calendarDate : (dayKey <= calendarEndKey ? dayKey : calendarEndKey);
     const selectedVocabularyCard = scheduledVocabularyCard(requestedCalendarDate);
     const oxfordDailyWords = ensureOxfordWordsForDate(requestedCalendarDate);
     const calendarDate = new Date(`${requestedCalendarDate}T12:00:00`);
@@ -1589,9 +1591,10 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     const calendarProgress = legacyPlanDone ? '<p class="b2-calendar-progress">✓ План этого дня выполнен</p>' : calendarTasks.length ? `<p class="b2-calendar-progress">${calendarDoneCount}/${calendarTasks.length} заданий отмечено${calendarFullyDone ? ' · день выполнен' : ''}</p>` : '';
     const calendarDurationNote = calendarAssignment && !calendarAssignment.minutes ? `<p class="b2-incomplete-note">${calendarMinutes < 90 ? `Оценка блоков сайта — ${calendarMinutes} минут, меньше ориентира 90 минут. ` : ''}Фактическое время выполнения этих упражнений Student’s Book отдельно не проверено; сайт не добавляет задания ради длительности.</p>` : '';
     const calendarPreview = calendarDay.rest ? '<strong>Rest Day — полный выходной.</strong> Обязательных заданий нет.' : calendarRoadmap?.buffer ? `<strong>${escapeHtml(calendarRoadmap.buffer)}</strong><br>Новые задания не назначены. Используй время для повторения, отставаний или отдыха.` : calendarAssignment ? `<strong>Unit ${scheduledUnitForDate(requestedCalendarDate)} · ${escapeHtml(calendarAssignment.lesson)}</strong> · ${escapeHtml(calendarAssignment.topic)}<br><strong>${calendarAssignment.minutes ? 'Оценка времени' : 'Ориентир по блокам сайта'}:</strong> ${escapeHtml(calendarMinutes)} минут<ol>${orderedAssignmentBlocks(calendarAssignment, requestedCalendarDate).map(([skill, value]) => `<li><strong>${escapeHtml(skill)}:</strong> ${escapeHtml(value)}</li>`).join('')}</ol>${calendarDurationNote}` : requestedCalendarDate === '2027-02-15' ? '<strong>B2 Checkpoint · контрольная дата.</strong> Запиши фактические результаты в разделе B2 Checkpoint. Новые упражнения не назначены.' : '<strong>Точные задания пока не назначены.</strong> Проверь данные курса или план Unit.';
+    const selectedPlan = `<section class="redesign-plan" id="selected-day-plan"><div class="redesign-plan-heading"><div><span class="b2-kicker">B2 Foundation · Cambridge Empower</span><h2>${requestedCalendarDate === dayKey ? 'План на сегодня' : 'План на выбранную дату'}</h2><p>${escapeHtml(calendarDay.name)} · ${displayDate(requestedCalendarDate)}${calendarAssignment ? ` · Unit ${scheduledUnitForDate(requestedCalendarDate)} · Lesson ${escapeHtml(calendarAssignment.lesson)}` : ''}</p></div><span class="redesign-count">${calendarDoneCount}/${calendarTasks.length} выполнено</span></div>${calendarAssignment ? `<p class="system-sub">${escapeHtml(calendarAssignment.topic)} · ${escapeHtml(calendarMinutes)} минут</p>` : `<div class="b2-rest">${calendarPreview}</div>`}${calendarTasks.map(task => renderTask(task, requestedCalendarDate)).join('')}</section>`;
     const firstCalendarMonth = calendarStartKey.slice(0, 7);
     const lastCalendarMonth = calendarEndKey.slice(0, 7);
-    const monthCandidate = /^\d{4}-\d{2}$/.test(b2.calendarMonth) ? b2.calendarMonth : requestedCalendarDate.slice(0, 7);
+    const monthCandidate = window.dailyEnglishCalendarSelectionActive && /^\d{4}-\d{2}$/.test(b2.calendarMonth) ? b2.calendarMonth : requestedCalendarDate.slice(0, 7);
     const displayedMonth = monthCandidate >= firstCalendarMonth && monthCandidate <= lastCalendarMonth ? monthCandidate : requestedCalendarDate.slice(0, 7);
     const [calendarYear, calendarMonthNumber] = displayedMonth.split('-').map(Number);
     const calendarCursor = new Date(calendarYear, calendarMonthNumber - 1, 1, 12);
@@ -1648,16 +1651,16 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     const skillRows = b2.skillChecks.slice(-6).reverse().map(check => `<article class="b2-skill-card"><strong>${escapeHtml(check.type === 'speaking' ? 'Speaking' : 'Writing')} · ${escapeHtml(check.task || 'без названия')}</strong><div class="b2-skill-meta">${escapeHtml(check.date)} · ясность ${escapeHtml(check.clarity)}/5 · грамматика ${escapeHtml(check.grammar)}/5 · лексика ${escapeHtml(check.vocabulary)}/5</div>${check.note ? `<div class="b2-skill-meta">Наблюдение: ${escapeHtml(check.note)}</div>` : ''}${check.next ? `<div class="b2-skill-meta">Следующий шаг: ${escapeHtml(check.next)}</div>` : ''}</article>`).join('') || '<p class="subtle">Пока нет записей. Оценка остаётся твоей заметкой, сайт не выдаёт автоматическую оценку уровня.</p>';
     const feedbackHtml = `<section class="b2-extra"><h3>Проверка Speaking / Writing</h3><p class="system-sub">${skillPrompt} Оцени только выполненную работу по трём признакам и выбери один конкретный следующий шаг.</p><form id="b2-skill-check-form" class="b2-error-form"><label>Навык<select class="b2-result-select" name="type"><option value="speaking">Speaking</option><option value="writing">Writing</option></select></label><label>Что проверяешь?<input name="task" required placeholder="например, Unit 2D travel blog"></label><label>Ясность и структура<select class="b2-result-select" name="clarity"><option value="1">1 — трудно</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5 — уверенно</option></select></label><label>Грамматика<select class="b2-result-select" name="grammar"><option value="1">1 — трудно</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5 — уверенно</option></select></label><label>Лексика<select class="b2-result-select" name="vocabulary"><option value="1">1 — трудно</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5 — уверенно</option></select></label><label>Следующий шаг<input name="next" placeholder="например, добавить 3 связки"></label><label class="wide">Что заметил(а)?<textarea name="note" placeholder="одна сильная сторона и одна ошибка"></textarea></label><button class="sys-btn" type="submit">Сохранить проверку</button></form><div class="b2-skill-list">${skillRows}</div></section>`;
     const vocabularyHtml = `<section class="b2-extra"><h3>Моя лексика и повторение</h3><p class="system-sub">Повторения: Day 1 → 2 → 4 → 7 → 14 → 30. <span class="b2-review-count">К повторению сегодня: ${dueVocabulary.length}</span></p><details class="b2-vocab-bank"><summary>Empower B1 word list · ${empowerB1Words.length} entries</summary><p class="system-sub">Найди слово по Unit или поиску. Cambridge English–Russian Dictionary показывает объяснение на английском, перевод на русский, произношение и аудио. После просмотра внеси английское объяснение и русский перевод в личную карточку.</p><div class="b2-vocab-search"><input id="b2-wordbank-search" type="search" placeholder="Поиск слова или фразы" aria-label="Поиск в словаре Empower"><select id="b2-wordbank-unit" aria-label="Фильтр по Unit"><option value="">Все Units</option>${Array.from({length:12},(_,i)=>`<option value="${i+1}">Unit ${i+1}</option>`).join('')}</select></div><div id="b2-wordbank-results" class="b2-word-results" aria-live="polite"></div></details><form id="b2-vocabulary-form" class="b2-error-form"><label>Слово или фраза<input name="term" required placeholder="например, get used to"></label><label class="wide">Explanation in English<textarea name="definition" required rows="2" placeholder="Краткое объяснение на английском"></textarea></label><label>Перевод на русский<input name="meaning" required placeholder="Например, привыкнуть к"></label><label>Part of speech<input name="pos" placeholder="например, phrase, noun"></label><label>Произношение (IPA)<input name="pronunciation" placeholder="можно посмотреть в Cambridge"></label><label class="wide">Пример или collocation<input name="example" placeholder="Пример из урока или свой пример"></label><label class="wide">Источник / страница Empower<input name="sourceRef" placeholder="например, Unit 2 · Student’s Book p. 19"></label><div class="wide"><a id="b2-cambridge-lookup" class="sys-btn" href="https://dictionary.cambridge.org/dictionary/english-russian/" target="_blank" rel="noopener noreferrer">Открыть Cambridge English–Russian Dictionary ↗</a></div><div class="wide"><button class="sys-btn primary" type="submit">Добавить на повторение</button><span id="b2-vocab-form-status" class="system-sub" aria-live="polite"></span></div></form><div class="b2-vocab-list">${vocabularyRows}</div>${recentVocabulary ? `<details class="b2-extra"><summary>Ближайшие повторения</summary><div class="b2-vocab-list">${recentVocabulary}</div></details>` : ''}</section>`;
-    const b2CalendarSection = `<details id="b2-calendar-section" class="b2-secondary-section"><summary>Календарь · планировать до 15 февраля</summary>${calendarPlannerHtml}${calendarHtml}</details>`;
+    const b2CalendarSection = `<section id="b2-calendar-section" aria-label="Учебный календарь">${calendarPlannerHtml}<div id="redesign-roadmap-source">${calendarHtml}</div></section>`;
     document.getElementById('textbook-plan-content').innerHTML = textbookPlan;
     document.getElementById('b2-foundation-content').innerHTML = `<div class="b2-today-head"><div><span class="b2-kicker">B2 Foundation · до 15 февраля 2027</span><h2>Сегодня</h2><div class="system-sub">До целевой даты: ${daysLeft} дней · цель — завершить переход к B2, без расчёта вымышленного уровня.</div></div><span class="b2-day-badge">${selectedDay.name}${selectedDay.rest ? ' · Rest Day' : ''}</span></div>
-      ${todayCard}
+      ${selectedPlan}
       ${checkpointHtml}
       ${weeklyReview}
       <div class="b2-course-summary"><strong>Основной курс:</strong> ${escapeHtml(summary)}<br><strong>Расписание недели:</strong> ${escapeHtml(plannedWeek.unit ? `Unit ${plannedWeek.unit} · ${empowerUnits[plannedWeek.unit-1][0]}` : plannedWeek.buffer)}${cfg.exerciseRef ? `<br><strong>Твоя заметка:</strong> ${escapeHtml(cfg.exerciseRef)}` : ''}</div>
-      ${courseForm}
+      ${courseForm}<div class="redesign-original-today" hidden>
       ${selectedDay.rest ? `<div class="b2-rest"><h3>Полный выходной</h3><p>Сегодня нет обязательных заданий. План вернётся в понедельник.</p></div>` : preparationWeek ? `<div class="b2-rest"><h3>Старт программы — 26 октября</h3><p>На этой неделе нет обязательных заданий по Empower.</p></div>` : unscheduledDay ? `<div class="b2-rest"><h3>Новых обязательных заданий нет</h3><p>Для контрольной даты используй раздел B2 Checkpoint.</p></div>` : reviewOnlyWeek ? `<div class="b2-rest"><h3>${escapeHtml(bufferWeek)}</h3><p>Новых обязательных заданий нет. Повторяй пройденное по необходимости.</p></div>` : `<div class="b2-stats"><div class="b2-stat"><strong>${nDone}/${todayTaskList.length}</strong><small>действий сегодня выполнено</small></div><div class="b2-stat"><strong>${expected} мин</strong><small>запланировано сегодня</small></div><div class="b2-stat"><strong>${week.done}/${week.total}</strong><small>действий недели выполнено</small></div></div><div class="b2-week-progress"><i style="width:${week.total ? Math.round(week.done / week.total * 100) : 0}%"></i></div>${tasksHtml}<p class="subtle" id="b2-today-status">${nDone === todayTaskList.length ? 'План на сегодня выполнен.' : `Осталось отметить ${todayTaskList.length - nDone} действий.`}</p>`}
-      ${b2CalendarSection}
+      </div>${b2CalendarSection}
       <details class="b2-week-details"><summary>Weekly Study Plan · 6 учебных дней + 1 Rest Day</summary><div>${week.rows}</div></details>
       <details class="b2-optional"><summary>Как распределены учебные материалы</summary><p><strong>Cambridge Empower:</strong> новый материал и основные упражнения — только по данным твоего учебника. <strong>British Council:</strong> дополнительная практика навыка, если Empower не даёт подходящего упражнения или нужно больше практики. Ссылка ведёт в тематический раздел уровня; сайт не выбирает упражнение автоматически. <strong>English Grammar in Use:</strong> точечная помощь с грамматикой, которая осталась трудной после Empower. <strong>Daily English Project:</strong> план, журнал ошибок, повторение и отметки выполнения. Одно упражнение не назначается сразу в нескольких ресурсах.</p></details>
       ${feedbackHtml}
@@ -1950,5 +1953,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   setTimeout(refreshForNewDay, midnight.getTime() - now.getTime() + 100);
 })();
 </script>
+<link rel="stylesheet" href="./redesign.css">
+<script src="./redesign.js"></script>
 </body>
 </html>
