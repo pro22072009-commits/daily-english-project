@@ -1,4 +1,4 @@
-# Existing-app redesign ? release checks, 19 November 2026
+# Existing-app redesign — release checks, 19 November 2026
 
 Specification: codex_daily_english_redesign_spec.md and english_redesign_prototype-1.html supplied on 19 November 2026.
 
@@ -10,7 +10,7 @@ The real calendar is a permanent section immediately below the header. Selecting
 
 Five primary tabs replace the competing navigation. Desktop uses a sidebar; mobile uses a five-item safe-area bottom bar. Existing skill views are reached from Practice. The real Grammar exercise is moved into Practice. Weekly plan, stages, diagnostics, results, error log, Speaking/Writing review and roadmap are accessible under Progress; course notes and unit dates remain in Tutorial. Existing vocabulary workflows are retained.
 
-The palette and layout follow the supplied reference: dark blue surfaces, subtle indigo accents, rounded cards and consistent outline icons. The large brand label is removed; header date, streak and profile remain real app controls. Two direct British Council B1?B2 links are provided beneath the plan and in Practice.
+The palette and layout follow the supplied reference: dark blue surfaces, subtle indigo accents, rounded cards and consistent outline icons. The large brand label is removed; header date, streak and profile remain real app controls. Two direct British Council B1–B2 links are provided beneath the plan and in Practice.
 
 A small existing save bug was corrected: Object.assign(data, latest, data) mutated its own source and could undo mode changes. It now uses a snapshot merge. Storage schema and keys are unchanged. A UI lifecycle hook clears relocated previous-generation elements before the original renderer rebinds form handlers, preventing duplicate IDs and stale handlers.
 
@@ -61,4 +61,4 @@ Corrections made before verification: streak styles previously targeted the leve
 
 Additional release test served the old production version and then the redesign at exactly the same local origin, installed the updated service worker and reloaded twice: completion marks, streak, vocabulary/SRS and writing draft were identical before and after. Existing cloud error/restore regression tests passed against the byte-identical storage implementation.
 
-These checks verify preservation of existing material, not a new verification of every textbook exercise against photographs. Unavailable Unit 11 pages 111?117 remain excluded. The existing plan contains some estimates below 90 minutes (for example Unit 1 Thursday: 80?100); these were not inflated or replaced with invented exercises. Full Oxford PDF ingestion and a real personal-cloud login were not exercised during this release.
+These checks verify preservation of existing material, not a new verification of every textbook exercise against photographs. Unavailable Unit 11 pages 111–117 remain excluded. The existing plan contains some estimates below 90 minutes (for example Unit 1 Thursday: 80–100); these were not inflated or replaced with invented exercises. Full Oxford PDF ingestion and a real personal-cloud login were not exercised during this release.
