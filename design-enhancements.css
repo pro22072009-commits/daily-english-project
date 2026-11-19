@@ -1,0 +1,17 @@
+.design-preview-banner{padding:7px 16px;background:#303b67;color:#f0f3ff;text-align:center;font-size:14px}
+#redesign-home>#design-next{order:-1;background:linear-gradient(120deg,#293653,#25394a);border:1px solid #718bc5;margin:0;padding:28px;box-shadow:0 12px 32px #0002}
+#design-next h2{font-size:30px;margin:9px 0}#design-next p{font-size:18px;max-width:65ch}#design-start{min-width:180px}
+.hub-panel,.redesign-plan,.redesign-resources{box-shadow:none;border-color:#3a4558;background:#1c2330}
+.hub-panel article,.hub-work-list button{border-color:transparent;background:#252e3d}
+.design-density{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.design-density span{margin-right:auto;color:#c0cbe0;font-size:14px}.design-density button{padding:10px 14px;min-height:44px;border:1px solid #60708d;border-radius:12px;background:#242d3d;color:#e2e9fa}.design-density button[aria-pressed=true]{background:#3b4c74;border-color:#a4baff}
+.design-compact .b2-calendar-day{min-height:44px!important;padding:3px!important}.design-compact .b2-calendar-day small{display:none}.design-compact .b2-calendar-grid{gap:4px!important}
+.b2-calendar-day.rest:not(.completed):not(.partial){border:1px dashed #657089!important}.b2-calendar-day.completed{box-shadow:inset 0 -3px #74d5a6}.b2-calendar-day.selected{outline:2px solid #bdcaff;outline-offset:1px}
+.design-filters{margin-top:18px}.design-filters p{grid-column:1/-1;margin:0;font-size:14px;color:#c0cbe0}
+#design-progress-details>summary{font-size:20px;padding:12px 0}#design-progress-details>.hub-panel{border:0;padding:18px 0;margin:0;background:transparent}
+#hub-week{border-color:#657ba9}.hub-metrics>div{background:transparent;border-radius:0;border-left:2px solid #536685}.hub-metrics strong{font-size:32px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #c9d7ff!important;outline-offset:3px!important}
+button,input,select,summary{scroll-margin:80px}button,summary{min-height:44px}.hub-muted,.subtle,.system-sub{color:#bec9dc!important}
+@media(max-width:900px){#redesign-home>#design-next{padding:20px}#design-next h2{font-size:26px}#design-next p{font-size:16px}#design-start{width:100%}.design-density{gap:7px}.design-density button{padding:8px 10px}#design-progress-details{padding:16px}.design-preview-banner{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+#redesign-home>#design-next{order:-3}.design-density{order:-2}#redesign-home>#b2-calendar-section{order:-1}
