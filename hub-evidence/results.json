@@ -1,0 +1,87 @@
+[
+  {
+    "name": "empty profile, all sections and no invented results",
+    "status": "PASS",
+    "detail": "empty queue and weekly facts, 5 tabs"
+  },
+  {
+    "name": "review queue uses native SRS and resolves old errors",
+    "status": "PASS",
+    "detail": "same SRS stage and date; error outside native last-5 resolved"
+  },
+  {
+    "name": "weekly facts, past empty week and copy text",
+    "status": "PASS",
+    "detail": "actual 2 days, 3 marks, 8 unresolved, 1 Unit; copy/fallback"
+  },
+  {
+    "name": "work autosave, versions, preview/restore and reopen",
+    "status": "PASS",
+    "detail": "autosave + 2 retained versions + safe preview + escaped user text + reload"
+  },
+  {
+    "name": "existing Writing drafts import without duplicates and modes stay separate",
+    "status": "PASS",
+    "detail": "legacy fields intact, 2 unique imported works, isolated B2/IELTS editor"
+  },
+  {
+    "name": "two tabs preserve independent works and native marks",
+    "status": "PASS",
+    "detail": "2 works retained after native B2 write"
+  },
+  {
+    "name": "audio: real WAV import, limits and IndexedDB reload",
+    "status": "PASS",
+    "detail": "valid WAV stored, >3min rejected, audio survives reload and stays outside JSON"
+  },
+  {
+    "name": "audio: actual MediaRecorder with synthetic microphone",
+    "status": "PASS",
+    "detail": "fake-device microphone recorded, stored, downloadable; no physical microphone used"
+  },
+  {
+    "name": "backup preview is read-only; cancel and confirmed restore preserve rollback",
+    "status": "PASS",
+    "detail": "preview/cancel unchanged; confirm restores; previous work retained in safety snapshot"
+  },
+  {
+    "name": "partial recovery preview counts retained sections and invalid file rejected",
+    "status": "PASS",
+    "detail": "partial backup retains words/marks; invalid null entity rejected"
+  },
+  {
+    "name": "responsive calendar, editor, backup modal and reduced motion",
+    "status": "PASS",
+    "detail": [
+      320,
+      360,
+      390,
+      412,
+      768,
+      900,
+      901,
+      1280,
+      1440
+    ]
+  },
+  {
+    "name": "PWA caches new hub; offline work saves and reloads",
+    "status": "PASS",
+    "detail": [
+      "daily-english-learning-hub-v3"
+    ]
+  },
+  {
+    "name": "upgrade audited app to hub on same origin retains data",
+    "status": "PASS",
+    "detail": "ordinary refresh under old SW + update + repeat refresh"
+  },
+  {
+    "name": "no runtime errors or missing local assets",
+    "status": "PASS",
+    "detail": {
+      "runtimeErrors": [],
+      "badResponses": []
+    }
+  }
+]

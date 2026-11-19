@@ -1,0 +1,145 @@
+[
+  {
+    "name": "source schedule unchanged from stable",
+    "status": "PASS",
+    "detail": "roadmap + all 72 weekday assignments byte-equivalent after serialization"
+  },
+  {
+    "name": "every calendar date vs source",
+    "status": "PASS",
+    "detail": "120 dates"
+  },
+  {
+    "name": "completion, dates, modes and reopen",
+    "status": "PASS",
+    "detail": "selected date returns to today on ordinary open; checked day persisted"
+  },
+  {
+    "name": "two tabs retain independently added vocabulary",
+    "status": "PASS",
+    "detail": [
+      "audit alpha",
+      "audit beta"
+    ]
+  },
+  {
+    "name": "two tabs retain marks, corrections and different writing fields",
+    "status": "PASS",
+    "detail": "marks on two dates, two errors, two draft fields; explicit uncheck retained"
+  },
+  {
+    "name": "B2 and IELTS scores separated; contrast and reduced-motion scrolling",
+    "status": "PASS",
+    "detail": {
+      "badgeContrast": 8.600903117748015,
+      "grammarScroll": "auto"
+    }
+  },
+  {
+    "name": "month controls, dates of words, Cambridge and speech invocation",
+    "status": "PASS",
+    "detail": "month boundaries + Today + dated words + Cambridge URL + en-GB TTS invocation; no audio playback assertion"
+  },
+  {
+    "name": "vocabulary duplicate, meanings, SRS six stages",
+    "status": "PASS",
+    "detail": [
+      {
+        "day": "2026-11-20",
+        "stage": 1,
+        "next": "2026-11-21"
+      },
+      {
+        "day": "2026-11-21",
+        "stage": 2,
+        "next": "2026-11-23"
+      },
+      {
+        "day": "2026-11-23",
+        "stage": 3,
+        "next": "2026-11-26"
+      },
+      {
+        "day": "2026-11-26",
+        "stage": 4,
+        "next": "2026-12-03"
+      },
+      {
+        "day": "2026-12-03",
+        "stage": 5,
+        "next": "2026-12-19"
+      },
+      {
+        "day": "2026-12-19",
+        "stage": 6,
+        "next": ""
+      }
+    ]
+  },
+  {
+    "name": "real Oxford PDF import and duplicate import",
+    "status": "PASS",
+    "detail": [
+      {
+        "file": "oxford3000.pdf",
+        "count": 1417,
+        "status": "Список загружен: 1417 уникальных слов B1–B2 из Oxford 3000/5000. Совпадения с Empower и стартовой подборкой исключены; назначения по датам сохраняются."
+      },
+      {
+        "file": "oxford5000.pdf",
+        "count": 2104,
+        "status": "Список загружен: 2104 уникальных слов B1–B2 из Oxford 3000/5000. Совпадения с Empower и стартовой подборкой исключены; назначения по датам сохраняются."
+      },
+      {
+        "file": "oxford3000.pdf",
+        "count": 2104,
+        "status": "Список загружен: 2104 уникальных слов B1–B2 из Oxford 3000/5000. Совпадения с Empower и стартовой подборкой исключены; назначения по датам сохраняются."
+      }
+    ]
+  },
+  {
+    "name": "forms, diagnostic Later, modules, drafting",
+    "status": "PASS",
+    "detail": "5 modules + grammar answer + 3 forms + Later + writing reload"
+  },
+  {
+    "name": "visible navigation active state",
+    "status": "PASS",
+    "detail": "exactly one active item"
+  },
+  {
+    "name": "responsive all sections, modal, reduced motion",
+    "status": "PASS",
+    "detail": [
+      320,
+      360,
+      390,
+      412,
+      768,
+      900,
+      901,
+      1280,
+      1440
+    ]
+  },
+  {
+    "name": "service worker, offline save and reload",
+    "status": "PASS",
+    "detail": [
+      "daily-english-learning-hub-v1"
+    ]
+  },
+  {
+    "name": "stable to candidate service worker upgrade same origin",
+    "status": "PASS",
+    "detail": "daily-english-learning-hub-v1"
+  },
+  {
+    "name": "runtime and local asset responses",
+    "status": "PASS",
+    "detail": {
+      "runtimeErrors": [],
+      "missingResources": []
+    }
+  }
+]

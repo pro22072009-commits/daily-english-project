@@ -1,0 +1,17 @@
+[
+  {
+    "name": "edge: same work edited in two tabs preserves independent fields and metadata",
+    "status": "PASS",
+    "detail": "independent review/text/next step and createdAt retained"
+  },
+  {
+    "name": "edge: 20-version cap and audio size limit retain existing data",
+    "status": "PASS",
+    "detail": "no silent removal of old versions; oversized audio rejected"
+  },
+  {
+    "name": "edge: quota failure keeps stored draft and visible unsaved text",
+    "status": "PASS",
+    "detail": "failure preserves both texts; successful retry clears failure status"
+  }
+]

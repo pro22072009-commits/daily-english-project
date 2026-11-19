@@ -1,0 +1,17 @@
+[
+  {
+    "name": "responsive calendar, editor, backup modal and reduced motion",
+    "status": "PASS",
+    "detail": [
+      320,
+      360,
+      390,
+      412,
+      768,
+      900,
+      901,
+      1280,
+      1440
+    ]
+  }
+]

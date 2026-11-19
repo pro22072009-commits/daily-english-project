@@ -7,10 +7,17 @@
   const safe = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const parse = key => { try { return JSON.parse(service.getItem(key) || '{}'); } catch { return {}; } };
   const labels = { dailyEnglishProgressV1: 'Упражнения, результаты и streak', dailyEnglishAcademicDraftsV2: 'Черновики Writing', dailyEnglishBandsV1: 'IELTS estimated bands', dailyEnglishSystemV2: 'B2 Foundation и календарь' };
+  let pendingBackup = null;
+  function previewMarkup() {
+    if (!pendingBackup) return '';
+    const p = pendingBackup.preview;
+    return `<section class="account-note hub-backup-preview" aria-label="Предварительный просмотр восстановления"><h3>Что изменится при восстановлении</h3><p>${safe(p.createdAt ? new Date(p.createdAt).toLocaleString('ru-RU') : 'Дата не указана')} · версия ${safe(p.appBuild)}</p><table><thead><tr><th>Данные</th><th>Сейчас</th><th>После</th></tr></thead><tbody>${Object.entries({ marks:'Отметки заданий',words:'Слова',drafts:'Черновики',works:'Мои работы',versions:'Версии текстов',errors:'Нерешённые ошибки' }).map(([key,label])=>`<tr><th>${label}</th><td>${p.current[key]}</td><td>${p.target[key]}</td></tr>`).join('')}</tbody></table><p>Разделы: ${p.sections.map(safe).join('; ')}. Текущие данные сначала сохранятся в автоматическую копию. Аудиозаписи на устройстве не заменяются и в JSON-копию не входят.</p><div class="account-actions"><button type="button" class="account-primary" id="confirmProgressRestore">Восстановить показанную копию</button><button type="button" class="account-secondary" id="cancelProgressRestore">Отмена</button></div></section>`;
+  }
+  function showPreview(backup) { pendingBackup = { backup, preview: service.previewBackup(backup) }; render(); el('confirmProgressRestore')?.focus(); }
   function backupControls() {
     const snapshots = service.getRecoveryBackups();
-    const recovery = snapshots.length ? `<details class="account-conflicts"><summary>Автоматические копии прошлых версий · ${snapshots.length}</summary>${snapshots.map(item => `<article><strong>${safe(new Date(item.createdAt).toLocaleString('ru-RU'))} · до ${safe(item.previousBuild)}</strong><div><button type="button" class="account-small" data-restore-safety-backup="${item.index}">Восстановить эту версию</button></div></article>`).join('')}</details>` : '';
-    return `<section class="account-note"><strong>Резервная копия всего прогресса</strong><p>Сохраняет упражнения, календарь, огонёк, слова, IELTS и черновики в файл на устройстве.</p><div class="account-actions"><button class="account-secondary" id="downloadProgressBackup" type="button">Скачать копию</button><button class="account-secondary" id="chooseProgressBackup" type="button">Восстановить копию</button><input id="progressBackupFile" type="file" accept="application/json,.json" hidden></div>${recovery}</section>`;
+    const recovery = snapshots.length ? `<details class="account-conflicts"><summary>История сохранений · ${snapshots.length}</summary>${snapshots.map(item => `<article><strong>${safe(new Date(item.createdAt).toLocaleString('ru-RU'))} · до ${safe(item.previousBuild)}</strong><p>Версия ${safe(item.appBuild)} · ${item.summary.words} слов · ${item.summary.marks} отметок · ${item.summary.drafts} черновиков</p><div><button type="button" class="account-small" data-restore-safety-backup="${item.index}">Посмотреть изменения</button></div></article>`).join('')}</details>` : '';
+    return `<section class="account-note"><strong>Резервная копия прогресса и работ</strong><p>Упражнения, календарь, слова, IELTS, черновики и версии текстов. Голосовые записи скачиваются отдельно из «Моих работ».</p><div class="account-actions"><button class="account-secondary" id="downloadProgressBackup" type="button">Скачать копию</button><button class="account-secondary" id="chooseProgressBackup" type="button">Посмотреть копию из файла</button><input id="progressBackupFile" type="file" accept="application/json,.json" hidden></div>${recovery}</section>${previewMarkup()}`;
   }
   const headerMeta = document.querySelector('.topbar .meta');
   document.querySelector('.app')?.insertAdjacentHTML('afterbegin', '<div class="global-storage-status" id="storageStatus" role="status" aria-live="polite"></div>');
@@ -82,9 +89,16 @@
   content.addEventListener('click', async event => {
     const recovery = event.target.closest('[data-restore-safety-backup]');
     if (recovery) {
-      if (!window.confirm('Текущие данные будут сохранены в автоматическую копию, затем заменены выбранной версией. Продолжить?')) return;
-      try { await service.restoreRecoveryBackup(recovery.dataset.restoreSafetyBackup); window.location.reload(); }
+      try { showPreview(service.readRecoveryBackup(recovery.dataset.restoreSafetyBackup)); }
       catch (error) { status.textContent = error.message || 'Не удалось восстановить автоматическую копию.'; }
+      return;
+    }
+    if (event.target.id === 'cancelProgressRestore') { pendingBackup = null; render(); return; }
+    if (event.target.id === 'confirmProgressRestore' && pendingBackup) {
+      const backup = pendingBackup.backup;
+      event.target.disabled = true;
+      try { await service.restoreBackup(backup); pendingBackup = null; window.location.reload(); }
+      catch (error) { render(); status.textContent = error.message || 'Не удалось восстановить копию.'; }
       return;
     }
     if (event.target.id === 'downloadProgressBackup') {
@@ -112,11 +126,7 @@
     const file = event.target.files[0];
     try {
       const backup = JSON.parse(await file.text());
-      if (!window.confirm('Текущие данные будут сохранены в автоматическую копию, затем заменены данными из выбранного файла. Продолжить?')) return;
-      status.textContent = 'Сохраняю текущий прогресс и восстанавливаю копию…';
-      await service.restoreBackup(backup);
-      status.textContent = 'Копия восстановлена. Перезагружаю сайт…';
-      setTimeout(() => window.location.reload(), 250);
+      showPreview(backup);
     } catch (error) { status.textContent = error.message || 'Не удалось восстановить резервную копию.'; }
     finally { event.target.value = ''; }
   });

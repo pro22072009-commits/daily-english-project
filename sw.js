@@ -1,10 +1,10 @@
-const CACHE = 'daily-english-audit-v1';
+const CACHE = 'daily-english-learning-hub-v3';
 const BASE = new URL('./', self.registration.scope);
 const page = name => new URL(name, BASE).toString();
 const CORE = ['', 'index.html', 'oneui.css', 'redesign.css', 'redesign.js', 'empower-b1-wordlist.js', 'sourced-vocabulary.js', 'github-config.js', 'storage-service.js', 'account-ui.js', 'manifest.webmanifest', 'icon.svg', 'offline.html', 'vendor/pdfjs/pdf.min.mjs', 'vendor/pdfjs/pdf.worker.min.mjs', 'vendor/pdfjs/LICENSE'].map(page);
 // The network-first HTML can arrive before the old worker is replaced. These
 // URLs avoid mixing new inline code with a previous storage-service API.
-CORE.push(...['storage-service.js', 'redesign.js', 'redesign.css'].map(name => page(`${name}?build=2026-11-19.audit1`)));
+CORE.push(...['storage-service.js', 'account-ui.js', 'redesign.js', 'redesign.css', 'learning-hub.js', 'learning-hub.css'].map(name => page(`${name}?build=2026-11-19.hub3`)));
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('daily-english-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', event => {

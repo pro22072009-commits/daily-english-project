@@ -7,7 +7,7 @@
   const SAFETY_BACKUPS_KEY = 'dailyEnglishSafetyBackupsV1';
   const BUILD_KEY = 'dailyEnglishAppBuildV1';
   // Bump this value on every published app update. The previous local data is snapshotted before app scripts run.
-  const BUILD_VERSION = '2026-11-19.audit1';
+  const BUILD_VERSION = '2026-11-19.hub3';
   const MIGRATION_KEY = 'dailyEnglishMigrationVersion';
   const SESSION_KEY = 'dailyEnglishCloudSessionV1';
   const QUEUE_KEY = 'dailyEnglishOfflineQueueV1';
@@ -88,6 +88,7 @@
       return true;
     }
     try { localStorage.setItem(key, raw); } catch (error) { state.error = 'Не удалось сохранить данные на устройстве: возможно, закончилось место.'; emit(); throw error; }
+    if (state.error.startsWith('Не удалось сохранить данные на устройстве')) state.error = '';
     if (!KEYS.includes(key)) return;
     const meta = metadata();
     if (!options.preserveTimestamp) meta[key] = options.updatedAt || stamp();
@@ -318,7 +319,33 @@
   function createBackup() {
     return { format: 'daily-english-progress-backup', version: 1, appBuild: BUILD_VERSION, createdAt: stamp(), data: currentLocalData(), recoverySnapshots: parse(localGet(SAFETY_BACKUPS_KEY), []) };
   }
+  function summarizeData(rawData) {
+    const system = parse(rawData.dailyEnglishSystemV2, {}) || {};
+    const b2 = system.b2Foundation || {};
+    const drafts = parse(rawData.dailyEnglishAcademicDraftsV2, {}) || {};
+    const works = system.learningHub?.works || [];
+    return {
+      marks: Object.values(b2.completed || {}).reduce((n, day) => n + Object.values(day || {}).filter(value => value === true).length, 0),
+      words: (b2.vocabulary || []).length,
+      drafts: Object.values(drafts).filter(value => typeof value === 'string' && value.trim()).length + works.filter(work => work.status !== 'done').length,
+      works: works.length,
+      versions: works.reduce((n, work) => n + (work.versions || []).length, 0),
+      errors: (b2.errors || []).filter(item => !item.resolved).length
+    };
+  }
+  function previewBackup(backup) {
+    if (!backup || backup.format !== 'daily-english-progress-backup' || !backup.data || typeof backup.data !== 'object') throw new Error('Это не резервная копия Daily English.');
+    const entries = KEYS.filter(key => typeof backup.data[key] === 'string');
+    if (!entries.length) throw new Error('В копии не найдены данные прогресса.');
+    for (const key of entries) {
+      let value; try { value = JSON.parse(backup.data[key]); } catch { throw new Error(`В копии повреждён раздел «${FRIENDLY[key]}».`); }
+      if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`Неверный формат раздела «${FRIENDLY[key]}».`);
+    }
+    const current = currentLocalData();
+    return { createdAt: backup.createdAt || '', appBuild: backup.appBuild || 'не указана', sections: entries.map(key => FRIENDLY[key]), current: summarizeData(current), target: summarizeData({ ...current, ...Object.fromEntries(entries.map(key => [key, backup.data[key]])) }) };
+  }
   async function restoreBackup(backup) {
+    previewBackup(backup);
     if (!backup || backup.format !== 'daily-english-progress-backup' || !backup.data || typeof backup.data !== 'object') throw new Error('Это не резервная копия Daily English.');
     const entries = KEYS.filter(key => typeof backup.data[key] === 'string');
     if (!entries.length) throw new Error('В копии не найдены данные прогресса.');
@@ -349,15 +376,16 @@
   }
   function getRecoveryBackups() {
     const snapshots = parse(localGet(SAFETY_BACKUPS_KEY), []);
-    return (Array.isArray(snapshots) ? snapshots : []).map((item, index) => ({ item, index })).filter(({ item }) => recoveryData(item)).map(({ item, index }) => ({ index, createdAt: item.createdAt, previousBuild: item.source === 'before-manual-restore' ? 'восстановления' : item.source.startsWith('before-cloud-') ? 'синхронизации' : item.source === 'before-manual-conflict-resolution' ? 'разрешения конфликта' : item.details?.previousBuild || 'предыдущей версии' }));
+    return (Array.isArray(snapshots) ? snapshots : []).map((item, index) => ({ item, index })).filter(({ item }) => recoveryData(item)).map(({ item, index }) => ({ index, createdAt: item.createdAt, appBuild: item.appBuild || 'не указана', summary: summarizeData(recoveryData(item)), previousBuild: item.source === 'before-manual-restore' ? 'восстановления' : item.source.startsWith('before-cloud-') ? 'синхронизации' : item.source === 'before-manual-conflict-resolution' ? 'разрешения конфликта' : item.details?.previousBuild || 'предыдущей версии' }));
   }
-  async function restoreRecoveryBackup(index) {
+  function readRecoveryBackup(index) {
     const snapshots = parse(localGet(SAFETY_BACKUPS_KEY), []);
     const item = Array.isArray(snapshots) ? snapshots[Number(index)] : null;
     const data = recoveryData(item);
     if (!data) throw new Error('Автоматическая копия не найдена.');
-    return restoreBackup({ format: 'daily-english-progress-backup', version: 1, createdAt: item.createdAt, data });
+    return { format: 'daily-english-progress-backup', version: 1, createdAt: item.createdAt, appBuild: item.appBuild, data };
   }
+  async function restoreRecoveryBackup(index) { return restoreBackup(readRecoveryBackup(index)); }
   function clearLocalData() { for (const key of KEYS) localStorage.removeItem(key); localStorage.removeItem(META_KEY); localStorage.removeItem(QUEUE_KEY); }
   function getState() { return { configured: Boolean(state.config), session: state.session, profile: state.profile, status: state.status, error: state.error, conflicts: state.conflicts, lastSync: state.lastSync, migrationWarning: state.migrationWarning }; }
   function subscribe(listener) { state.listeners.add(listener); listener(getState()); return () => state.listeners.delete(listener); }
@@ -372,7 +400,7 @@
     saveProgress(value) { setLocal('dailyEnglishProgressV1', JSON.stringify(value)); },
     loadDrafts() { return parse(localGet('dailyEnglishAcademicDraftsV2'), {}); },
     saveDraft(key, value) { const drafts = api.loadDrafts(); drafts[key] = value; api.setItemDebounced('dailyEnglishAcademicDraftsV2', JSON.stringify(drafts)); },
-    loadProfile, syncWithCloud, migrateLocalData, clearLocalData, queueOfflineChange, signUp, signIn, signOut, saveProfile, resolveConflict, createBackup, restoreBackup, getRecoveryBackups, restoreRecoveryBackup, subscribe, getState,
+    loadProfile, syncWithCloud, migrateLocalData, clearLocalData, queueOfflineChange, signUp, signIn, signOut, saveProfile, resolveConflict, createBackup, restoreBackup, getRecoveryBackups, readRecoveryBackup, previewBackup, restoreRecoveryBackup, subscribe, getState,
     setStatus
   };
   global.storageService = api;

@@ -1,6 +1,6 @@
 const fs=require('fs'),path=require('path'),http=require('http'),assert=require('assert/strict'),vm=require('vm');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const root=path.resolve(__dirname,'..'),out=path.resolve(__dirname,'../audit-evidence');
+const root=path.resolve(__dirname,'..'),out=path.resolve(__dirname,'../hub-evidence');
 const old=path.resolve(process.env.AUDIT_BASELINE_DIR || '../stable-before-redesign');
 let served=root;const results=[];
 const server=http.createServer((req,res)=>{const name=decodeURIComponent(new URL(req.url,'http://localhost').pathname);const file=path.resolve(served,'.'+(name==='/'?'/index.html':name));if(!file.startsWith(served+path.sep))return res.writeHead(403).end();fs.readFile(file,(e,b)=>{res.writeHead(e?404:200,{'Content-Type':file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css':/\.m?js$/.test(file)?'text/javascript':file.endsWith('.svg')?'image/svg+xml':'application/octet-stream','Cache-Control':'no-store'});res.end(e?'':b)})});
@@ -9,7 +9,7 @@ let browser,base;
 async function context(options={}){const c=await browser.newContext({viewport:{width:1280,height:950},timezoneId:'Europe/Moscow',serviceWorkers:'block',...options});await c.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.abort());return c;}
 const runtimeErrors=[],missingResources=[];
 async function open(c){const p=await c.newPage();p.on('pageerror',e=>runtimeErrors.push(e.message));p.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)missingResources.push({url:r.url(),status:r.status()});});await p.goto(base);await p.waitForSelector('#redesign-home #b2-calendar-section');return p;}
-async function tab(p,name){await p.evaluate(n=>showView(n),name);await p.waitForTimeout(240);}
+async function tab(p,name){await p.evaluate(n=>showView(n),name);await p.waitForTimeout(240);if(name==='progress')await p.locator('#hub-original-progress').evaluate(e=>{if(e)e.open=true}).catch(()=>{});}
 async function date(p,date){await tab(p,'dashboard');await p.locator('#b2-calendar-picker').fill(date);await p.locator('#b2-calendar-picker').dispatchEvent('change');}
 async function addWord(p,word){await tab(p,'vocabulary');await p.locator('#b2-vocabulary-form [name=term]').fill(word);await p.locator('#b2-vocabulary-form [name=definition]').fill('An isolated audit entry.');await p.locator('#b2-vocabulary-form [name=meaning]').fill('тестовая запись');await p.locator('#b2-vocabulary-form button[type=submit]').click();}
 const saved=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('dailyEnglishSystemV2')));

@@ -1,0 +1,842 @@
+[
+  {
+    "date": "2026-10-19",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Подготовительная неделя · Unit 1 начинается 26 октября"
+  },
+  {
+    "date": "2026-10-20",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Подготовительная неделя · Unit 1 начинается 26 октября"
+  },
+  {
+    "date": "2026-10-21",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Подготовительная неделя · Unit 1 начинается 26 октября"
+  },
+  {
+    "date": "2026-10-22",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Подготовительная неделя · Unit 1 начинается 26 октября"
+  },
+  {
+    "date": "2026-10-23",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Подготовительная неделя · Unit 1 начинается 26 октября"
+  },
+  {
+    "date": "2026-10-24",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Подготовительная неделя · Unit 1 начинается 26 октября"
+  },
+  {
+    "date": "2026-10-25",
+    "unit": null,
+    "tasks": 0,
+    "rest": true,
+    "buffer": "Подготовительная неделя · Unit 1 начинается 26 октября"
+  },
+  {
+    "date": "2026-10-26",
+    "unit": 1,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-10-27",
+    "unit": 1,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-10-28",
+    "unit": 1,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-10-29",
+    "unit": 1,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-10-30",
+    "unit": 1,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-10-31",
+    "unit": 1,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-01",
+    "unit": 1,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-02",
+    "unit": 2,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-03",
+    "unit": 2,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-04",
+    "unit": 2,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-05",
+    "unit": 2,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-06",
+    "unit": 2,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-07",
+    "unit": 2,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-08",
+    "unit": 2,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-09",
+    "unit": 3,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-10",
+    "unit": 3,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-11",
+    "unit": 3,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-12",
+    "unit": 3,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-13",
+    "unit": 3,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-14",
+    "unit": 3,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-15",
+    "unit": 3,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-16",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Пауза перед Unit 4 · новые задания начнутся 23 ноября"
+  },
+  {
+    "date": "2026-11-17",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Пауза перед Unit 4 · новые задания начнутся 23 ноября"
+  },
+  {
+    "date": "2026-11-18",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Пауза перед Unit 4 · новые задания начнутся 23 ноября"
+  },
+  {
+    "date": "2026-11-19",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Пауза перед Unit 4 · новые задания начнутся 23 ноября"
+  },
+  {
+    "date": "2026-11-20",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Пауза перед Unit 4 · новые задания начнутся 23 ноября"
+  },
+  {
+    "date": "2026-11-21",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Пауза перед Unit 4 · новые задания начнутся 23 ноября"
+  },
+  {
+    "date": "2026-11-22",
+    "unit": null,
+    "tasks": 0,
+    "rest": true,
+    "buffer": "Пауза перед Unit 4 · новые задания начнутся 23 ноября"
+  },
+  {
+    "date": "2026-11-23",
+    "unit": 4,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-24",
+    "unit": 4,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-25",
+    "unit": 4,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-26",
+    "unit": 4,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-27",
+    "unit": 4,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-28",
+    "unit": 4,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-29",
+    "unit": 4,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2026-11-30",
+    "unit": 5,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-01",
+    "unit": 5,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-02",
+    "unit": 5,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-03",
+    "unit": 5,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-04",
+    "unit": 5,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-05",
+    "unit": 5,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-06",
+    "unit": 5,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-07",
+    "unit": 6,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-08",
+    "unit": 6,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-09",
+    "unit": 6,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-10",
+    "unit": 6,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-11",
+    "unit": 6,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-12",
+    "unit": 6,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-13",
+    "unit": 6,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-14",
+    "unit": 7,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-15",
+    "unit": 7,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-16",
+    "unit": 7,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-17",
+    "unit": 7,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-18",
+    "unit": 7,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-19",
+    "unit": 7,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-20",
+    "unit": 7,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-21",
+    "unit": 8,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-22",
+    "unit": 8,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-23",
+    "unit": 8,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-24",
+    "unit": 8,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-25",
+    "unit": 8,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-26",
+    "unit": 8,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-27",
+    "unit": 8,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2026-12-28",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Review Units 7–8 + catch-up"
+  },
+  {
+    "date": "2026-12-29",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Review Units 7–8 + catch-up"
+  },
+  {
+    "date": "2026-12-30",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Review Units 7–8 + catch-up"
+  },
+  {
+    "date": "2026-12-31",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Review Units 7–8 + catch-up"
+  },
+  {
+    "date": "2027-01-01",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Review Units 7–8 + catch-up"
+  },
+  {
+    "date": "2027-01-02",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Review Units 7–8 + catch-up"
+  },
+  {
+    "date": "2027-01-03",
+    "unit": null,
+    "tasks": 0,
+    "rest": true,
+    "buffer": "Review Units 7–8 + catch-up"
+  },
+  {
+    "date": "2027-01-04",
+    "unit": 9,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-05",
+    "unit": 9,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-06",
+    "unit": 9,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-07",
+    "unit": 9,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-08",
+    "unit": 9,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-09",
+    "unit": 9,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-10",
+    "unit": 9,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-11",
+    "unit": 10,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-12",
+    "unit": 10,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-13",
+    "unit": 10,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-14",
+    "unit": 10,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-15",
+    "unit": 10,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-16",
+    "unit": 10,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-17",
+    "unit": 10,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-18",
+    "unit": 11,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-19",
+    "unit": 11,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-20",
+    "unit": 11,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-21",
+    "unit": 11,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-22",
+    "unit": 11,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-23",
+    "unit": 11,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-24",
+    "unit": 11,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-25",
+    "unit": 12,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-26",
+    "unit": 12,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-27",
+    "unit": 12,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-28",
+    "unit": 12,
+    "tasks": 3,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-29",
+    "unit": 12,
+    "tasks": 2,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-30",
+    "unit": 12,
+    "tasks": 1,
+    "rest": false,
+    "buffer": null
+  },
+  {
+    "date": "2027-01-31",
+    "unit": 12,
+    "tasks": 0,
+    "rest": true,
+    "buffer": null
+  },
+  {
+    "date": "2027-02-01",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Consolidation + catch-up + review weak skills"
+  },
+  {
+    "date": "2027-02-02",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Consolidation + catch-up + review weak skills"
+  },
+  {
+    "date": "2027-02-03",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Consolidation + catch-up + review weak skills"
+  },
+  {
+    "date": "2027-02-04",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Consolidation + catch-up + review weak skills"
+  },
+  {
+    "date": "2027-02-05",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Consolidation + catch-up + review weak skills"
+  },
+  {
+    "date": "2027-02-06",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Consolidation + catch-up + review weak skills"
+  },
+  {
+    "date": "2027-02-07",
+    "unit": null,
+    "tasks": 0,
+    "rest": true,
+    "buffer": "Consolidation + catch-up + review weak skills"
+  },
+  {
+    "date": "2027-02-08",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Final review + reserve + prepare for B2 Checkpoint"
+  },
+  {
+    "date": "2027-02-09",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Final review + reserve + prepare for B2 Checkpoint"
+  },
+  {
+    "date": "2027-02-10",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Final review + reserve + prepare for B2 Checkpoint"
+  },
+  {
+    "date": "2027-02-11",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Final review + reserve + prepare for B2 Checkpoint"
+  },
+  {
+    "date": "2027-02-12",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Final review + reserve + prepare for B2 Checkpoint"
+  },
+  {
+    "date": "2027-02-13",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": "Final review + reserve + prepare for B2 Checkpoint"
+  },
+  {
+    "date": "2027-02-14",
+    "unit": null,
+    "tasks": 0,
+    "rest": true,
+    "buffer": "Final review + reserve + prepare for B2 Checkpoint"
+  },
+  {
+    "date": "2027-02-15",
+    "unit": null,
+    "tasks": 0,
+    "rest": false,
+    "buffer": null
+  }
+]

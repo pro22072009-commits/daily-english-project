@@ -71,9 +71,9 @@
       if(node.matches('.b2-today-head,.redesign-original-today,.b2-ielts-note'))return;
       if(node.matches('.b2-course-details,.b2-course-summary'))move(node,course);
       else if(node.matches('.b2-optional,.b2-resources'))move(node,practice);
-      else move(node,progress);
+      else move(node,window.dailyEnglishHubProgressTarget?.(node)||progress);
     });
-    move(document.getElementById('redesign-roadmap-source'),progress);
+    move(document.getElementById('redesign-roadmap-source'),window.dailyEnglishHubProgressTarget?.()||progress);
     // Retain the original dashboard/IELTS controls in Progress, including diagnostics.
     Array.from(dash.children).forEach(node=>{if(node!==home&&node.id!=='b2-foundation-panel')move(node,progress);});
     const p=document.getElementById('progress-system');
@@ -96,6 +96,7 @@
     }
     document.querySelectorAll('[data-section]').forEach(b=>{b.classList.toggle('active',b.dataset.section===current);b.setAttribute('aria-current',b.dataset.section===current?'page':'false');});
     document.getElementById('redesign-page-title').textContent=labels[current]||'Практика';
+    window.dailyEnglishPlaceHub?.();
     observer.observe(document.body,{childList:true,subtree:true});
   }
   window.showView=function(name){
