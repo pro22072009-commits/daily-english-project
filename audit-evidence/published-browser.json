@@ -1,0 +1,12 @@
+{
+  "origin": "https://pro22072009-commits.github.io/daily-english-project/",
+  "labels": "Сегодня\nУчебник\nПрактика\nСлова\nПрогресс",
+  "errors": [],
+  "bad": [],
+  "serviceWorker": {
+    "controlled": true,
+    "caches": [
+      "daily-english-redesign-v3"
+    ]
+  }
+}

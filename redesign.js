@@ -5,6 +5,8 @@
   const original=window.showView;
   const app=document.querySelector('.app');
   const dash=document.getElementById('view-dashboard');
+  // The footer belongs after all five views, including the generated ones.
+  const footer=document.querySelector('.footer');if(footer)app.append(footer);
   let current='dashboard';
   document.addEventListener('click',event=>{if(event.target.closest('[data-calendar-date],[data-calendar-shift],[data-calendar-today]'))window.dailyEnglishCalendarSelectionActive=true;},true);
   document.addEventListener('change',event=>{if(event.target.id==='b2-calendar-picker')window.dailyEnglishCalendarSelectionActive=true;},true);
@@ -16,6 +18,8 @@
   practiceBody.innerHTML=`<div class="redesign-section-heading"><span class="b2-kicker">Практика навыков</span><h1>Продолжай учиться</h1><p>Работающие модули и дополнительные материалы твоего курса.</p></div><div class="redesign-practice-grid">${[['reading','Reading','Понимание текста'],['listening','Listening','Аудирование'],['writing','Writing','Письменная речь'],['speaking','Speaking','Устная речь'],['grammar','Grammar','Грамматика']].map(([id,name,sub])=>`<button data-practice="${id}"><strong>${name}</strong><span>${sub}</span><b aria-hidden="true">↗</b></button>`).join('')}</div>`;
   const progressHead=create('redesign-progress-heading',progress);progressHead.innerHTML='<span class="b2-kicker">Твой учебный путь</span><h1>Прогресс и результаты</h1><p>Сохранённые результаты, проверки, ошибки и история обучения.</p>';
   progress.prepend(progressHead);
+  const diagnostic=create('redesign-diagnostic',progress);diagnostic.className='redesign-resources';
+  diagnostic.innerHTML='<h2>Дополнительная диагностика IELTS</h2><p class="system-sub">Учебная диагностика экзаменационного режима. Результат не определяет уровень B2 автоматически.</p>';
   const resources=()=>`<h3>Полезные ресурсы</h3><p class="system-sub">Дополнительные упражнения к основному курсу Empower.</p><div class="redesign-resource-links"><a href="https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2" target="_blank" rel="noopener noreferrer">British Council · B1–B2 Grammar ↗</a><a href="https://learnenglish.britishcouncil.org/free-resources/vocabulary/b1-b2" target="_blank" rel="noopener noreferrer">British Council · B1–B2 Vocabulary ↗</a></div>`;
   const useful=create('redesign-useful',home);useful.className='redesign-resources';useful.innerHTML=resources();
   const extra=create('redesign-practice-resources',practice);extra.className='redesign-resources';extra.innerHTML=resources();
@@ -72,12 +76,24 @@
     move(document.getElementById('redesign-roadmap-source'),progress);
     // Retain the original dashboard/IELTS controls in Progress, including diagnostics.
     Array.from(dash.children).forEach(node=>{if(node!==home&&node.id!=='b2-foundation-panel')move(node,progress);});
-    const p=document.getElementById('progress-system');if(p)p.hidden=false;
+    const p=document.getElementById('progress-system');
+    move(document.getElementById('open-diagnostic')?.closest('.buttonrow'),diagnostic);
     move(document.getElementById('grammar-daily'),practice);
     const legacyPlan=document.getElementById('daily-plan-system');
     const academic=JSON.parse(storageService.getItem('dailyEnglishSystemV2')||'{}').studyMode==='ielts';
+    if(p)p.hidden=!academic;
     if(legacyPlan){legacyPlan.hidden=!academic;move(legacyPlan,academic?home:progress);}
-    if(current==='progress')progress.querySelectorAll('.scoregrid,.targetbox,#roadmap').forEach(n=>{n.hidden=false;n.style.removeProperty('display');});
+    progress.querySelectorAll('.scoregrid,.targetbox,#roadmap').forEach(n=>{
+      n.hidden=!academic;
+      if(academic)n.style.removeProperty('display');
+      if(n.previousElementSibling?.classList.contains('headingrow'))n.previousElementSibling.hidden=!academic;
+    });
+    const academicSide=progress.querySelector('.side');if(academicSide)academicSide.hidden=!academic;
+    if(footer){
+      if(app.lastElementChild!==footer)app.append(footer);
+      const caption=academic?'IELTS Academic · ориентировочные учебные оценки':'B2 Foundation · Cambridge Empower · цель 15 февраля 2027';
+      if(footer.textContent!==caption)footer.textContent=caption;
+    }
     document.querySelectorAll('[data-section]').forEach(b=>{b.classList.toggle('active',b.dataset.section===current);b.setAttribute('aria-current',b.dataset.section===current?'page':'false');});
     document.getElementById('redesign-page-title').textContent=labels[current]||'Практика';
     observer.observe(document.body,{childList:true,subtree:true});
@@ -93,7 +109,7 @@
     const skill=event.target.closest('[data-practice]');if(!skill)return;
     if(skill.dataset.practice==='grammar'){
       showView('practice');const grammar=document.getElementById('grammar-daily');
-      if(grammar){grammar.hidden=false;grammar.scrollIntoView({behavior:'smooth',block:'start'});}else document.getElementById('redesign-practice-resources').scrollIntoView({behavior:'smooth'});
+      if(grammar){grammar.hidden=false;grammar.scrollIntoView({behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'),block:'start'});}else document.getElementById('redesign-practice-resources').scrollIntoView({behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth')});
     }else showView(skill.dataset.practice);
   });
   arrange();showView('dashboard');

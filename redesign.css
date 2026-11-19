@@ -11,6 +11,10 @@ html,body{background:#11151f;color:var(--ink)}body{background:radial-gradient(el
 @media(max-width:900px){.b2-calendar-day>span{display:none!important}.b2-calendar-day{display:flex!important;flex-direction:column;align-items:center;justify-content:center;min-height:44px!important}.b2-calendar-day>b{font-size:14px!important}}
 @media(prefers-reduced-motion:no-preference){.view.active{animation:redesign-enter .2s ease-out}@keyframes redesign-enter{from{opacity:.6;transform:translateY(5px)}to{opacity:1;transform:none}}}
 /* Shared motion and warm streak accents; never animate the layout dimensions. */
+.b2-textbook-head>span{background:#30394a!important;color:#d6def0!important}
+.b2-book-note{color:var(--muted)!important}.b2-book-note strong{color:var(--ink)}
+@media(max-width:560px){.b2-textbook-head{flex-wrap:wrap!important}.b2-textbook-head>div{min-width:0;flex-basis:100%}}
+#view-progress .side[hidden]{display:none!important}
 button,a,input,select,textarea,summary{transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #adbcff!important;outline-offset:3px}
 .modalback{z-index:30!important}.toast{z-index:40!important;bottom:100px}

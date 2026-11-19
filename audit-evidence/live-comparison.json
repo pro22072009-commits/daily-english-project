@@ -1,0 +1,135 @@
+[
+  {
+    "file": "index.html",
+    "status": 200,
+    "equal": true,
+    "sha256": "adc3eb467d5b30556b1a3049cc83f77bce5f2f6047c9d1577519d32a14c4511b",
+    "normalizedEqual": true
+  },
+  {
+    "file": "oneui.css",
+    "status": 200,
+    "equal": false,
+    "sha256": "3ad761152dd987141027508caa4e7b4f0aba8bf6113e5d303233480a1929db56",
+    "normalizedEqual": true
+  },
+  {
+    "file": "redesign.css",
+    "status": 200,
+    "equal": false,
+    "sha256": "0d42ce097aea777af349a85c5220ae490d96098e009140b8c60380f42226aa93",
+    "normalizedEqual": true
+  },
+  {
+    "file": "redesign.js",
+    "status": 200,
+    "equal": false,
+    "sha256": "7a5950ec570ac13e7213b2d4c27f286d244a94e6f108046fd226f89494200a53",
+    "normalizedEqual": true
+  },
+  {
+    "file": "sw.js",
+    "status": 200,
+    "equal": true,
+    "sha256": "472b9765267e0ecaea0f642f8619f7da8cec43dcbebbb534561292a8f7af844f",
+    "normalizedEqual": true
+  },
+  {
+    "file": "storage-service.js",
+    "status": 200,
+    "equal": true,
+    "sha256": "3cea03afef21926c346872be200b1ae1ba2c063f3b3b146dc0bfea5f71d9a2d1",
+    "normalizedEqual": true
+  },
+  {
+    "file": "account-ui.js",
+    "status": 200,
+    "equal": true,
+    "sha256": "d763053feb867b33b7031fa1dce0223df11d486e6926490340cacbfc06fd8987",
+    "normalizedEqual": true
+  },
+  {
+    "file": "github-config.js",
+    "status": 200,
+    "equal": false,
+    "sha256": "506c8e86e43435804165746f9c03dae45408bf46a878d3d7ade6cdcc2bd92c8b",
+    "normalizedEqual": true
+  },
+  {
+    "file": "sourced-vocabulary.js",
+    "status": 200,
+    "equal": false,
+    "sha256": "850f6d6e1b06c1c783342fbb60aa72aa88a101c7291f2efdf6ed451d49ba2ffb",
+    "normalizedEqual": true
+  },
+  {
+    "file": "empower-b1-wordlist.js",
+    "status": 200,
+    "equal": false,
+    "sha256": "24d3ee1b6dfc71b9dc3d430dfd89cea3fdece4a6fe4d396c591eb7e9849f6a97",
+    "normalizedEqual": true
+  },
+  {
+    "file": "manifest.webmanifest",
+    "status": 200,
+    "equal": false,
+    "sha256": "8f60d690f1c2aeed2c54995125fc27614cab26633b67dca88e8d78315a6e0bf0",
+    "normalizedEqual": true
+  },
+  {
+    "file": "icon.svg",
+    "status": 200,
+    "equal": false,
+    "sha256": "4ac200b5a272bccda6f81f9401203585d1728b1bb52810a345983de262770169",
+    "normalizedEqual": true
+  },
+  {
+    "file": "offline.html",
+    "status": 200,
+    "equal": false,
+    "sha256": "089e06f8f5e04ddbcdf85e30acb923f270921b7252339ac434291a90983e6016",
+    "normalizedEqual": true
+  },
+  {
+    "file": "vendor/pdfjs/pdf.min.mjs",
+    "status": 200,
+    "equal": false,
+    "sha256": "57456c8e0c81e46be31174b499ef77f2b9f5ee46d04412ba627320a36755d4c2",
+    "normalizedEqual": true
+  },
+  {
+    "file": "vendor/pdfjs/pdf.worker.min.mjs",
+    "status": 200,
+    "equal": false,
+    "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18",
+    "normalizedEqual": true
+  },
+  {
+    "file": "oxford3000.pdf",
+    "status": 200,
+    "url": "https://www.oxfordlearnersdictionaries.com/us/external/pdf/wordlists/oxford-3000-5000/The_Oxford_3000_by_CEFR_level.pdf",
+    "bytes": 336931,
+    "pdf": true
+  },
+  {
+    "file": "oxford5000.pdf",
+    "status": 200,
+    "url": "https://www.oxfordlearnersdictionaries.com/us/external/pdf/wordlists/oxford-3000-5000/The_Oxford_5000_by_CEFR_level.pdf",
+    "bytes": 217257,
+    "pdf": true
+  },
+  {
+    "file": "bc-grammar.html",
+    "status": 200,
+    "url": "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2",
+    "bytes": 183931,
+    "pdf": false
+  },
+  {
+    "file": "bc-vocabulary.html",
+    "status": 200,
+    "url": "https://learnenglish.britishcouncil.org/free-resources/vocabulary/b1-b2",
+    "bytes": 143359,
+    "pdf": false
+  }
+]

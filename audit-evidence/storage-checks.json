@@ -1,0 +1,25 @@
+{
+  "environment": "IN-MEMORY MOCK; NOT LIVE SUPABASE",
+  "results": [
+    {
+      "name": "mock: two independent local stores read/write same remote entity",
+      "status": "PASS"
+    },
+    {
+      "name": "mock: offline queue sync after reconnect",
+      "status": "PASS"
+    },
+    {
+      "name": "mock: equal timestamps preserve local and require explicit conflict choice",
+      "status": "PASS"
+    },
+    {
+      "name": "mock: temporary fetch and refresh failures preserve progress and session",
+      "status": "PASS"
+    },
+    {
+      "name": "three-way edits preserve remote additions, local removals and nested changes",
+      "status": "PASS"
+    }
+  ]
+}

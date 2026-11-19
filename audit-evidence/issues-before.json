@@ -1,0 +1,20 @@
+[
+  {
+    "name": "two tabs retain independently added vocabulary",
+    "status": "FAIL",
+    "error": "first tab word lost: audit beta"
+  },
+  {
+    "name": "Study-day vocabulary has no visible date",
+    "status": "FAIL",
+    "steps": "select 2026-11-23 then Vocabulary",
+    "actual": "UNIT 4 · LESSON 4A–4B; Новые слова на день; no 23 ноября",
+    "source": "original index.html:1568"
+  },
+  {
+    "name": "B2 has no speech buttons",
+    "status": "FAIL",
+    "actual": "Original B2 templates have Cambridge and add/review controls; speak() is used in legacy IELTS only.",
+    "source": "original index.html:1564,1648,1678-1679,1693"
+  }
+]

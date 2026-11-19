@@ -1,0 +1,720 @@
+{
+  "roadmap": [
+    {
+      "start": "2026-10-19",
+      "end": "2026-10-25",
+      "buffer": "Подготовительная неделя · Unit 1 начинается 26 октября",
+      "reviewIndex": 0
+    },
+    {
+      "start": "2026-10-26",
+      "end": "2026-11-01",
+      "unit": 1
+    },
+    {
+      "start": "2026-11-02",
+      "end": "2026-11-08",
+      "unit": 2
+    },
+    {
+      "start": "2026-11-09",
+      "end": "2026-11-15",
+      "unit": 3
+    },
+    {
+      "start": "2026-11-16",
+      "end": "2026-11-22",
+      "buffer": "Пауза перед Unit 4 · новые задания начнутся 23 ноября",
+      "reviewIndex": "before-unit-4"
+    },
+    {
+      "start": "2026-11-23",
+      "end": "2026-11-29",
+      "unit": 4
+    },
+    {
+      "start": "2026-11-30",
+      "end": "2026-12-06",
+      "unit": 5
+    },
+    {
+      "start": "2026-12-07",
+      "end": "2026-12-13",
+      "unit": 6
+    },
+    {
+      "start": "2026-12-14",
+      "end": "2026-12-20",
+      "unit": 7
+    },
+    {
+      "start": "2026-12-21",
+      "end": "2026-12-27",
+      "unit": 8
+    },
+    {
+      "start": "2026-12-28",
+      "end": "2027-01-03",
+      "buffer": "Review Units 7–8 + catch-up",
+      "reviewIndex": 10
+    },
+    {
+      "start": "2027-01-04",
+      "end": "2027-01-10",
+      "unit": 9
+    },
+    {
+      "start": "2027-01-11",
+      "end": "2027-01-17",
+      "unit": 10
+    },
+    {
+      "start": "2027-01-18",
+      "end": "2027-01-24",
+      "unit": 11
+    },
+    {
+      "start": "2027-01-25",
+      "end": "2027-01-31",
+      "unit": 12
+    },
+    {
+      "start": "2027-02-01",
+      "end": "2027-02-07",
+      "buffer": "Consolidation + catch-up + review weak skills",
+      "reviewIndex": 15
+    },
+    {
+      "start": "2027-02-08",
+      "end": "2027-02-14",
+      "buffer": "Final review + reserve + prepare for B2 Checkpoint",
+      "reviewIndex": 16
+    }
+  ],
+  "empowerAssignments": {
+    "1": {
+      "Пн": {
+        "lesson": "1A–1B",
+        "topic": "adjectives, question forms, adverbs; present simple / present continuous",
+        "blocks": {
+          "Grammar": "SB p.9 ex.4a–g — Question Forms; p.11 ex.3a–c — Present Simple / Present Continuous",
+          "Vocabulary": "SB p.8 ex.2a–c — adjectives; p.11 ex.2a–b — adverbs of degree and frequency"
+        }
+      },
+      "Вт": {
+        "lesson": "Getting Started + 1A–1C",
+        "topic": "sport, small talk, conversations and everyday English",
+        "blocks": {
+          "Speaking": "SB p.7 Getting Started a–b — answer the picture and personal questions; after listening, give a short oral retelling using your notes (follow-up, not a repeated SB exercise)",
+          "Listening": "SB p.8 ex.1a–c (track 01.01); p.10 ex.1d–f (01.09); p.12 ex.1a–d (01.14)"
+        }
+      },
+      "Ср": {
+        "lesson": "1A–1B",
+        "topic": "Small Talk; The Fast and the Furious; present tenses in context",
+        "blocks": {
+          "Reading": "SB p.8 ex.3a–d — Small Talk; p.10 ex.1b–c — The Fast and the Furious",
+          "Grammar": "Самостоятельно: выпиши из текстов примеры Present Simple / Continuous и объясни выбор формы; не повторяй SB p.11 ex.3"
+        }
+      },
+      "Чт": {
+        "lesson": "1C",
+        "topic": "sentence stress and useful language for conversations",
+        "minutes": "80–100",
+        "blocks": {
+          "Listening": "SB p.13 Pronunciation 4a–b (track 01.18), Listening 5a–c (01.19), Useful Language 6a–c (01.20)",
+          "Vocabulary": "Самостоятельно: повтори и используй слова из SB p.11 ex.2a–b в пяти новых фразах; упражнение повторно не выполняй",
+          "Speaking": "Самостоятельно: перескажи ответы и вырази своё мнение о технологиях, используя фразы SB p.13 ex.6; упражнение с back-of-book Communication не назначено"
+        }
+      },
+      "Пт": {
+        "lesson": "1D",
+        "topic": "write a personal email; edit common mistakes",
+        "minutes": "90–120",
+        "blocks": {
+          "Writing": "SB p.14 ex.1a–f and Reading 2a–d; p.15 Writing Skills 3a–c and Writing 4a–d — plan, write and edit a full personal email",
+          "Grammar": "Самостоятельно: вычитай письмо по категориям p.15 ex.3a — grammar, spelling, punctuation and capital letters; само упражнение не дублируй"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 1 Review and Extension",
+        "topic": "review grammar, vocabulary and wordpower",
+        "minutes": "90–120",
+        "blocks": {
+          "Review": "SB p.16 Grammar 1a–c, Vocabulary 2a–c, Wordpower 3a–d and Review your progress. Это Review and Extension, не отдельный Unit Progress Test."
+        }
+      }
+    },
+    "2": {
+      "Пн": {
+        "lesson": "2A–2B",
+        "topic": "Past Simple; travel collocations and tourist items",
+        "blocks": {
+          "Grammar": "SB p.18 Grammar 2a–b; p.19 Grammar 4a–c and Pronunciation 5a–c (tracks 02.05–02.06)",
+          "Vocabulary": "SB p.20 Vocabulary 1a–c — travel collocations; p.19 Vocabulary 6a–b — tourist items"
+        }
+      },
+      "Вт": {
+        "lesson": "2A–2B",
+        "topic": "a travel story; telling an anecdote",
+        "blocks": {
+          "Listening": "SB p.18 Reading and Listening 1a–f (track 02.01); p.20 Listening 2a–d (02.11)",
+          "Speaking": "SB p.19 Speaking 7a–b — tell a travel story using the printed questions"
+        }
+      },
+      "Ср": {
+        "lesson": "2B",
+        "topic": "Yes Man Changed My Life; Past Continuous and Past Simple",
+        "blocks": {
+          "Reading": "SB p.21 Reading and Speaking 4a–g — work with the text and follow-up discussion; do not repeat SB p.18–19 Reading 1b–d from Tuesday",
+          "Grammar": "SB p.21 Grammar 3a–i (track 02.12; pronunciation 02.14–02.15)"
+        }
+      },
+      "Чт": {
+        "lesson": "2C",
+        "topic": "asking for information; travel problems and public places",
+        "minutes": "90–120",
+        "blocks": {
+          "Listening": "SB p.22 Listening 1a–d (track/video 02.16); p.23 Conversation Skills 4a–d (02.22) and Listening 5a–c (02.23)",
+          "Vocabulary": "SB p.22 Useful Language 2a–d (tracks 02.17–02.19) and Pronunciation 3a–d (02.20–02.21)",
+          "Speaking": "SB p.23 Speaking 6a–d — role-play using the printed task cards on the page"
+        }
+      },
+      "Пт": {
+        "lesson": "2D",
+        "topic": "write a travel blog; linking words",
+        "minutes": "90–120",
+        "blocks": {
+          "Writing": "SB p.24 ex.1a–d — discuss the Sydney photos and listen to Lucila’s video call (track 02.24); p.24 ex.2a–b and the blog on p.25 — identify content; p.25 Writing Skills 3a–c and Writing 4a–d — make notes, write and exchange a complete blog",
+          "Grammar": "Самостоятельно: проверь употребление but/when/so/because из p.25 ex.3 в готовом блоге; не выполняй упражнение повторно"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 2 Review and Extension",
+        "topic": "review grammar, vocabulary and wordpower",
+        "minutes": "90–120",
+        "blocks": {
+          "Review": "SB pp.26–27 — выполнить видимые разделы Review and Extension: Grammar, Vocabulary, Wordpower and Review your progress. Unit Progress Test не назначен."
+        }
+      }
+    },
+    "3": {
+      "Пн": {
+        "lesson": "3A",
+        "topic": "money and shopping; Present Perfect / Past Simple",
+        "minutes": "90–110",
+        "blocks": {
+          "Grammar": "SB p.29 Grammar 4a–d (track 03.03)",
+          "Vocabulary": "SB p.28 Vocabulary 1a–d — money and shopping"
+        }
+      },
+      "Вт": {
+        "lesson": "3A + 3D",
+        "topic": "shopping experiences; charities",
+        "minutes": "90–110",
+        "blocks": {
+          "Listening": "SB p.29 Listening 3a–b (track 03.02); p.34 Listening and Speaking 1a–f (03.18)",
+          "Speaking": "SB p.29 Listening 3c/Speaking 5a–c — discuss the shopping experiences; p.34 discuss the charity choices and reasons"
+        }
+      },
+      "Ср": {
+        "lesson": "3A–3B",
+        "topic": "sales; Get Happy — Give Your Money Away; already / yet",
+        "minutes": "95–120",
+        "blocks": {
+          "Reading": "SB p.28 Reading and Speaking 2a–e; p.30 Reading 1a–d — Get Happy — Give Your Money Away",
+          "Grammar": "SB p.31 Grammar 4a–d — Present Perfect with already/yet"
+        }
+      },
+      "Чт": {
+        "lesson": "3B–3C",
+        "topic": "make/do/give collocations; everyday English",
+        "minutes": "90–115",
+        "blocks": {
+          "Listening": "SB p.31 Listening 3a–c (track 03.07); p.32 Listening 1a–g (03.12–03.13)",
+          "Vocabulary": "SB p.31 Vocabulary 2a–c (03.06) — make/do/give collocations",
+          "Speaking": "SB p.31 Speaking 5a–b; p.32 Useful Language 2a–b (03.14); p.33 Pronunciation 3a–c (03.15–03.16), Useful Language 4a–c (03.17), Conversation Skills 5a–b. Back-of-book Communication 3C task is excluded."
+        }
+      },
+      "Пт": {
+        "lesson": "3B + 3D",
+        "topic": "write a four-paragraph email; paragraphing and already/yet",
+        "minutes": "95–125",
+        "blocks": {
+          "Writing": "SB p.35 Reading 2a–b, Writing Skills 3a–c, Writing 4a–d — plan, write and check a complete four-paragraph email",
+          "Grammar": "SB p.31 Grammar 4e–g — pronunciation/adverb position; apply already/yet in own sentences without repeating completed items"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 3 Review and Extension",
+        "topic": "review grammar, vocabulary and wordpower",
+        "minutes": "90–120",
+        "blocks": {
+          "Review": "SB pp.36–37 — visible Grammar, Vocabulary, Wordpower and Review your progress. Unit Progress Test is not assigned."
+        }
+      }
+    },
+    "4": {
+      "Пн": {
+        "lesson": "4A–4B",
+        "topic": "clothes and appearance; future arrangements; will / shall",
+        "blocks": {
+          "Grammar": "SB p.38 Grammar 3a–f; p.40 Grammar 2a–d — Present Continuous, be going to, will/won’t/shall (track 04.05 where shown)",
+          "Vocabulary": "SB p.38 Vocabulary 1a–b — clothes and appearance"
+        }
+      },
+      "Вт": {
+        "lesson": "4A–4B",
+        "topic": "plans and a day in the city",
+        "blocks": {
+          "Listening": "SB p.38 Listening 2a–d (track 04.03); p.40 Listening 1a–d (04.06)",
+          "Speaking": "SB p.39 Speaking 5a–b — plan and describe future events"
+        }
+      },
+      "Ср": {
+        "lesson": "4A–4B",
+        "topic": "Life in Numbers; will / won’t / shall",
+        "blocks": {
+          "Reading": "SB p.39 Reading 4a–d — Life in Numbers",
+          "Grammar": "SB p.40 Pronunciation 2e–g (tracks 04.10–04.11); do not repeat Grammar 2a–d from Monday"
+        }
+      },
+      "Чт": {
+        "lesson": "4B–4C",
+        "topic": "places in a city; making arrangements",
+        "minutes": "105–130",
+        "blocks": {
+          "Listening": "SB p.41 Listening 3a–e (tracks 04.12–04.14); p.42 Listening 1a–c (04.15); p.42 Conversation Skills 3a–c (04.18); p.43 Listening 4a–c (04.19) and Pronunciation 5a–c (04.20–04.22)",
+          "Vocabulary": "SB p.41 Vocabulary 4a–e — adjectives for places",
+          "Speaking": "SB p.41 Speaking 5a–c — plan a day in a city; p.42 Useful Language 2a–c (04.16–04.17). Back-of-book Communication task is excluded."
+        }
+      },
+      "Пт": {
+        "lesson": "4C–4D",
+        "topic": "write an invitation and a reply",
+        "blocks": {
+          "Writing": "SB p.44 Speaking and Listening 1a–f; Reading 2a–b; p.45 Writing Skills 3a–d and Writing 4a–c — complete preparation, then write and check an invitation and reply",
+          "Grammar": "Самостоятельно: примени в письме формы вопросов и договорённостей, изученные по SB p.42 Useful Language 2a–c (tracks 04.16–04.17); упражнение не повторяй"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 4 Review and Extension",
+        "topic": "review grammar, vocabulary and wordpower",
+        "minutes": "90–120",
+        "blocks": {
+          "Review": "SB pp.46–47 — visible Grammar, Vocabulary, Wordpower and Review your progress. Unit Progress Test is not assigned."
+        }
+      }
+    },
+    "5": {
+      "Пн": {
+        "lesson": "5A",
+        "topic": "jobs and careers; must / have to / can",
+        "minutes": "95–120",
+        "blocks": {
+          "Grammar": "SB p.49 Grammar 4a–e — must, have to and can",
+          "Vocabulary": "SB p.48 Vocabulary 1a–d; Reading 2a–d — jobs and The Coolest Jobs"
+        }
+      },
+      "Вт": {
+        "lesson": "5A–5B",
+        "topic": "career choices; forecasts about work",
+        "blocks": {
+          "Listening": "SB p.49 Listening 3a–b (track 05.03); p.50 Listening 2a–b (05.07)",
+          "Speaking": "SB p.49 Speaking 3c — discuss a suitable job; p.50 Speaking 1a–c and respond to the forecasts; p.51 Speaking 6a–c — explain reasons and choices"
+        }
+      },
+      "Ср": {
+        "lesson": "5B",
+        "topic": "Planning a Safe Future Career; will / might",
+        "minutes": "95–120",
+        "blocks": {
+          "Reading": "SB p.51 Reading 5a–c — discuss predictions, read Planning a Safe Future Career and check ideas; Vocabulary 4a–e is assigned Tuesday",
+          "Grammar": "SB p.50 Grammar 3a–c — will/might predictions and positive responses"
+        }
+      },
+      "Чт": {
+        "lesson": "5B–5C",
+        "topic": "future jobs; offers, suggestions and planning an event",
+        "blocks": {
+          "Listening": "SB p.52 Listening 1a–c (track/video 05.13), Conversation Skills 2a–c (05.13–05.14), Listening 3a (05.15); p.51 Pronunciation 4c–e (tracks 05.11–05.12)",
+          "Vocabulary": "SB p.51 Vocabulary 4a–e — job names and /ʃ/ pronunciation; p.53 Useful Language 4a–c (05.16) — offers and suggestions",
+          "Speaking": "SB p.53 Pronunciation 5a–c (05.17); Speaking 6a–c — plan an event using the printed prompt"
+        }
+      },
+      "Пт": {
+        "lesson": "5D",
+        "topic": "write a job application",
+        "minutes": "95–125",
+        "blocks": {
+          "Writing": "SB p.54 Speaking and Listening 1a–f (track 05.18), Reading 2; p.55 Writing Skills 3a–d and Writing 4a–c — write a complete job application",
+          "Grammar": "Самостоятельно: примени в заявке модальные формы, изученные по SB p.49 Grammar 4a–e; исходное упражнение не повторяй"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 5 Review and Extension",
+        "topic": "review grammar, vocabulary and wordpower",
+        "minutes": "90–120",
+        "blocks": {
+          "Review": "SB pp.56–57 — visible Grammar, Vocabulary, Wordpower and Review your progress. Unit Progress Test is not assigned."
+        }
+      }
+    },
+    "6": {
+      "Пн": {
+        "lesson": "6A–6B",
+        "topic": "advice; imperative and should; verb + preposition",
+        "minutes": "95–115",
+        "blocks": {
+          "Grammar": "SB p.58 Grammar 2a–f — imperative / should; use the pronunciation items where shown",
+          "Vocabulary": "SB p.59 Vocabulary 3a–e (track 06.05) — verbs with dependent prepositions; SB p.60 Vocabulary 1a–c — adjectives for experiences"
+        }
+      },
+      "Вт": {
+        "lesson": "6B",
+        "topic": "Sharks Saved My Life; telling an experience",
+        "minutes": "95–120",
+        "blocks": {
+          "Listening": "SB p.60 Reading and Listening 2f–h (track 06.08); p.61 Listening 4a–d (06.11)",
+          "Speaking": "SB p.61 Speaking 5a–c — tell an experience using notes from the listening"
+        }
+      },
+      "Ср": {
+        "lesson": "6A–6B",
+        "topic": "everyday problems; to + infinitive",
+        "minutes": "90–115",
+        "blocks": {
+          "Reading": "SB p.58 Reading 1a–e — How to Deal with Life’s Little Problems; p.60 Reading component 2a–e — Sharks Saved My Life",
+          "Grammar": "SB p.61 Grammar 3a–g (track 06.09) — uses of to + infinitive"
+        }
+      },
+      "Чт": {
+        "lesson": "6C",
+        "topic": "asking for and giving advice",
+        "minutes": "95–125",
+        "blocks": {
+          "Listening": "SB p.62 Listening 1a–c (track/video 06.12); Conversation Skills 2a–d (06.12–06.13); Listening 3a–c (06.14); Pronunciation 4a–d (06.15); p.63 Useful Language 5a–d (06.16–06.17), Listening 6a–b (06.18)",
+          "Vocabulary": "Use the advice phrases from SB p.63 Useful Language 5a–d in the conversation; no additional word list is assigned",
+          "Speaking": "SB p.63 Speaking 7a–d — describe a situation and give/respond to advice using the prompts printed on the page"
+        }
+      },
+      "Пт": {
+        "lesson": "6D",
+        "topic": "write a letter giving advice",
+        "minutes": "105–135",
+        "blocks": {
+          "Writing": "SB p.64 Listening and Speaking 1a–e; Reading 2a–c; p.65 Writing Skills 3a–d and Writing 4a–d — complete the preparation, then plan and write a complete advice letter",
+          "Grammar": "Apply should/shouldn’t and to + infinitive in the letter; underline examples and check them without repeating earlier exercises"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 6 Review and Extension",
+        "topic": "review grammar, vocabulary and wordpower",
+        "minutes": "90–120",
+        "blocks": {
+          "Review": "SB pp.66–67 — visible Grammar, Vocabulary, Wordpower and Review your progress. Unit Progress Test is not assigned."
+        }
+      }
+    },
+    "7": {
+      "Пн": {
+        "lesson": "7A–7B",
+        "topic": "comparatives/superlatives; health and get collocations",
+        "blocks": {
+          "Grammar": "SB p.68 ex.2 — comparatives and superlatives",
+          "Vocabulary": "SB p.69 ex.4 — get collocations; p.71 ex.2 — health collocations"
+        }
+      },
+      "Вт": {
+        "lesson": "7A + 7C",
+        "topic": "life in a new city; health and symptoms",
+        "blocks": {
+          "Listening": "SB p.69 ex.3 (track 07.03); p.72 ex.2 (07.10) and ex.4 (07.12)",
+          "Speaking": "SB p.69 ex.5; p.73 ex.8"
+        }
+      },
+      "Ср": {
+        "lesson": "7A–7B",
+        "topic": "life changes, health and lifestyle",
+        "blocks": {
+          "Reading": "SB p.68 ex.1; p.70 ex.1",
+          "Grammar": "SB p.71 ex.3 — used to"
+        }
+      },
+      "Чт": {
+        "lesson": "7C",
+        "topic": "at the doctor’s; describing symptoms; concern and relief",
+        "blocks": {
+          "Listening": "SB p.73 ex.6 (tracks 07.14–07.15)",
+          "Vocabulary": "SB p.72 ex.1 — at the doctor’s; p.72 ex.3 — describing symptoms",
+          "Speaking": "SB p.73 ex.5, 7 — conversation skills and question intonation"
+        }
+      },
+      "Пт": {
+        "lesson": "7D",
+        "topic": "a blog article about a difficult change or achievement",
+        "blocks": {
+          "Writing": "SB pp.74–75 ex.1–4 — listening/reading preparation, time linkers, notes and a complete blog article",
+          "Grammar": "Применить временные связки из SB p.75 ex.3–4 при редактировании статьи"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 7 Review",
+        "topic": "review and extension",
+        "blocks": {
+          "Review": "SB pp.76–77 — все видимые упражнения Grammar и Vocabulary и самооценка Review your progress"
+        }
+      }
+    },
+    "8": {
+      "Пн": {
+        "lesson": "8A",
+        "topic": "art, music and literature; passive voice",
+        "blocks": {
+          "Grammar": "SB p.79 ex.3 — passive, present and past simple",
+          "Vocabulary": "SB p.78 ex.1 — art, music and literature"
+        }
+      },
+      "Вт": {
+        "lesson": "8A–8B",
+        "topic": "books, art and sport",
+        "blocks": {
+          "Listening": "SB p.80 ex.1c–f — radio competition listening",
+          "Speaking": "SB p.79 ex.4; p.80 ex.1a–b, g"
+        }
+      },
+      "Ср": {
+        "lesson": "8A–8B",
+        "topic": "popular art and present perfect with for/since",
+        "blocks": {
+          "Reading": "SB p.78 ex.2 — Six of the Best",
+          "Grammar": "SB p.81 ex.2a–f — present perfect with for and since"
+        }
+      },
+      "Чт": {
+        "lesson": "8B–8C",
+        "topic": "sports and leisure; apologies and excuses",
+        "blocks": {
+          "Listening": "SB pp.82–83 ex.1 and 4 — listening/video and follow-up questions",
+          "Vocabulary": "SB p.81 ex.3 — sports and leisure activities",
+          "Speaking": "SB p.83 ex.3 and 5 — intonation and role-play; complete the Useful Language work on p.82"
+        }
+      },
+      "Пт": {
+        "lesson": "8D",
+        "topic": "write an online book review",
+        "blocks": {
+          "Writing": "SB pp.84–85 ex.1–4 — story preparation, reading reviews, linking with although/however, then write and check a full review",
+          "Grammar": "Применить although/however из SB p.85 ex.3 при редактировании отзыва"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 8 Review",
+        "topic": "review and extension",
+        "blocks": {
+          "Review": "SB pp.86–87 — все видимые упражнения Review and Extension и самооценка Review your progress"
+        }
+      }
+    },
+    "9": {
+      "Пн": {
+        "lesson": "9A",
+        "topic": "degree subjects; education collocations; first conditional",
+        "blocks": {
+          "Grammar": "SB p.89 ex.5a–b, 5d–e (track 09.04 and pronunciation 09.06) — first conditional",
+          "Vocabulary": "SB p.88 ex.1a–c — degree subjects; p.89 ex.3a — education collocations"
+        }
+      },
+      "Вт": {
+        "lesson": "9A–9B",
+        "topic": "study habits; celebrity lives; speaking about experiences",
+        "blocks": {
+          "Listening": "SB p.89 ex.4a–b (track 09.03); p.90 ex.1c–d (track 09.07)",
+          "Speaking": "SB p.89 ex.4c, 5f–g and 6a–b — discuss study habits and future plans; p.90 ex.1a–b, 1e — discuss online learning"
+        }
+      },
+      "Ср": {
+        "lesson": "9B",
+        "topic": "The Not-So-Easy Lives of Celebrities; verb patterns",
+        "blocks": {
+          "Reading": "SB pp.90–91 ex.2a–f — read the celebrity profiles, compare information and answer the questions",
+          "Grammar": "SB p.91 ex.3a–b — verb patterns"
+        }
+      },
+      "Чт": {
+        "lesson": "9B–9C",
+        "topic": "verbs followed by to + infinitive / -ing; telephone calls",
+        "blocks": {
+          "Listening": "SB p.92 ex.1b–c (track 09.10), ex.3a–b (09.12), Useful Language ex.2a (09.11) and ex.4a–b (09.13–09.14); p.93 Conversation Skills 5a–b (09.15), Pronunciation 6a–b (09.16)",
+          "Vocabulary": "SB p.91 ex.4a–b — verbs followed by to + infinitive / verb + -ing; do not repeat p.89 ex.3a",
+          "Speaking": "SB p.91 Speaking 5a–b — discuss topics using verb patterns; p.92 Useful Language 2b–d — practise caller/receiver/colleague roles; p.93 Speaking 7a–b — telephone role-play using the printed situations"
+        }
+      },
+      "Пт": {
+        "lesson": "9D",
+        "topic": "write an online student profile; avoid repetition",
+        "blocks": {
+          "Writing": "SB p.94 Listening and Speaking 1a–e (track 09.17), Reading 2a–b and profiles; p.95 Writing Skills 3a–d and Writing 4a–c — plan, write and exchange a complete student profile",
+          "Grammar": "Apply pronouns and avoiding-repetition examples from SB p.95 ex.3a–d when editing the profile; do not repeat those exercises"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 9 Review",
+        "topic": "review and extension",
+        "blocks": {
+          "Review": "SB pp.96–97 — все видимые упражнения Review and Extension и самооценка Review your progress"
+        }
+      }
+    },
+    "10": {
+      "Пн": {
+        "lesson": "10A",
+        "topic": "moral dilemmas; second conditional; multi-word verbs",
+        "blocks": {
+          "Grammar": "SB p.99 ex.3 — second conditional",
+          "Vocabulary": "SB p.99 ex.4 — multi-word verbs"
+        }
+      },
+      "Вт": {
+        "lesson": "10A",
+        "topic": "moral dilemmas and doing the right thing",
+        "blocks": {
+          "Listening": "SB p.98 ex.2 — podcast, track 10.01",
+          "Speaking": "SB p.98 ex.1 — discuss and rank the situations"
+        }
+      },
+      "Ср": {
+        "lesson": "10B",
+        "topic": "complaints and quantifiers",
+        "blocks": {
+          "Reading": "SB p.100 ex.1 — reading about complaints",
+          "Grammar": "SB p.100 ex.2 — too/not enough; complete the visible practice"
+        }
+      },
+      "Чт": {
+        "lesson": "10B–10C",
+        "topic": "complaints, returns and polite language",
+        "blocks": {
+          "Listening": "SB p.101 ex.3; pp.102–103 — Listening tasks in Everyday English",
+          "Vocabulary": "SB p.101 ex.4 — noun formation",
+          "Speaking": "SB p.101 ex.5; p.103 ex.5–6 — conversation skills and role-play; include Useful Language on p.102"
+        }
+      },
+      "Пт": {
+        "lesson": "10C–10D",
+        "topic": "returning goods; write an apology email",
+        "blocks": {
+          "Writing": "SB p.103 ex.3–4 pronunciation/conversation work; pp.104–105 ex.1–4 — listening/reading preparation, formal and informal language, then write a full apology email",
+          "Grammar": "Применить formal/informal language из SB p.105 ex.3 при вычитке письма"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 10 Review",
+        "topic": "review and extension",
+        "blocks": {
+          "Review": "SB pp.106–107 — все видимые упражнения Review and Extension и самооценка Review your progress"
+        }
+      }
+    },
+    "11": {
+      "Пн": {
+        "lesson": "11A",
+        "topic": "compound nouns; defining relative clauses",
+        "blocks": {
+          "Grammar": "SB p.109 ex.3 — defining relative clauses",
+          "Vocabulary": "SB p.108 ex.1 — compound nouns"
+        }
+      },
+      "Вт": {
+        "lesson": "11A",
+        "topic": "science-fiction stories and predicted inventions",
+        "blocks": {
+          "Listening": "SB pp.108–109 ex.2d–e — podcast From Fiction to Fact, track 11.02, and true/false statements",
+          "Speaking": "SB p.109 ex.2f — discuss usefulness and future inventions"
+        }
+      },
+      "Ср": {
+        "lesson": "11B",
+        "topic": "lucky discoveries",
+        "blocks": {
+          "Reading": "SB p.110 ex.1 — all visible reading, story questions and discussion",
+          "Grammar": "Самостоятельно: составь свои примеры с defining relative clauses по уже изученному правилу; это применение, не повтор SB p.109 ex.3 и не упражнение Cambridge Empower"
+        }
+      },
+      "Чт": {
+        "lesson": "11A — повтор",
+        "topic": "technology and inventions",
+        "blocks": {
+          "Listening": "Дополнительная практика, не Student’s Book: самостоятельно выбери одно упражнение в British Council B1 Listening, связанное с темой technology/inventions. Сайт не подбирает конкретную страницу. Не повторяй SB pp.108–109 track 11.02",
+          "Vocabulary": "Повтори собственные записи о compound nouns, изученные по SB p.108 ex.1; упражнение повторно не выполняй, новые слова с невидимых страниц не добавляй",
+          "Speaking": "SB p.109 ex.4a–c — discuss new technology and pictured inventions"
+        }
+      },
+      "Пт": {
+        "lesson": "B2 Foundation · самостоятельная практика",
+        "topic": "technology and inventions",
+        "blocks": {
+          "Writing": "Самостоятельно: напиши короткий текст о полезном изобретении по теме Unit 11; это не задание Cambridge Empower и сайт его не проверяет",
+          "Grammar": "Самостоятельно: проверь свои relative clauses по заметкам к правилу SB p.109 ex.3; исходное упражнение повторно не выполняй, невидимые страницы не открывай"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 11 — повтор доступного материала",
+        "topic": "visible Student’s Book pages 108–110",
+        "blocks": {
+          "Review": "Самостоятельно: повтори только выполненные задания и записи по SB pp.108–110. Отдельный Unit Review или тест не назначен."
+        }
+      }
+    },
+    "12": {
+      "Пн": {
+        "lesson": "12A–12B",
+        "topic": "animals; past perfect; reported speech",
+        "blocks": {
+          "Grammar": "SB p.119 — Past perfect; p.120–121 — Reported speech: выполнить все видимые упражнения раздела",
+          "Vocabulary": "SB p.118 ex.1 — animals"
+        }
+      },
+      "Вт": {
+        "lesson": "12A–12B",
+        "topic": "animal stories and family stories",
+        "blocks": {
+          "Listening": "SB p.119 ex.4b (track 12.05); p.120 ex.1c–d (track 12.06)",
+          "Speaking": "SB p.119 ex.4a, c–d; p.120 ex.1e"
+        }
+      },
+      "Ср": {
+        "lesson": "12A–12B",
+        "topic": "Jambo’s Story; past perfect and reported speech",
+        "blocks": {
+          "Reading": "SB p.118 ex.2 — Jambo’s Story and all visible follow-up questions",
+          "Grammar": "Самостоятельно: составь собственные примеры с Past perfect и reported speech по изученным заметкам; не повторяй задания SB pp.119–121"
+        }
+      },
+      "Чт": {
+        "lesson": "12B–12C",
+        "topic": "personality; agreeing and disagreeing",
+        "blocks": {
+          "Listening": "SB p.122 ex.1c–e — clips 12.11–12.12",
+          "Vocabulary": "SB p.121 ex.3 — personality adjectives",
+          "Speaking": "SB p.121 ex.4; p.122 ex.1a–b, f; p.123 ex.3–4"
+        }
+      },
+      "Пт": {
+        "lesson": "12D",
+        "topic": "write a short story",
+        "blocks": {
+          "Writing": "SB pp.124–125 — Speaking and Listening, Reading, past-time linkers and a complete short story",
+          "Grammar": "Применить past perfect и time linkers из SB pp.119, 125 при вычитке истории"
+        }
+      },
+      "Сб": {
+        "lesson": "Unit 12 Review",
+        "topic": "review and extension",
+        "blocks": {
+          "Review": "SB pp.126–127 — все видимые упражнения Review and Extension и самооценка Review your progress"
+        }
+      }
+    }
+  }
+}

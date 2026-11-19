@@ -7,7 +7,7 @@
   const SAFETY_BACKUPS_KEY = 'dailyEnglishSafetyBackupsV1';
   const BUILD_KEY = 'dailyEnglishAppBuildV1';
   // Bump this value on every published app update. The previous local data is snapshotted before app scripts run.
-  const BUILD_VERSION = '2026-11-18.3';
+  const BUILD_VERSION = '2026-11-19.audit1';
   const MIGRATION_KEY = 'dailyEnglishMigrationVersion';
   const SESSION_KEY = 'dailyEnglishCloudSessionV1';
   const QUEUE_KEY = 'dailyEnglishOfflineQueueV1';
@@ -23,6 +23,33 @@
   const parse = (value, fallback) => { try { return value == null ? fallback : JSON.parse(value); } catch { return fallback; } };
   const stamp = () => new Date().toISOString();
   const localGet = key => { try { return localStorage.getItem(key); } catch { return null; } };
+  // Apply only this module's edits to the latest saved entity. A second tab
+  // can add words, marks or drafts while this module still holds an old copy.
+  function mergeChanges(base, edited, latest) {
+    if (JSON.stringify(edited) === JSON.stringify(base)) return latest;
+    if (JSON.stringify(latest) === JSON.stringify(base) || JSON.stringify(edited) === JSON.stringify(latest)) return edited;
+    const object = value => value && typeof value === 'object' && !Array.isArray(value);
+    if (Array.isArray(edited) && Array.isArray(latest)) {
+      const before = Array.isArray(base) ? base : [];
+      const key = value => object(value) && value.id != null ? `id:${value.id}` : JSON.stringify(value);
+      const b = new Map(before.map(v => [key(v), v]));
+      const e = new Map(edited.map(v => [key(v), v]));
+      const l = new Map(latest.map(v => [key(v), v]));
+      return [...new Set([...l.keys(), ...e.keys()])].flatMap(k => {
+        if (b.has(k) && !e.has(k)) return [];
+        if (b.has(k) && !l.has(k) && JSON.stringify(e.get(k)) === JSON.stringify(b.get(k))) return [];
+        return [e.has(k) ? mergeChanges(b.get(k), e.get(k), l.get(k)) : l.get(k)];
+      });
+    }
+    if (object(edited) && object(latest)) {
+      const before = object(base) ? base : {};
+      return Object.fromEntries([...new Set([...Object.keys(before), ...Object.keys(edited), ...Object.keys(latest)])].flatMap(k => {
+        const value = mergeChanges(before[k], edited[k], latest[k]);
+        return value === undefined ? [] : [[k, value]];
+      }));
+    }
+    return edited;
+  }
   function currentLocalData() { return Object.fromEntries(KEYS.map(key => [key, localGet(key)]).filter(([, value]) => value !== null)); }
   function saveSafetySnapshot(source, data, details = {}) {
     const entry = { version: 1, appBuild: BUILD_VERSION, createdAt: stamp(), source, details, data };
@@ -336,6 +363,7 @@
   function subscribe(listener) { state.listeners.add(listener); listener(getState()); return () => state.listeners.delete(listener); }
   const api = {
     getItem: localGet,
+    mergeChanges,
     setItem: setLocal,
     // Persist immediately so refresh/close cannot discard the last keystrokes.
     // scheduleSync already debounces network writes independently.

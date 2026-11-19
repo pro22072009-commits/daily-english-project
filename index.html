@@ -54,7 +54,7 @@ html,body{background:var(--paper);color:var(--ink)}body{background:radial-gradie
 <div class="toast" id="toast" role="status"></div>
 <script src="./empower-b1-wordlist.js"></script>
 <script src="./sourced-vocabulary.js"></script>
-<script src="./github-config.js"></script><script src="./storage-service.js"></script>
+<script src="./github-config.js"></script><script src="./storage-service.js?build=2026-11-19.audit1"></script>
 <script src="account-ui.js"></script>
 <script>
 // Cloud data arrives asynchronously. Rebuild the screen once after a safe
@@ -69,8 +69,8 @@ function updateBands(){const grid=document.getElementById('scoregrid');grid.inne
 function updateOverall(){let n=Number(overall()),base=4,goal=6.5,progress=Math.max(0,Math.min(100,Math.round((n-base)/(goal-base)*100)));document.getElementById('currentTarget').textContent=n.toFixed(1)+' / 9.0';document.getElementById('goalProgress').style.width=progress+'%';document.getElementById('progressText').textContent=progress+'% пути';document.getElementById('gapText').textContent=n>=goal?'Цель достигнута по текущей estimated оценке. Продолжай проверять стабильность на timed practice.':'Осталось около '+(goal-n).toFixed(1)+' band до целевого overall. Это оценка-прогноз, не гарантия результата.'}
 document.getElementById('deadline').textContent='Финишная цель · апрель 2027';const phases=[['Сейчас · ноябрь 2026','A2/B1 foundation','Основная грамматика, частотная лексика, простые связные ответы.'],['Декабрь · январь','B1 structured','Абзацы, пересказ, причины и примеры; Academic vocabulary по темам.'],['Февраль 2027','B1+ → B2','Все форматы IELTS Academic, сложнее тексты и синтаксис, timed practice.'],['Март · апрель','IELTS 6.5 practice','Полные секции, работа над ошибками, устойчивый результат на пробниках.']];document.getElementById('roadmap').innerHTML=phases.map((p,i)=>`<div class="phase ${i===0?'active':''}"><small>${p[0]}</small><b>${p[1]}</b><span>${p[2]}</span></div>`).join('');
 const dow=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];let today=new Date(),monday=new Date(today);monday.setDate(today.getDate()-((today.getDay()+6)%7));document.getElementById('week').innerHTML=dow.map((d,i)=>{let dt=new Date(monday);dt.setDate(dt.getDate()+i);let key=dt.toLocaleDateString('sv-SE');return `<div class="day"><span>${d}</span><div class="dot">${dt.getDate()}</div></div>`}).join('');updateBands();
-function showView(name){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+name));document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===name));window.scrollTo({top:0,behavior:'smooth'})}document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
-function toast(t){let el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2100)}function speak(t){if(!('speechSynthesis'in window)){toast('Озвучивание недоступно в этом браузере');return}speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.88;speechSynthesis.speak(u)}function wordCount(t){return (t.trim().match(/\S+/g)||[]).length}function save(k,v,msg){saved[k]=v;storageService.setItemDebounced(draftKey,JSON.stringify(saved),400);if(msg)toast(msg)}
+function showView(name){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+name));document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===name));window.scrollTo({top:0,behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth')})}document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+function toast(t){let el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2100)}function speak(t){if(!('speechSynthesis'in window)){toast('Озвучивание недоступно в этом браузере');return}speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.88;speechSynthesis.speak(u)}function wordCount(t){return (t.trim().match(/\S+/g)||[]).length}function save(k,v,msg){let latestDrafts={};try{latestDrafts=JSON.parse(storageService.getItem(draftKey)||'{}')}catch{};saved={...latestDrafts,[k]:v};storageService.setItemDebounced(draftKey,JSON.stringify(saved),400);if(msg)toast(msg)}
 // Academic Reading: question types and scaffolded progression.
 const readingTypes=['Multiple Choice','True / False / Not Given','Yes / No / Not Given','Matching Headings','Matching Information','Matching Features','Sentence Completion','Summary Completion','Note Completion','Table Completion','Flow-chart Completion'];const readingTips={'Multiple Choice':'Выбери вариант, который точно подтверждается текстом. Отсекай ответы с лишним обобщением.','True / False / Not Given':'True = совпадает с текстом; False = текст прямо противоречит; Not Given = информации недостаточно.','Yes / No / Not Given':'Определи позицию или утверждение автора: согласие, противоречие или отсутствие мнения.','Matching Headings':'Найди главную мысль абзаца, а не повторяющееся слово.','Matching Information':'Ищи абзац с конкретным фактом, примером или объяснением.','Matching Features':'Сопоставь человека, место или теорию с указанной характеристикой.','Sentence Completion':'Следи за лимитом слов и грамматикой пропуска; ответ обычно берётся из текста.','Summary Completion':'Найди перефразированный фрагмент и проверь, подходит ли слово по смыслу и форме.','Note Completion':'Пойми структуру заметок и заполняй только существенную информацию.','Table Completion':'Сравни строки и заголовки колонок, затем проверь единицы измерения.','Flow-chart Completion':'Проследи последовательность шагов и причинно-следственную связь.'};const rt=document.getElementById('readingType');rt.innerHTML=readingTypes.map((x,i)=>`<option value="${x}" ${i===1?'selected':''}>${x}</option>`).join('');const qdata={'Multiple Choice':['According to the passage, why do planners choose local tree species?',['They need less regular care','They are better suited to local conditions','They grow without water'],1],'True / False / Not Given':['The tree-covered street was cooler in the afternoon.',['TRUE','FALSE','NOT GIVEN'],0],'Yes / No / Not Given':['The writer believes every city should plant the same species of tree.',['YES','NO','NOT GIVEN'],2],'Matching Headings':['Which heading best matches paragraph 2?',['The cost of removing old trees','Challenges and planning for urban trees','A history of city parks'],1],'Matching Information':['Which paragraph mentions asking local people for advice?',['Paragraph 1','Paragraph 2','Both paragraphs'],1],'Matching Features':['Who selected suitable tree species?',['Researchers','Residents','City planners'],2],'Sentence Completion':['Young trees may not survive without enough ___.',['space','water','sunlight'],1],'Summary Completion':['City planners select species that grow well in local ___.',['conditions','streets','buildings'],0],'Note Completion':['Tree care: young trees need enough ___.',['water','shade','space'],0],'Table Completion':['Afternoon street temperature: street with more trees was ___.',['cooler','warmer','unchanged'],0],'Flow-chart Completion':['Choose a species → plant it → provide regular ___.',['care','shade','research'],0]};function renderReading(){let t=rt.value,d=qdata[t];document.getElementById('readingTip').innerHTML='<strong>'+t+'.</strong> '+readingTips[t];document.getElementById('readingChips').innerHTML=readingTypes.map(x=>`<button class="typechip ${x===t?'selected':''}" data-rtype="${x}">${x}</button>`).join('');document.querySelectorAll('[data-rtype]').forEach(b=>b.onclick=()=>{rt.value=b.dataset.rtype;renderReading()});document.getElementById('readingQuestion').textContent=d[0];document.getElementById('readingAnswers').innerHTML=d[1].map((x,i)=>`<button class="answer" data-i="${i}">${x}</button>`).join('');document.getElementById('readingFeedback').textContent='';document.querySelectorAll('#readingAnswers .answer').forEach(b=>b.onclick=()=>{let ok=Number(b.dataset.i)===d[2];document.querySelectorAll('#readingAnswers .answer').forEach(x=>x.disabled=true);b.classList.add(ok?'correct':'wrong');document.getElementById('readingFeedback').textContent=ok?'Правильно. '+readingTips[t]:'Перечитай соответствующий фрагмент и найди подтверждение.';document.getElementById('readingFeedback').style.color=ok?'var(--green)':'#a74434';save('readingLast',t)})}rt.onchange=renderReading;document.getElementById('readingLevel').onchange=e=>document.querySelector('#view-reading .passage').dataset.level=e.target.selectedIndex;document.getElementById('nextReading').onclick=()=>{let i=(rt.selectedIndex+1)%readingTypes.length;rt.selectedIndex=i;renderReading()};renderReading();
 // Academic Writing Task 1.
@@ -127,6 +127,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   const skillNames = ['Listening', 'Reading', 'Writing', 'Speaking'];
   let data;
   try { data = JSON.parse(storageService.getItem(KEY) || '{}'); } catch { data = {}; }
+  let persistedData = JSON.parse(JSON.stringify(data));
   data.stats ||= { completedExercises: 0, grammarCorrect: 0, grammarAttempts: 0, vocabulary: {}, mocks: [], streak: 0, lastActive: '', plans: {} };
   data.stats.vocabulary ||= {};
   data.stats.mocks ||= [];
@@ -137,16 +138,10 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   function persist() {
     let latest = {};
     try { latest = JSON.parse(storageService.getItem(KEY) || '{}'); } catch { latest = {}; }
-    const latestStats = latest.stats || {};
-    const localStats = data.stats || {};
-    data = { ...latest, ...data,
-      b2Foundation: latest.b2Foundation || data.b2Foundation,
-      stats: { ...latestStats, ...localStats,
-        plans: { ...(latestStats.plans || {}), ...(localStats.plans || {}) },
-        activityDates: { ...(latestStats.activityDates || {}), ...(localStats.activityDates || {}) }
-      }
-    };
+    data = storageService.mergeChanges(persistedData, data, latest);
+    data.b2Foundation = latest.b2Foundation || data.b2Foundation;
     storageService.setItem(KEY, JSON.stringify(data));
+    persistedData = JSON.parse(JSON.stringify(data));
   }
   function dateKey(date = new Date()) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
   function dayNumber() { const d = new Date(); return Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(d.getFullYear(), 0, 1)) / DAY); }
@@ -875,6 +870,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   const today = new Date();
   const isoDate = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const audioButton = term => `<button type="button" class="sys-btn" data-b2-speak="${escapeHtml(term)}" title="Голос устройства · en-GB">🔊 Произнести</button>`;
   const empowerB1Words = Array.isArray(window.EMPOWER_B1_WORDS) ? window.EMPOWER_B1_WORDS : [];
   const sourcedVocabulary = Array.isArray(window.DAILY_SOURCE_WORDS) ? window.DAILY_SOURCE_WORDS : [];
   const normalizeTerm = value => String(value || '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase();
@@ -960,9 +956,11 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   const cambridgeEntryUrl = term => `https://dictionary.cambridge.org/dictionary/english-russian/${encodeURIComponent(String(term || '').trim().toLowerCase().replace(/\s+/g, '_'))}`;
   const readData = () => { try { return JSON.parse(storageService.getItem(KEY) || '{}'); } catch { return {}; } };
   const data = readData();
+  let persistedSystem = JSON.parse(JSON.stringify(data));
   data.studyMode ||= 'b2';
   data.b2Foundation ||= {};
   const b2 = data.b2Foundation;
+  let persistedB2 = JSON.parse(JSON.stringify(b2));
   b2.course ||= { level: 'A2/B1', book: 'Cambridge Empower', unit: '', lesson: '', topic: '', exerciseRef: '', grammarFocus: '' };
   b2.completed ||= {};
   b2.weeklyResults ||= {};
@@ -990,6 +988,9 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   ];
   function save() {
     const latest = readData();
+    const mergedB2 = JSON.parse(JSON.stringify(storageService.mergeChanges(persistedB2, b2, latest.b2Foundation || {})));
+    for (const key of Object.keys(b2)) delete b2[key];
+    Object.assign(b2, mergedB2);
     const latestStats = latest.stats || {};
     const localStats = data.stats || {};
     const mergedLastActive = [latestStats.lastActive, localStats.lastActive].filter(Boolean).sort().at(-1) || '';
@@ -999,10 +1000,13 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       plans: { ...(latestStats.plans || {}), ...(localStats.plans || {}) },
       activityDates: { ...(latestStats.activityDates || {}), ...(localStats.activityDates || {}) }
     };
-    Object.assign(data, { ...latest, ...data });
+    mergedStats.completedExercises = Math.max(0, (Number(latestStats.completedExercises) || 0) + (Number(localStats.completedExercises) || 0) - (Number(persistedSystem.stats?.completedExercises) || 0));
+    Object.assign(data, storageService.mergeChanges(persistedSystem, data, latest));
     data.stats = mergedStats;
     data.b2Foundation = b2;
     storageService.setItem(KEY, JSON.stringify(data));
+    persistedB2 = JSON.parse(JSON.stringify(b2));
+    persistedSystem = JSON.parse(JSON.stringify(data));
   }
   function ensureOxfordWordsForDate(targetDate) {
     const pool = Array.isArray(b2.oxfordWords) ? b2.oxfordWords : [];
@@ -1561,11 +1565,11 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       const selectedWords = vocabularyAssignments.get(date) || [];
       const rows = selectedWords.map(({ entry, index, sourceLabel }) => {
         const alreadyAdded = b2.vocabulary.some(item => normalizeTerm(item.term) === normalizeTerm(entry.term));
-        return `<article class="b2-daily-word"><div><strong>${escapeHtml(entry.term)}</strong><small>${escapeHtml(sourceLabel)} · Unit ${entry.unit} · p. ${escapeHtml(entry.page)} · ${escapeHtml(entry.pos)}</small></div><div class="b2-daily-word-actions"><a class="sys-btn" href="${cambridgeEntryUrl(entry.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-scheduled-word="${index}" ${alreadyAdded ? 'disabled' : ''}>${alreadyAdded ? 'Уже в моих словах ✓' : 'Добавить на повторение'}</button></div></article>`;
+        return `<article class="b2-daily-word"><div><strong>${escapeHtml(entry.term)}</strong><small>${escapeHtml(sourceLabel)} · Unit ${entry.unit} · p. ${escapeHtml(entry.page)} · ${escapeHtml(entry.pos)}</small></div><div class="b2-daily-word-actions">${audioButton(entry.term)}<a class="sys-btn" href="${cambridgeEntryUrl(entry.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-scheduled-word="${index}" ${alreadyAdded ? 'disabled' : ''}>${alreadyAdded ? 'Уже в моих словах ✓' : 'Добавить на повторение'}</button></div></article>`;
       }).join('');
       const shortage = selectedWords.length < 10 ? `<p class="b2-incomplete-note"><strong>Не хватает ${10 - selectedWords.length} новых слов.</strong> В загруженном словаре Empower B1 больше нет неиспользованных слов с подтверждённых страниц курса. Не подменяю их повторными или словами из исключённых приложений.</p>` : '';
       const assignmentTitle = assignment ? `Unit ${unit} · Lesson ${escapeHtml(assignment.lesson)}` : `Unit ${unit} · vocabulary practice`;
-      return `<section class="b2-extra b2-daily-words ${compact ? 'compact' : ''}"><div class="b2-daily-words-head"><div><span class="b2-kicker">${escapeHtml(assignmentTitle)}</span><h3>Новые слова на день</h3></div><span class="b2-day-badge">${selectedWords.length} / 10</span></div><p class="system-sub">Подборка привязана к выбранной календарной дате. Слова со страниц текущего урока идут первыми; затем используются новые слова Unit и следующих Units. Уже назначенные в предыдущие дни слова не повторяются. Добавляй изученное на интервальное повторение.</p><div class="b2-daily-word-list">${rows || '<p class="system-sub">В словаре Empower B1 не осталось новых слов для назначения.</p>'}</div>${shortage}</section>`;
+      return `<section class="b2-extra b2-daily-words ${compact ? 'compact' : ''}"><div class="b2-daily-words-head"><div><span class="b2-kicker">${escapeHtml(assignmentTitle)}</span><h3>Новые слова на день</h3><p class="system-sub">${escapeHtml(heading)}</p></div><span class="b2-day-badge">${selectedWords.length} / 10</span></div><p class="system-sub">Подборка привязана к выбранной календарной дате. Слова со страниц текущего урока идут первыми; затем используются новые слова Unit и следующих Units. Уже назначенные в предыдущие дни слова не повторяются. Добавляй изученное на интервальное повторение.</p><div class="b2-daily-word-list">${rows || '<p class="system-sub">В словаре Empower B1 не осталось новых слов для назначения.</p>'}</div>${shortage}</section>`;
     };
     const todayCard = `<section class="b2-today-card"><div class="b2-today-title"><div><span class="b2-kicker">${selectedDay.name} · ${new Date(`${dayKey}T12:00:00`).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</span><h3>Что делать сегодня</h3></div><strong>${nDone}/${todayTaskList.length} действий выполнено</strong></div>${selectedDay.rest ? '<div class="b2-today-book"><strong>Rest Day — полный выходной.</strong> Обязательных заданий нет.</div>' : preparationWeek ? '<div class="b2-today-book"><strong>Подготовительная неделя.</strong> Unit 1 начинается в понедельник, 26 октября. Сегодня обязательных заданий нет.</div>' : unscheduledDay ? `<div class="b2-today-book"><strong>${dayKey === '2027-02-15' ? 'B2 Checkpoint · 15 февраля 2027' : 'Нет подтверждённых заданий на эту дату'}</strong><br>Новые упражнения не назначены. Проверь календарь и запиши фактические результаты в разделе B2 Checkpoint.</div>` : reviewOnlyWeek ? `<div class="b2-today-book"><strong>${escapeHtml(bufferWeek)}</strong><br>Новые упражнения не назначены. Выполненные занятия сохранены на фактических датах.</div>` : `<div class="b2-today-book"><b>План:</b> ${escapeHtml(selectedDay.name)} · ${expected} минут по текущей оценке<br><b>Unit ${currentUnit} · ${escapeHtml(unitTopic)}</b> · Student’s Book pp. ${unitPageStart}–${unitPageEnd}<br><b>Lesson:</b> ${escapeHtml(todayAssignment?.lesson || activePart?.lesson || 'не подтверждён')} · <b>Тема:</b> ${escapeHtml(todayAssignment?.topic || activePart?.topic || 'не подтверждена')}<br>${todayAssignment ? `<b>Действия по книге в порядке:</b><ol>${assignedBlocks}</ol>` : '<b>Точные упражнения на эту неделю:</b> не заданы в подтверждённом плане; смотри сохранённые записи Textbook Plan.'}<b>Выполнено / осталось:</b> ${nDone} / ${todayTaskList.length - nDone}<br><b>Срок Unit:</b> ${displayDate(unitPlan.start || unitWeek.start)}–${displayDate(unitPlan.end || unitWeek.end)} · ${unitStatusLabel[unitStatus(currentUnit, { start: unitPlan.start || unitWeek.start, end: unitPlan.end || unitWeek.end })]}</div>${gapNote}${saturdayTestNote}`}${plannedWeek.buffer && !preparationWeek ? `<p class="b2-extension-note"><strong>Гибкая неделя:</strong> ${escapeHtml(plannedWeek.buffer)}. Используй её для повторения пройденного; новые упражнения не назначены.</p>` : ''}${carried.length?`<p class="b2-extension-note"><strong>Перенесено с прошлой недели:</strong> ${carried.map(escapeHtml).join(' · ')}</p>`:''}</section>`;
     const calendarStartKey = roadmap[0].start;
@@ -1645,7 +1649,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     const testResult = b2.weeklyResults[weekKey] || {};
     const errorRows = b2.errors.slice(-5).reverse().map((err, i) => `<div class="b2-error ${err.resolved ? 'done' : ''}"><label><input type="checkbox" data-error-resolved="${b2.errors.length - 1 - i}" ${err.resolved ? 'checked' : ''}> ${escapeHtml(err.date || '')} · <strong>${escapeHtml(err.error)}</strong></label>${err.correction ? `<div>Исправление: ${escapeHtml(err.correction)}</div>` : ''}</div>`).join('') || '<p class="subtle">Ошибок пока нет. Добавляй только то, что действительно встретилось в уроках или твоих ответах.</p>';
     const dueVocabulary = b2.vocabulary.filter(item => item.nextReview && item.nextReview <= dayKey).sort((a,b) => a.nextReview.localeCompare(b.nextReview));
-    const vocabularyRows = dueVocabulary.slice(0, 12).map(item => `<article class="b2-vocab-card"><strong>${escapeHtml(item.term)}</strong>${item.definition ? `<div class="b2-vocab-meta"><b>Explanation in English:</b> ${escapeHtml(item.definition)}</div>` : ''}<div class="b2-vocab-meta"><b>Перевод на русский:</b> ${escapeHtml(item.meaning)} · шаг ${Math.min((item.stage || 0) + 1, reviewIntervals.length)} из ${reviewIntervals.length}</div>${item.pos ? `<div class="b2-vocab-meta">${escapeHtml(item.pos)}${item.pronunciation ? ` · /${escapeHtml(item.pronunciation)}/` : ''}</div>` : ''}${item.sourceRef ? `<div class="b2-vocab-meta">${escapeHtml(item.sourceRef)}</div>` : ''}${item.example ? `<div class="b2-vocab-meta">Пример: ${escapeHtml(item.example)}</div>` : ''}<div class="b2-card-actions"><a class="sys-btn" href="${cambridgeEntryUrl(item.term)}" target="_blank" rel="noopener noreferrer">Cambridge English–Russian ↗</a><button type="button" class="primary" data-vocab-review="${escapeHtml(item.id)}">Вспомнил(а) — следующее повторение</button><button type="button" data-vocab-again="${escapeHtml(item.id)}">Нужно повторить завтра</button></div></article>`).join('') || '<p class="subtle">Сегодня повторений нет. Новые слова появятся здесь сразу после добавления.</p>';
+    const vocabularyRows = dueVocabulary.slice(0, 12).map(item => `<article class="b2-vocab-card"><strong>${escapeHtml(item.term)}</strong>${item.definition ? `<div class="b2-vocab-meta"><b>Explanation in English:</b> ${escapeHtml(item.definition)}</div>` : ''}<div class="b2-vocab-meta"><b>Перевод на русский:</b> ${escapeHtml(item.meaning)} · шаг ${Math.min((item.stage || 0) + 1, reviewIntervals.length)} из ${reviewIntervals.length}</div>${item.pos ? `<div class="b2-vocab-meta">${escapeHtml(item.pos)}${item.pronunciation ? ` · /${escapeHtml(item.pronunciation)}/` : ''}</div>` : ''}${item.sourceRef ? `<div class="b2-vocab-meta">${escapeHtml(item.sourceRef)}</div>` : ''}${item.example ? `<div class="b2-vocab-meta">Пример: ${escapeHtml(item.example)}</div>` : ''}<div class="b2-card-actions">${audioButton(item.term)}<a class="sys-btn" href="${cambridgeEntryUrl(item.term)}" target="_blank" rel="noopener noreferrer">Cambridge English–Russian ↗</a><button type="button" class="primary" data-vocab-review="${escapeHtml(item.id)}">Вспомнил(а) — следующее повторение</button><button type="button" data-vocab-again="${escapeHtml(item.id)}">Нужно повторить завтра</button></div></article>`).join('') || '<p class="subtle">Сегодня повторений нет. Новые слова появятся здесь сразу после добавления.</p>';
     const recentVocabulary = b2.vocabulary.filter(item => item.nextReview && item.nextReview > dayKey).sort((a,b) => a.nextReview.localeCompare(b.nextReview)).slice(0, 5).map(item => `<div class="b2-vocab-card"><strong>${escapeHtml(item.term)}</strong><div class="b2-vocab-meta">Следующее повторение: ${displayShortDate(item.nextReview)}</div></div>`).join('');
     const skillPrompt = selectedDay.short === 'Вт' ? 'Сегодня после Speaking запиши короткую проверку ответа.' : selectedDay.short === 'Пт' ? 'Сегодня после Writing запиши короткую проверку текста.' : 'Проверку Speaking и Writing можно записать после реального ответа или текста.';
     const skillRows = b2.skillChecks.slice(-6).reverse().map(check => `<article class="b2-skill-card"><strong>${escapeHtml(check.type === 'speaking' ? 'Speaking' : 'Writing')} · ${escapeHtml(check.task || 'без названия')}</strong><div class="b2-skill-meta">${escapeHtml(check.date)} · ясность ${escapeHtml(check.clarity)}/5 · грамматика ${escapeHtml(check.grammar)}/5 · лексика ${escapeHtml(check.vocabulary)}/5</div>${check.note ? `<div class="b2-skill-meta">Наблюдение: ${escapeHtml(check.note)}</div>` : ''}${check.next ? `<div class="b2-skill-meta">Следующий шаг: ${escapeHtml(check.next)}</div>` : ''}</article>`).join('') || '<p class="subtle">Пока нет записей. Оценка остаётся твоей заметкой, сайт не выдаёт автоматическую оценку уровня.</p>';
@@ -1674,8 +1678,8 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     let vocabularyDaysRemaining = 0;
     for (let checkDate = new Date(`${dayKey}T12:00:00`); checkDate <= calendarEndDate; checkDate.setDate(checkDate.getDate() + 1)) if (checkDate.getDay() !== 0) vocabularyDaysRemaining++;
     const vocabularyCoverageNote = `В словаре сейчас ${eligibleVocabularyTermCount} уникальных слов с подтверждённых страниц Empower. Для 10 новых слов в каждый учебный день до 15 февраля нужно около ${vocabularyDaysRemaining * 10}; источник пока не покрывает весь срок. Слова не будут повторяться под видом новых — после исчерпания списка сайт покажет фактическое количество.`;
-    const oxfordDailyCardsHtml = oxfordDailyWords.map((item,index)=>{const alreadyAdded=b2.vocabulary.some(saved=>normalizeTerm(saved.term)===normalizeTerm(item.term));const isFiveThousand=String(item.source||'').includes('5000');const sourceUrl=isFiveThousand?OXFORD_5000_PDF_URL:OXFORD_3000_PDF_URL;return `<article class="b2-daily-word"><div><strong>${escapeHtml(item.term)}</strong><small>${isFiveThousand?'Oxford 5000':'Oxford 3000'} · ${escapeHtml(item.level)} · ${escapeHtml(item.pos)}</small><div class="b2-vocab-meta">Уровень и часть речи взяты из официального Oxford PDF. Значение, перевод и пример открой в Cambridge и добавь в карточку для интервального повторения.</div></div><div class="b2-daily-word-actions"><a class="sys-btn" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Oxford PDF ↗</a><a class="sys-btn" href="${cambridgeEntryUrl(item.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-oxford-word="${index}" ${alreadyAdded?'disabled':''}>${alreadyAdded?'Уже добавлено ✓':'Добавить на повторение'}</button></div></article>`}).join('');
-    const starterVocabularyHtml = sourcedVocabulary.map((item,index)=>{const alreadyAdded=b2.vocabulary.some(saved=>normalizeTerm(saved.term)===normalizeTerm(item.word));return `<article class="b2-daily-word"><div><strong>${escapeHtml(item.word)}</strong><small>${escapeHtml(item.level)} · ${escapeHtml(item.pos)} · ${escapeHtml(item.topic)}</small><div class="b2-vocab-meta"><b>Explanation in English:</b> ${escapeHtml(item.definition)}</div><div class="b2-vocab-meta"><b>Перевод:</b> ${escapeHtml(item.translation)} · <b>Collocation:</b> ${escapeHtml(item.collocation)}</div><div class="b2-vocab-meta">Example: <i>${escapeHtml(item.example)}</i></div></div><div class="b2-daily-word-actions"><a class="sys-btn" href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer">Oxford ↗</a><a class="sys-btn" href="${item.checkUrl}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-sourced-word="${index}" ${alreadyAdded?'disabled':''}>${alreadyAdded?'Уже добавлено ✓':'Добавить на повторение'}</button></div></article>`}).join('');
+    const oxfordDailyCardsHtml = oxfordDailyWords.map((item,index)=>{const alreadyAdded=b2.vocabulary.some(saved=>normalizeTerm(saved.term)===normalizeTerm(item.term));const isFiveThousand=String(item.source||'').includes('5000');const sourceUrl=isFiveThousand?OXFORD_5000_PDF_URL:OXFORD_3000_PDF_URL;return `<article class="b2-daily-word"><div><strong>${escapeHtml(item.term)}</strong><small>${isFiveThousand?'Oxford 5000':'Oxford 3000'} · ${escapeHtml(item.level)} · ${escapeHtml(item.pos)}</small><div class="b2-vocab-meta">Уровень и часть речи взяты из официального Oxford PDF. Значение, перевод и пример открой в Cambridge и добавь в карточку для интервального повторения.</div></div><div class="b2-daily-word-actions">${audioButton(item.term)}<a class="sys-btn" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Oxford PDF ↗</a><a class="sys-btn" href="${cambridgeEntryUrl(item.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-oxford-word="${index}" ${alreadyAdded?'disabled':''}>${alreadyAdded?'Уже добавлено ✓':'Добавить на повторение'}</button></div></article>`}).join('');
+    const starterVocabularyHtml = sourcedVocabulary.map((item,index)=>{const alreadyAdded=b2.vocabulary.some(saved=>normalizeTerm(saved.term)===normalizeTerm(item.word));return `<article class="b2-daily-word"><div><strong>${escapeHtml(item.word)}</strong><small>${escapeHtml(item.level)} · ${escapeHtml(item.pos)} · ${escapeHtml(item.topic)}</small><div class="b2-vocab-meta"><b>Explanation in English:</b> ${escapeHtml(item.definition)}</div><div class="b2-vocab-meta"><b>Перевод:</b> ${escapeHtml(item.translation)} · <b>Collocation:</b> ${escapeHtml(item.collocation)}</div><div class="b2-vocab-meta">Example: <i>${escapeHtml(item.example)}</i></div></div><div class="b2-daily-word-actions">${audioButton(item.word)}<a class="sys-btn" href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer">Oxford ↗</a><a class="sys-btn" href="${item.checkUrl}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="sys-btn primary" data-sourced-word="${index}" ${alreadyAdded?'disabled':''}>${alreadyAdded?'Уже добавлено ✓':'Добавить на повторение'}</button></div></article>`}).join('');
     const importedOxfordCount = Array.isArray(b2.oxfordWords) ? b2.oxfordWords.length : 0;
     const oxfordImportStatus = importedOxfordCount ? `Список загружен: ${importedOxfordCount} уникальных слов B1–B2 из Oxford 3000/5000. Совпадения с Empower и стартовой подборкой исключены; назначения по датам сохраняются.` : 'Скачай PDF Oxford 3000 (B1–B2) или Oxford 5000 (только B2), выбери его и нажми «Импортировать». Импортируй оба файла по очереди: списки объединятся.';
     const oxfordDailyNote = new Date(`${requestedCalendarDate}T12:00:00`).getDay() === 0 ? 'Воскресенье — полный выходной: новые слова на этот день не назначаются.' : importedOxfordCount ? `${oxfordDailyWords.length} / 10 новых слов на ${new Date(`${requestedCalendarDate}T12:00:00`).toLocaleDateString('ru-RU', { day:'numeric', month:'long' })}. ${oxfordDailyWords.length < 10 ? 'В официальном списке не осталось столько подходящих уникальных слов; повторы не подставляются.' : 'Сначала идут B1, доля B2 постепенно растёт.'}` : 'После импорта сайт будет выбирать слова для выбранного дня. Пока импорт не выполнен, показывается только стартовая подборка.';
@@ -1689,7 +1693,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       const query = String(wordSearch.value || '').trim().toLowerCase();
       const selectedUnit = wordUnit.value;
       const matches = empowerB1Words.map((entry,index)=>({entry,index})).filter(({entry}) => (!selectedUnit || String(entry.unit) === selectedUnit) && (!query || entry.term.toLowerCase().includes(query))).slice(0, 20);
-      wordResults.innerHTML = matches.length ? matches.map(({entry,index}) => `<article class="b2-word-result"><div><strong>${escapeHtml(entry.term)}</strong><div class="b2-vocab-meta">Unit ${entry.unit} · p. ${escapeHtml(entry.page)} · ${escapeHtml(entry.pos)}</div></div><div class="b2-word-actions"><a class="sys-btn" href="${cambridgeEntryUrl(entry.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="primary" data-empower-word="${index}">Добавить слово</button></div></article>`).join('') : '<p class="subtle">Ничего не найдено.</p>';
+      wordResults.innerHTML = matches.length ? matches.map(({entry,index}) => `<article class="b2-word-result"><div><strong>${escapeHtml(entry.term)}</strong><div class="b2-vocab-meta">Unit ${entry.unit} · p. ${escapeHtml(entry.page)} · ${escapeHtml(entry.pos)}</div></div><div class="b2-word-actions">${audioButton(entry.term)}<a class="sys-btn" href="${cambridgeEntryUrl(entry.term)}" target="_blank" rel="noopener noreferrer">Cambridge ↗</a><button type="button" class="primary" data-empower-word="${index}">Добавить слово</button></div></article>`).join('') : '<p class="subtle">Ничего не найдено.</p>';
       wordResults.querySelectorAll('[data-empower-word]').forEach(button => button.onclick = () => {
         const entry = empowerB1Words[Number(button.dataset.empowerWord)];
         if (!entry) return;
@@ -1703,7 +1707,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
         form.elements.sourceRef.value = `Cambridge Empower B1 · Unit ${entry.unit} · Student’s Book p. ${entry.page}`;
         document.getElementById('b2-cambridge-lookup').href = cambridgeEntryUrl(entry.term);
         document.getElementById('b2-vocab-form-status').textContent = 'Открой Cambridge, заполни объяснение на английском и перевод на русский.';
-        form.scrollIntoView({behavior:'smooth',block:'center'});
+        form.scrollIntoView({behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'),block:'center'});
         form.elements.definition.focus({preventScroll:true});
       });
     };
@@ -1723,7 +1727,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       form.elements.sourceRef.value = `Cambridge Empower B1 · Unit ${entry.unit} · Student’s Book p. ${entry.page}`;
       document.getElementById('b2-cambridge-lookup').href = cambridgeEntryUrl(entry.term);
       document.getElementById('b2-vocab-form-status').textContent = 'Открой Cambridge, заполни explanation in English и перевод на русский, затем сохрани для повторения.';
-      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      form.scrollIntoView({ behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'), block: 'center' });
       form.elements.definition.focus({ preventScroll: true });
     });
     b2VocabularyView?.querySelectorAll('[data-sourced-word]').forEach(button => button.onclick = () => {
@@ -1739,7 +1743,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       form.elements.sourceRef.value = `${item.sourceLabel} · ${item.level}; Cambridge Learner’s Dictionary`;
       document.getElementById('b2-cambridge-lookup').href = item.checkUrl;
       document.getElementById('b2-vocab-form-status').textContent = 'Проверь карточку и нажми «Добавить на повторение».';
-      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      form.scrollIntoView({ behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'), block: 'center' });
       form.elements.term.focus({ preventScroll: true });
     });
     b2VocabularyView?.querySelectorAll('[data-oxford-word]').forEach(button => button.onclick = () => {
@@ -1755,7 +1759,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
       form.elements.sourceRef.value = `${item.source || 'Oxford by CEFR level'} · ${item.level} · ${item.pos}`;
       document.getElementById('b2-cambridge-lookup').href = cambridgeEntryUrl(item.term);
       document.getElementById('b2-vocab-form-status').textContent = 'Открой Cambridge, заполни Explanation in English и перевод на русский, затем сохрани для интервального повторения.';
-      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      form.scrollIntoView({ behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'), block: 'center' });
       form.elements.definition.focus({ preventScroll: true });
     });
     const oxfordFileInput = b2VocabularyView?.querySelector('#b2-oxford-pdf');
@@ -1838,7 +1842,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     document.querySelectorAll('[data-add-part]').forEach(button => button.onclick = () => {
       const unit = Number(button.dataset.addPart); b2.lessonParts[unit] ||= [];
       b2.lessonParts[unit].push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,7)}`, lesson:'', topic:'', sbPages:'', sbExercises:'', dwExercises:'', audio:'', video:'', extra:'', completedAt:'' });
-      save(); render(); document.getElementById('textbook-plan')?.scrollIntoView({ behavior:'smooth', block:'start' });
+      save(); render(); document.getElementById('textbook-plan')?.scrollIntoView({ behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'), block:'start' });
     });
     document.querySelectorAll('[data-part-form]').forEach(form => form.onsubmit = event => {
       event.preventDefault(); const fd = new FormData(form); const unit = Number(form.dataset.partForm); b2.lessonParts[unit] ||= [];
@@ -1930,6 +1934,10 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
     data.studyMode = button.dataset.studyMode;
     save(); render();
   }));
+  document.addEventListener('click', event => {
+    const button = event.target.closest('[data-b2-speak]');
+    if (button) speak(button.dataset.b2Speak);
+  });
   save();
   render();
 })();
@@ -1953,7 +1961,7 @@ document.querySelector('#view-listening .hero p').textContent='Практику�
   setTimeout(refreshForNewDay, midnight.getTime() - now.getTime() + 100);
 })();
 </script>
-<link rel="stylesheet" href="./redesign.css">
-<script src="./redesign.js"></script>
+<link rel="stylesheet" href="./redesign.css?build=2026-11-19.audit1">
+<script src="./redesign.js?build=2026-11-19.audit1"></script>
 </body>
 </html>

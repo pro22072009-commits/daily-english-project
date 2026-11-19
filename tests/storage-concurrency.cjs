@@ -1,0 +1,25 @@
+// This is an isolated in-memory Supabase substitute, not a live account test.
+const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert/strict');
+const source=fs.readFileSync(path.join(__dirname,'../storage-service.js'),'utf8');
+const key='dailyEnglishSystemV2',remote=new Map(),results=[];let failure=false;
+const clone=x=>JSON.parse(JSON.stringify(x));
+const response=(status,body)=>({ok:status>=200&&status<300,status,json:async()=>clone(body),text:async()=>JSON.stringify(body)});
+function environment(initial={},expired=false){
+ const values=new Map(Object.entries(initial));
+ values.set('dailyEnglishCloudSessionV1',JSON.stringify({access_token:'test-only',refresh_token:'test-only',expires_at:expired?1:9999999999,user:{id:'isolated-user',email:'audit@example.test'}}));
+ const listeners={};const navigator={onLine:true};const localStorage={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,String(v)),removeItem:k=>values.delete(k)};
+ const window={DAILY_ENGLISH_SUPABASE_CONFIG:{configured:true,url:'https://mock.invalid',publishableKey:'test-only'},addEventListener:(name,fn)=>{listeners[name]=fn},dispatchEvent:()=>{},localStorage,navigator};
+ const fetch=async(url,init={})=>{if(failure){if(url.includes('/auth/'))return response(503,{message:'test outage'});throw Error('test network outage');}if(url.includes('/user_data?select='))return response(200,[...remote.values()]);if(url.includes('/user_data?on_conflict=')){const row=JSON.parse(init.body);remote.set(row.entity_key,{entity_key:row.entity_key,payload:row.payload,updated_at:row.updated_at});return response(204,null)}if(url.includes('/profiles?'))return response(200,[]);throw Error('Unexpected mock request '+url)};
+ vm.runInNewContext(source,{window,localStorage,navigator,fetch,URL,CustomEvent:class{},console,Map,Set,Promise,Date,JSON,Object,Array,Number,String,Boolean,Math,Error,setTimeout:()=>0,clearTimeout:()=>{},location:{origin:'http://test.invalid',pathname:'/'}});
+ return {values,api:window.storageService,navigator};
+}
+async function settle(){await new Promise(r=>setTimeout(r,15));}
+async function test(name,fn){try{await fn();results.push({name,status:'PASS'});console.log('PASS',name)}catch(e){results.push({name,status:'FAIL',error:e.message});console.log('FAIL',name,e.message)}}
+(async()=>{
+ await test('mock: two independent local stores read/write same remote entity',async()=>{remote.clear();const a=environment({[key]:JSON.stringify({studyMode:'b2',b2Foundation:{vocabulary:[{id:'a',term:'retain'}]}})});await settle();await a.api.syncWithCloud();const b=environment();await settle();assert.deepEqual(JSON.parse(b.values.get(key)),JSON.parse(a.values.get(key)));});
+ await test('mock: offline queue sync after reconnect',async()=>{const a=environment();await settle();a.navigator.onLine=false;a.api.setItem(key,JSON.stringify({b2Foundation:{errors:[{error:'offline test'}]}}));assert(a.values.get('dailyEnglishOfflineQueueV1').includes('offline test'));assert.equal((await a.api.syncWithCloud()).reason,'offline');a.navigator.onLine=true;await a.api.syncWithCloud();assert.equal(remote.get(key).payload.b2Foundation.errors[0].error,'offline test');assert.equal(a.values.get('dailyEnglishOfflineQueueV1'),'{}');});
+ await test('mock: equal timestamps preserve local and require explicit conflict choice',async()=>{const time='2026-11-19T12:00:00.000Z';remote.set(key,{entity_key:key,payload:{cloud:true},updated_at:time});const a=environment({[key]:'{"local":true}',dailyEnglishStorageMetaV1:JSON.stringify({[key]:time})});await settle();assert.equal(a.api.getState().conflicts.length,1);assert.equal(a.values.get(key),'{"local":true}');await a.api.resolveConflict(key,'cloud');assert.deepEqual(JSON.parse(a.values.get(key)),{cloud:true});assert(a.api.getRecoveryBackups().length>0);});
+ await test('mock: temporary fetch and refresh failures preserve progress and session',async()=>{failure=true;const raw=JSON.stringify({b2Foundation:{vocabulary:[{id:'keep'}]},stats:{streak:9}});const a=environment({[key]:raw},true);await settle();assert.equal(a.values.get(key),raw);assert(a.values.has('dailyEnglishCloudSessionV1'));assert(a.api.getState().error.includes('test outage'));failure=false;});
+ await test('three-way edits preserve remote additions, local removals and nested changes',async()=>{const api=environment().api;await settle();const base={marks:{a:true},words:[{id:'a',stage:0},{id:'delete',stage:0}]};const local={marks:{a:false},words:[{id:'a',stage:1},{id:'local',stage:0}]};const latest={marks:{a:true,b:true},words:[{id:'a',stage:0},{id:'delete',stage:0},{id:'remote',stage:0}]};const merged=clone(api.mergeChanges(base,local,latest));assert.deepEqual(merged,{marks:{a:false,b:true},words:[{id:'a',stage:1},{id:'remote',stage:0},{id:'local',stage:0}]});});
+ fs.writeFileSync(path.join(__dirname,'../audit-evidence/storage-checks.json'),JSON.stringify({environment:'IN-MEMORY MOCK; NOT LIVE SUPABASE',results},null,2));if(results.some(x=>x.status==='FAIL'))process.exitCode=1;
+})();
