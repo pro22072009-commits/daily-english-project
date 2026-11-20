@@ -23,10 +23,6 @@
     if (button) window.showView(button.dataset.biomeView);
   });
 
-  const credits = document.createElement('p');
-  credits.className = 'biome-credits';
-  credits.innerHTML = 'Фотографии <a href="https://unsplash.com/photos/Pxm-TUd61vY" target="_blank" rel="noopener noreferrer">Aaron Burden</a> и <a href="https://unsplash.com/photos/NRQV-hBF10M" target="_blank" rel="noopener noreferrer">Luca Bravo</a> · Unsplash';
-  document.querySelector('.app').append(credits);
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
 })();
 

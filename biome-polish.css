@@ -1,0 +1,242 @@
+
+/* Biome polish proposal: calendar-led home and consistent component states. */
+#redesign-home { gap: 24px; }
+#redesign-home>.design-density { order: -7; margin-bottom: -14px; padding: 0; }
+#redesign-home>#b2-calendar-section { order: -6; }
+#redesign-home>#study-mode-panel { order: -5; }
+#redesign-home>#design-next { order: -4; }
+#redesign-home>#selected-day-plan { order: -3; }
+#redesign-home>#hub-review-entry { order: -2; }
+#redesign-home>#biome-media { order: 0; margin-top: 18px; }
+#redesign-home>#redesign-useful { order: 1; }
+#b2-calendar-section .b2-calendar { padding: 24px 24px 18px; }
+.b2-calendar-head { align-items: center; }
+.b2-calendar-head h3 { font-size: 36px !important; margin: 4px 0 14px; }
+.b2-calendar-head .b2-kicker { font-weight: 500; letter-spacing: .05em; }
+.b2-calendar-weekdays { font-size: 13px !important; color: #675b53; padding-bottom: 7px; }
+.b2-calendar-day { padding: 9px !important; min-height: 84px !important; line-height: 1.4; }
+.b2-calendar-day b { font: 600 15px/1.3 var(--biome-sans) !important; }
+.b2-calendar-day>span { font-size: 12px !important; line-height: 1.35; }
+.b2-calendar-day small { font-size: 12px !important; line-height: 1.4; }
+html body .b2-calendar-day.today {
+  background: #fff !important; color: #301912 !important; border-color: #cbbeaf !important;
+  box-shadow: inset 0 3px #566e5b !important;
+}
+html body .b2-calendar-day.selected {
+  background: #e8eee7 !important; color: #301912 !important;
+  outline: 2px solid #103228 !important; outline-offset: -3px;
+}
+html body .b2-calendar-day.completed { background: #103228 !important; color: #fff !important; }
+html body .b2-calendar-day.partial { background: #f4e8d1 !important; color: #65471c !important; }
+html body .b2-calendar-day.completed span, html body .b2-calendar-day.completed small,
+html body .b2-calendar-day.completed b, html body .b2-calendar-day.completed .hub-day-state { color: #fff !important; }
+.hub-calendar-legend { font-size: 13px; gap: 10px 18px; }
+#redesign-home>#design-next { padding: 22px 0; border-top: 0; border-bottom: 1px solid #cbbeaf; }
+#design-next h2 { font-size: 23px; margin-bottom: 7px; }
+#design-next p { font-size: 27px; line-height: 1.25; }
+#biome-media .biome-destination img { height: 230px; }
+#biome-media .biome-destination span { font-size: 25px; }
+html body #view-textbook input:not([type=checkbox]):not([type=radio]),
+html body #view-textbook select, html body #view-textbook textarea {
+  color: #301912 !important; background: #fff !important; color-scheme: light !important;
+  border: 1px solid #a8998d !important;
+}
+html body #view-textbook input[type=date]::-webkit-calendar-picker-indicator { filter: none; }
+html body #view-textbook .b2-unit-plan>summary,
+html body #view-textbook .b2-course-map>summary,
+html body #view-textbook button.sys-btn:not(.primary) {
+  background: #fff !important; color: #301912 !important; border-color: #cbbeaf !important;
+}
+html body #view-textbook .b2-unit-plan>summary { padding: 14px 12px; }
+html body #view-textbook .b2-unit-plan>summary em { color: #103228 !important; }
+html body #view-textbook button.sys-btn.primary { background: #103228 !important; color: #fff !important; border-color: #103228 !important; }
+#view-textbook .b2-unit-dates, #view-textbook .b2-part-form, #view-textbook .b2-unit-plan,
+#view-textbook .b2-course-details, #view-textbook .b2-course-details>summary,
+#grammar-daily, .b2-resources { box-shadow: none !important; border-radius: 0 !important; color: #301912 !important; }
+#view-textbook .b2-unit-plan>summary strong { font: 400 23px/1.3 var(--biome-serif); }
+#view-textbook .b2-unit-plan>summary span, #view-textbook .b2-unit-plan>summary em { font-size: 14px; }
+#view-textbook .b2-course-details>summary { color: #103228 !important; }
+#grammar-daily { border-top: 1px solid #cbbeaf; padding: 20px 0; background: #fff !important; }
+.b2-resources { background: #fff !important; padding: 16px 0; border-top: 1px solid #cbbeaf; }
+.b2-resources a { display: inline-block; margin: 4px 18px 4px 0; font-size: 14px; }
+.b2-part-heading, .b2-part-fields label, .b2-unit-dates label, .b2-checkpoint-field,
+.b2-textbook-head>span, .b2-source, .b2-task-time, .b2-textbook-head .system-sub { font-size: 14px !important; }
+.b2-current-task .b2-source { line-height: 1.5; }
+@media(min-width:901px) {
+  .topbar { min-height: 96px !important; padding-block: 14px; }
+  .nav { margin-bottom: 24px !important; }
+}
+@media(max-width:900px) {
+  #b2-calendar-section .b2-calendar { padding: 18px; }
+  .b2-calendar-day { min-height: 50px !important; padding: 4px !important; }
+  #design-next p { font-size: 25px; }
+  #biome-media .biome-destination img { height: 185px; }
+}
+@media(max-width:560px) {
+  .topbar { min-height: 90px !important; margin-bottom: 14px !important; padding-block: 14px; }
+  .redesign-header-title .biome-wordmark { font-size: 23px; }
+  .redesign-header-title h1 { font-size: 25px; }
+  #redesign-home { gap: 18px; }
+  #b2-calendar-section .b2-calendar { padding: 14px 10px; }
+  .b2-calendar-head h3 { font-size: 28px !important; }
+  .b2-calendar-head .b2-kicker { display: block !important; font-size: 12px !important; margin: 0 0 8px; }
+  .b2-calendar-weekdays { font-size: 12px !important; }
+  .b2-calendar-day, .b2-calendar-empty { min-height: 46px !important; }
+  #design-next h2 { font-size: 21px; }
+  #design-next p { font-size: 24px; }
+  #design-start { width: 100%; }
+  #biome-media .biome-destination img { height: 150px; }
+  #biome-media .biome-destination span { font-size: 21px; }
+  #view-textbook .b2-unit-plan>summary { flex-wrap: wrap; gap: 8px; }
+  #view-textbook .b2-unit-plan>summary strong { font-size: 21px; flex-basis: 100%; }
+  .b2-part-heading, .b2-unit-dates { gap: 10px; }
+}
+
+
+/* Background alternatives for comparison. */
+body {
+  padding-top: 62px;
+  background: #edf0e9 !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+body[data-background="landscape"] {
+  background-image: linear-gradient(#e9efe5aa,#e9efe5aa),var(--background-photo) !important;
+}
+body[data-background="book"] {
+  background-image: linear-gradient(#eee5d6a8,#eee5d6a8),var(--background-book) !important;
+}
+body[data-background="light"] {
+  background-image: linear-gradient(120deg,#dce5d9 0%,#f3f5ed 48%,#e4eae1 100%) !important;
+}
+.app {
+  width: calc(100% - 100px);
+  max-width: 1280px;
+  margin: 24px auto 40px;
+  padding: 0 32px 32px !important;
+  background: #fff !important;
+  border: 1px solid #d4d8cb;
+}
+.background-picker {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px;
+  min-height: 62px;
+  background: #fff;
+  border-bottom: 1px solid #cbbeaf;
+  font: 14px/1.4 'Segoe UI',Arial,sans-serif;
+  color: #301912;
+}
+.background-picker span { margin-right: 12px; }
+.background-picker button {
+  min-height: 40px;
+  padding: 7px 16px;
+  border: 1px solid #cbbeaf;
+  border-radius: 30px;
+  background: #fff;
+  color: #301912;
+  font-size: 14px;
+}
+.background-picker button[aria-pressed=true] {
+  background: #103228;
+  border-color: #103228;
+  color: #fff;
+}
+@media(max-width:900px) {
+  body { padding-top: 70px; }
+  .app { width: calc(100% - 32px); margin-top:16px; padding: 0 20px 100px !important; }
+}
+@media(max-width:560px) {
+  body { padding-top: 104px; }
+  .background-picker { gap: 5px; padding: 8px; }
+  .background-picker span { flex-basis:100%; text-align:center; margin:0; font-size:13px; }
+  .background-picker button { padding:6px 10px; }
+  .app { width:calc(100% - 16px); padding-inline:12px !important; margin-top:8px; }
+}
+
+
+/* Full-page background comparison. */
+body[data-background] {
+  background-position: center top !important;
+}
+.app {
+  width: calc(100% - 48px);
+  max-width: 1398px;
+  margin: 16px auto 40px;
+  background: transparent !important;
+  border: 0;
+}
+html body .app .global-storage-status,
+html body .app .topbar,
+html body .app .nav,
+html body .app .view,
+html body .app #b2-calendar-section,
+html body .app #b2-calendar-section .b2-calendar,
+html body .app #design-next,
+html body .app #selected-day-plan,
+html body .app .redesign-resources,
+html body .app .hero,
+html body .app .hub-panel,
+html body .app .panel,
+html body .app .card,
+html body .app .system-panel,
+html body .app .b2-current-task,
+html body .app .b2-course-map,
+html body .app .b2-unit-plan,
+html body .app .b2-extra,
+html body .app .footer {
+  background: transparent !important;
+}
+html body .app .b2-calendar-day,
+html body .app .b2-calendar-empty,
+html body .app .b2-calendar-day.today {
+  background: rgba(255,255,255,.16) !important;
+}
+html body .app .b2-calendar-day.rest:not(.completed):not(.partial) {
+  background: rgba(225,230,214,.28) !important;
+}
+html body .app .b2-calendar-day.selected {
+  background: rgba(198,215,193,.5) !important;
+}
+html body .app .b2-calendar-day.completed {
+  background: rgba(16,50,40,.88) !important;
+}
+html body .app .b2-calendar-day.partial {
+  background: rgba(244,232,209,.65) !important;
+}
+html body .app #hub-review-entry {
+  background: rgba(16,50,40,.84) !important;
+}
+html body .app .b2-sb-assignment,
+html body .app .b2-task-outcome,
+html body .app .b2-book-note,
+html body .app .hub-metrics>div,
+html body .app .redesign-practice-grid button,
+html body .app .b2-unit-plan>summary,
+html body .app .b2-course-map>summary,
+html body .app .b2-unit-dates,
+html body .app .b2-part-form,
+html body .app .b2-daily-word,
+html body .app .b2-vocab-card {
+  background: rgba(255,255,255,.25) !important;
+}
+body[data-background="landscape"] {
+  background-image: linear-gradient(#f4f6efdc,#f4f6efdc),var(--background-photo) !important;
+}
+body[data-background="book"] {
+  background-image: linear-gradient(#faf4e9e0,#faf4e9e0),var(--background-book) !important;
+}
+@media(max-width:900px) {
+  .app { width: 100%; margin: 0 auto; padding: 0 20px 100px !important; }
+  .mobile-nav { background: rgba(247,249,242,.88) !important; }
+}
+@media(max-width:560px) {
+  .app { width: 100%; padding-inline: 14px !important; }
+}
