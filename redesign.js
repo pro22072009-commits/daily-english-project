@@ -16,7 +16,7 @@
   const progress=create('view-progress',app);progress.className='view';
   const practiceBody=create('redesign-practice-body',practice);
   practiceBody.innerHTML=`<div class="redesign-section-heading"><span class="b2-kicker">Практика навыков</span><h1>Тренировка учебных навыков</h1><p>Работающие модули и дополнительные материалы курса.</p></div><div class="redesign-practice-grid">${[['reading','Reading','Понимание текста'],['listening','Listening','Аудирование'],['writing','Writing','Письменная речь'],['speaking','Speaking','Устная речь'],['grammar','Grammar','Грамматика']].map(([id,name,sub])=>`<button data-practice="${id}"><strong>${name}</strong><b aria-hidden="true">↗</b></button>`).join('')}</div>`;
-  const progressHead=create('redesign-progress-heading',progress);progressHead.innerHTML='<span class="b2-kicker">Твой учебный путь</span><h1>Прогресс и результаты</h1><p>Сохранённые результаты, проверки, ошибки и история обучения.</p>';
+  const progressHead=create('redesign-progress-heading',progress);progressHead.innerHTML='<span class="b2-kicker">Учебный путь</span><h1>Прогресс и результаты</h1><p>Сохранённые результаты, проверки, ошибки и история обучения.</p>';
   progress.prepend(progressHead);
   const diagnostic=create('redesign-diagnostic',progress);diagnostic.className='redesign-resources';
   diagnostic.innerHTML='<h2>Дополнительная диагностика IELTS</h2><p class="system-sub">Учебная диагностика экзаменационного режима. Результат не определяет уровень B2 автоматически.</p>';
@@ -115,3 +115,4 @@
   });
   arrange();showView('dashboard');
 })();
+
