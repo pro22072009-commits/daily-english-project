@@ -39,7 +39,7 @@
   summary.insertAdjacentHTML('beforeend',`<div class="hub-week-tools"><button type="button" data-hub-week="-7" aria-label="Предыдущая неделя">Предыдущая</button><label>Неделя с даты<input id="hub-week-date" type="date" value="${weekStart}"></label><button type="button" data-hub-week="7" aria-label="Следующая неделя">Следующая</button><button type="button" id="hub-current-week">Текущая</button></div><div id="hub-week-data"></div>`);
   const units=section('hub-unit-overview','Учебный путь',progress);
   const works=section('hub-works','Мои работы',progress);
-  works.insertAdjacentHTML('beforeend',`<p class="hub-muted">Writing и Speaking: свои тексты, заметки и проверки. Черновик сохраняется при вводе, отдельную версию можно зафиксировать.</p><div class="hub-actions"><button type="button" id="hub-new-work">Новая работа</button><button type="button" id="hub-import-drafts">Добавить черновики Writing</button></div><div id="hub-work-list" class="hub-work-list"></div><form id="hub-work-form" class="hub-work-form"><div class="hub-fields"><label>Навык<select name="type"><option value="writing">Writing</option><option value="speaking">Speaking</option></select></label><label>Режим<select name="mode"><option value="b2">B2 Foundation</option><option value="ielts">IELTS Academic</option></select></label><label>Дата<input name="date" type="date" required></label><label>Состояние<select name="status"><option value="draft">Черновик</option><option value="done">Готово</option></select></label></div><label>Тема<input name="topic" required maxlength="160" placeholder="О чём твоя работа?"></label><label>Текст или заметки к устному ответу<textarea name="text" rows="8" maxlength="50000" placeholder="Твой текст, план или расшифровка ответа"></textarea></label><div class="hub-fields"><label>Собственная проверка<textarea name="review" rows="3" maxlength="5000" placeholder="Что удалось и что стоит исправить?"></textarea></label><label>Следующий шаг<textarea name="nextStep" rows="3" maxlength="1000" placeholder="Одно конкретное действие"></textarea></label></div><div class="hub-actions"><button type="submit" class="primary">Сохранить версию</button><button type="button" id="hub-export-work">Скачать текст</button><span id="hub-work-save" role="status"></span></div><p class="hub-muted">До 20 зафиксированных версий на работу; до 50 000 символов в текущем тексте. Тексты и версии включены в резервную копию прогресса.</p></form><div id="hub-work-versions"></div><div id="hub-version-preview" hidden></div><section id="hub-audio"><h3>Голосовые записи</h3><p class="hub-muted">Аудио хранится только на этом устройстве, отдельно от текстов: до 3 минут и 3 МБ на запись, до 20 МБ всего. В облако и JSON-копию не входит. Скачай важные записи отдельно.</p><div class="hub-actions"><button type="button" id="hub-record">Записать голос</button><button type="button" id="hub-stop-record" disabled>Остановить</button><label class="hub-file">Добавить аудиофайл<input id="hub-audio-file" type="file" accept="audio/*,.webm,.mp3,.wav,.ogg,.m4a"></label></div><p id="hub-audio-status" role="status"></p><div id="hub-audio-list"></div></section><details id="hub-existing-reviews"><summary>Ранее сохранённые проверки Speaking / Writing</summary><div id="hub-existing-review-list"></div></details>`);
+  works.insertAdjacentHTML('beforeend',`<p class="hub-muted">Writing и Speaking: свои тексты, заметки и проверки. Черновик сохраняется при вводе, отдельную версию можно зафиксировать.</p><div class="hub-actions"><button type="button" id="hub-new-work">Новая работа</button><button type="button" id="hub-import-drafts">Добавить черновики Writing</button></div><div id="hub-work-list" class="hub-work-list"></div><form id="hub-work-form" class="hub-work-form"><div class="hub-fields"><label>Навык<select name="type"><option value="writing">Writing</option><option value="speaking">Speaking</option></select></label><label>Режим<select name="mode"><option value="b2">B2 Foundation</option><option value="ielts">IELTS Academic</option></select></label><label>Дата<input name="date" type="date" required></label><label>Состояние<select name="status"><option value="draft">Черновик</option><option value="done">Готово</option></select></label></div><label>Тема<input name="topic" required maxlength="160" placeholder="О чём твоя работа?"></label><label>Текст или заметки к устному ответу<textarea name="text" rows="8" maxlength="50000" placeholder="Твой текст, план или расшифровка ответа"></textarea></label><div class="hub-fields"><label>Собственная проверка<textarea name="review" rows="3" maxlength="5000" placeholder="Что удалось и что стоит исправить?"></textarea></label><label>Следующий шаг<textarea name="nextStep" rows="3" maxlength="1000" placeholder="Одно конкретное действие"></textarea></label></div><div class="hub-actions"><button type="submit" class="primary">Сохранить версию</button><button type="button" id="hub-export-work">Скачать текст</button><span id="hub-work-save" role="status"></span></div><p class="hub-muted">До 20 зафиксированных версий на работу; до 50 000 символов в текущем тексте. Тексты и версии включены в резервную копию прогресса.</p></form><div id="hub-work-versions"></div><div id="hub-version-preview" hidden></div><section id="hub-audio"><h3>Голосовые записи</h3><p class="hub-muted">Аудио хранится только на этом устройстве, отдельно от текстов: до 3 минут и 3 МБ на запись, до 20 МБ всего. В облако и JSON-копию не входит. Важные записи можно скачать отдельными файлами.</p><div class="hub-actions"><button type="button" id="hub-record">Записать голос</button><button type="button" id="hub-stop-record" disabled>Остановить</button><label class="hub-file">Добавить аудиофайл<input id="hub-audio-file" type="file" accept="audio/*,.webm,.mp3,.wav,.ogg,.m4a"></label></div><p id="hub-audio-status" role="status"></p><div id="hub-audio-list"></div></section><details id="hub-existing-reviews"><summary>Ранее сохранённые проверки Speaking / Writing</summary><div id="hub-existing-review-list"></div></details>`);
   const queue=section('hub-review','Повторить сегодня',progress);
   const legacy=section('hub-original-progress','Журнал, результаты и план курса',progress,'details');
   const form=el('hub-work-form');
@@ -95,7 +95,7 @@
   }
   function workValues() { const fd=new FormData(form);return Object.fromEntries(['type','mode','date','status','topic','text','review','nextStep'].map(k=>[k,String(fd.get(k)||'')])); }
   function loadWork(id='') {
-    if(recorder?.state==='recording'){message('Сначала останови запись голоса.',true);return;}
+    if(recorder?.state==='recording'){message('Для перехода к другой работе требуется завершить запись голоса.',true);return;}
     selectedId=id; previewVersion='';
     const work=(hub(read()).works||[]).find(w=>w.id===id);
     editorBase=work?clone(work):null;
@@ -116,7 +116,7 @@
       let work=existing?service.mergeChanges(editorBase||{},{...(editorBase||{}),...values},existing):{...values,id,createdAt:new Date().toISOString(),versions:[]};
       work={...work,id,updatedAt:new Date().toISOString(),versions:existing?.versions||work.versions||[]};
       if(version){
-        if(work.versions.length>=20)throw new Error('У работы уже 20 версий. Скачай текст; текущий черновик продолжает сохраняться.');
+        if(work.versions.length>=20)throw new Error('У работы уже 20 версий. Скачать текст; текущий черновик продолжает сохраняться.');
         work.versions.push({id:uid(),at:new Date().toISOString(),text:work.text,topic:work.topic,status:work.status,review:work.review,nextStep:work.nextStep});
       }
       if(existing)list[list.indexOf(existing)]=work;else list.push(work);
@@ -129,7 +129,7 @@
   }
   function renderWorks(data) {
     const list=(hub(data).works||[]).filter(w=>w.mode===currentMode()).sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));
-    el('hub-work-list').innerHTML=list.length?list.map(w=>`<button type="button" data-hub-work="${esc(w.id)}" aria-pressed="${selectedId===w.id}"><strong>${esc(w.topic||'Без названия')}</strong><span>${w.type==='speaking'?'Speaking':'Writing'} · ${dateLabel(w.date)} · ${w.status==='done'?'Готово':'Черновик'} · ${(w.versions||[]).length} версий</span></button>`).join(''):'<p class="hub-muted">В этом режиме ещё нет работ. Начни с новой работы или добавь существующие черновики Writing.</p>';
+    el('hub-work-list').innerHTML=list.length?list.map(w=>`<button type="button" data-hub-work="${esc(w.id)}" aria-pressed="${selectedId===w.id}"><strong>${esc(w.topic||'Без названия')}</strong><span>${w.type==='speaking'?'Speaking':'Writing'} · ${dateLabel(w.date)} · ${w.status==='done'?'Готово':'Черновик'} · ${(w.versions||[]).length} версий</span></button>`).join(''):'<p class="hub-muted">В этом режиме ещё нет работ. Доступны создание новой работы и импорт черновиков Writing.</p>';
     let drafts={};try{drafts=JSON.parse(service.getItem('dailyEnglishAcademicDraftsV2')||'{}');}catch{}
     const count=Object.values(drafts).filter(v=>typeof v==='string'&&v.trim()).length;
     el('hub-import-drafts').textContent=`Добавить черновики Writing (${count})`;el('hub-import-drafts').disabled=!count;
@@ -193,7 +193,7 @@
       }
       if(b.dataset.hubWord){
         const native=[...document.querySelectorAll(b.dataset.hubResult==='again'?'[data-vocab-again]':'[data-vocab-review]')].find(n=>(n.dataset.vocabReview||n.dataset.vocabAgain)===b.dataset.hubWord);
-        if(native)native.click();else{showView('vocabulary');message('Открой слово в очереди словаря.',true);}
+        if(native)native.click();else{showView('vocabulary');message('Слово доступно в очереди повторения словаря.',true);}
       }
       if(b.hasAttribute('data-hub-resolve')){
         persist(data=>{const error=data.b2Foundation?.errors?.[Number(b.dataset.hubResolve)];if(error&&error.error===b.dataset.hubError){error.resolved=true;error.resolvedAt=iso();}},true);
@@ -227,11 +227,11 @@
   const audioExtension = (blob) => /\.(webm|mp3|wav|ogg|m4a)$/i.exec(blob.name||'')?.[1].toLowerCase() || (blob.type.includes('mp4')?'m4a':blob.type.includes('mpeg')?'mp3':blob.type.includes('wav')?'wav':blob.type.includes('ogg')?'ogg':'webm');
   async function audioRows(){const db=await dbPromise;return new Promise((resolve,reject)=>{const tx=db.transaction('recordings'),r=tx.objectStore('recordings').getAll();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
   async function storeAudio(blob,workId,duration=0) {
-    if(!workId)throw new Error('Сначала задай тему работы.');
-    if(blob.size>3*1024*1024)throw new Error('Запись больше 3 МБ. Сохрани более короткий файл.');
+    if(!workId)throw new Error('Для записи нужна тема работы.');
+    if(blob.size>3*1024*1024)throw new Error('Запись больше 3 МБ. Сохранить более короткий файл.');
     if(!duration)duration=await new Promise((resolve,reject)=>{const audio=new Audio(),url=URL.createObjectURL(blob);const timer=setTimeout(()=>finish(new Error('Не удалось прочитать длительность аудио.')),10000);function finish(error){clearTimeout(timer);URL.revokeObjectURL(url);audio.removeAttribute('src');if(error)reject(error);else resolve(audio.duration);}audio.onloadedmetadata=()=>{const seconds=audio.duration;clearTimeout(timer);URL.revokeObjectURL(url);audio.removeAttribute('src');if(!Number.isFinite(seconds)||seconds<=0)reject(new Error('Не удалось прочитать длительность аудио.'));else resolve(seconds);};audio.onerror=()=>finish(new Error('Браузер не распознаёт этот аудиофайл.'));audio.src=url;});
-    if(duration>180.5)throw new Error('Запись длиннее 3 минут. Выбери более короткий файл.');
-    const rows=await audioRows();if(rows.reduce((n,r)=>n+r.blob.size,0)+blob.size>20*1024*1024)throw new Error('Хранилище аудио достигло 20 МБ. Скачай записи и освободи место.');
+    if(duration>180.5)throw new Error('Запись длиннее 3 минут. Выбрать более короткий файл.');
+    const rows=await audioRows();if(rows.reduce((n,r)=>n+r.blob.size,0)+blob.size>20*1024*1024)throw new Error('Хранилище аудио достигло 20 МБ. Скачать записи и освободить место.');
     const db=await dbPromise;
     await new Promise((resolve,reject)=>{const tx=db.transaction('recordings','readwrite');tx.objectStore('recordings').put({id:uid(),workId,createdAt:new Date().toISOString(),blob,duration,extension:audioExtension(blob)});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});
     el('hub-audio-status').textContent='Аудио сохранено на этом устройстве.';await renderAudio();
@@ -248,20 +248,20 @@
   el('hub-record').addEventListener('click',async()=>{
     try{
       if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)throw new Error('Запись доступна через HTTPS или localhost в поддерживаемом браузере. Можно добавить готовый аудиофайл.');
-      const id=saveWork();if(!id)throw new Error('Сначала задай тему работы.');
+      const id=saveWork();if(!id)throw new Error('Для записи нужна тема работы.');
       el('hub-record').disabled=true;stream=await navigator.mediaDevices.getUserMedia({audio:true});
       const mime=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(type=>MediaRecorder.isTypeSupported(type));
       recorder=new MediaRecorder(stream,mime?{mimeType:mime}:{});recordFor=id;recordStarted=performance.now();const chunks=[];let size=0;
       recorder.ondataavailable=event=>{if(event.data.size){chunks.push(event.data);size+=event.data.size;if(size>=3*1024*1024&&recorder.state==='recording')recorder.stop();}};
       recorder.onstop=async()=>{const blob=new Blob(chunks,{type:recorder.mimeType}),duration=(performance.now()-recordStarted)/1000;stopTracks();try{if(blob.size){await storeAudio(blob,recordFor,duration);window.dailyEnglishRecordActivity?.();}}catch(error){el('hub-audio-status').textContent=error.message;download(blob,`daily-english-recording-${iso()}.${audioExtension(blob)}`);}};
-      recorder.onerror=()=>{stopTracks();el('hub-audio-status').textContent='Не удалось продолжить запись. Добавь аудиофайл.';};
+      recorder.onerror=()=>{stopTracks();el('hub-audio-status').textContent='Не удалось продолжить запись. Добавить аудиофайл.';};
       recorder.start(500);el('hub-stop-record').disabled=false;el('hub-audio-status').textContent='Идёт запись. Автоматическая остановка через 3 минуты.';
       recordTimer=setTimeout(()=>{if(recorder.state==='recording')recorder.stop();},180000);
     }catch(error){stopTracks();el('hub-audio-status').textContent=error.message;}
   });
   el('hub-stop-record').addEventListener('click',()=>{if(recorder?.state==='recording')recorder.stop();});
-  el('hub-audio-file').addEventListener('change',async event=>{try{const file=event.target.files[0];if(!file)return;if(!file.type.startsWith('audio/')&&!/\.(webm|mp3|wav|ogg|m4a)$/i.test(file.name))throw new Error('Выбери аудиофайл.');await storeAudio(file,saveWork());}catch(error){el('hub-audio-status').textContent=error.message;}finally{event.target.value='';}});
-  el('hub-audio-list').addEventListener('click',async event=>{const button=event.target.closest('[data-hub-delete-audio]');if(!button)return;if(!confirm('Удалить эту запись с устройства? Сначала скачай её, если хочешь сохранить.'))return;try{const db=await dbPromise;await new Promise((resolve,reject)=>{const tx=db.transaction('recordings','readwrite');tx.objectStore('recordings').delete(button.dataset.hubDeleteAudio);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});await renderAudio();}catch(error){el('hub-audio-status').textContent=error.message;}});
+  el('hub-audio-file').addEventListener('change',async event=>{try{const file=event.target.files[0];if(!file)return;if(!file.type.startsWith('audio/')&&!/\.(webm|mp3|wav|ogg|m4a)$/i.test(file.name))throw new Error('Требуется аудиофайл.');await storeAudio(file,saveWork());}catch(error){el('hub-audio-status').textContent=error.message;}finally{event.target.value='';}});
+  el('hub-audio-list').addEventListener('click',async event=>{const button=event.target.closest('[data-hub-delete-audio]');if(!button)return;if(!confirm('Удалить эту запись с устройства? Сначала скачать её, если хочешь сохранить.'))return;try{const db=await dbPromise;await new Promise((resolve,reject)=>{const tx=db.transaction('recordings','readwrite');tx.objectStore('recordings').delete(button.dataset.hubDeleteAudio);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});await renderAudio();}catch(error){el('hub-audio-status').textContent=error.message;}});
   window.addEventListener('pagehide',()=>{if(recorder?.state==='recording')recorder.stop();stopTracks();audioURLs.forEach(url=>URL.revokeObjectURL(url));});
   window.addEventListener('storage',event=>{if(event.key===KEY||event.key==='dailyEnglishAcademicDraftsV2')schedule();});
   service.subscribe(()=>{const state=service.getState();const status=el('storageStatus');if(status)status.dataset.state=state.error?'error':state.conflicts.length?'conflict':!navigator.onLine?'offline':state.status==='Синхронизируется'?'syncing':'saved';schedule();});

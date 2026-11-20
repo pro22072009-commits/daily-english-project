@@ -51,7 +51,7 @@
     const globalStatus = el('storageStatus');
     if (globalStatus) globalStatus.textContent = [state.status, state.error, state.migrationWarning].filter(Boolean).join(' · ');
     const cloudNotice = state.configured ? '' : '<p class="account-note">Облачная база пока не настроена. Сайт работает в гостевом режиме; прогресс остаётся на этом устройстве.</p>';
-    const conflictMarkup = state.conflicts.length ? `<section class="account-conflicts"><h3>Нужно выбрать версию данных</h3><p>Локальная запись и облачная запись отличаются, а надёжной даты одной из них нет. Выбери вручную; резервная копия локальных данных сохранена.</p>${state.conflicts.map(item => `<article><strong>${safe(labels[item.key] || item.key)}</strong><div><button type="button" class="account-small" data-conflict="${safe(item.key)}" data-choice="local">Оставить на этом устройстве</button><button type="button" class="account-small" data-conflict="${safe(item.key)}" data-choice="cloud">Взять из облака</button></div></article>`).join('')}</section>` : '';
+    const conflictMarkup = state.conflicts.length ? `<section class="account-conflicts"><h3>Нужно выбрать версию данных</h3><p>Локальная запись и облачная запись отличаются, а надёжной даты одной из них нет. Требуется выбор версии данных. Резервная копия локальных данных сохранена.</p>${state.conflicts.map(item => `<article><strong>${safe(labels[item.key] || item.key)}</strong><div><button type="button" class="account-small" data-conflict="${safe(item.key)}" data-choice="local">Оставить на этом устройстве</button><button type="button" class="account-small" data-conflict="${safe(item.key)}" data-choice="cloud">Взять из облака</button></div></article>`).join('')}</section>` : '';
     if (!user) {
       content.innerHTML = `${cloudNotice}${backupControls()}<form id="accountForm" class="account-form"><label>Имя (для регистрации)<input name="displayName" autocomplete="name" maxlength="80" placeholder="Как к тебе обращаться"></label><label>Email<input name="email" type="email" required autocomplete="email" inputmode="email"></label><label>Пароль<input name="password" type="password" required minlength="8" autocomplete="current-password"></label><div class="account-actions"><button class="account-primary" type="submit" data-auth="signin" ${state.configured ? '' : 'disabled'}>Войти</button><button class="account-secondary" type="submit" data-auth="signup" ${state.configured ? '' : 'disabled'}>Создать аккаунт</button></div></form><p class="account-note">При регистрации с подтверждением по почте данные синхронизируются после перехода по ссылке. Пароль сайт не сохраняет.</p>${conflictMarkup}`;
     } else {
@@ -110,7 +110,7 @@
       link.download = `daily-english-backup-${new Date().toISOString().slice(0, 10)}.json`;
       link.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      status.textContent = 'Резервная копия скачана. Сохрани файл отдельно от сайта.';
+      status.textContent = 'Резервная копия скачана. Файл можно хранить отдельно от сайта.';
       return;
     }
     if (event.target.id === 'chooseProgressBackup') { el('progressBackupFile')?.click(); return; }

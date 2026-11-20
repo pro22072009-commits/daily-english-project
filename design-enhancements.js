@@ -12,7 +12,7 @@
   function refresh() {
     const task=nextTask(), title=$('design-next-title');
     const text=task?.querySelector('.b2-task-title')?.textContent;
-    const next=text || ($('selected-day-plan')?.hidden ? 'Выбери практику IELTS на сегодня.' : 'На выбранный день нет незавершённых заданий. Можно перейти к практике.');
+    const next=text || ($('selected-day-plan')?.hidden ? 'Практика IELTS на сегодня.' : 'На выбранный день нет незавершённых заданий. Можно перейти к практике.');
     if(title.textContent!==next)title.textContent=next;
     const label=task?'Начать задание':'Открыть практику';
     if($('design-start').textContent!==label)$('design-start').textContent=label;

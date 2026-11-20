@@ -58,7 +58,7 @@
     try { localStorage.setItem(SAFETY_BACKUPS_KEY, JSON.stringify(snapshots)); state.migrationWarning = ''; return true; }
     catch (error) {
       try { localStorage.setItem(SAFETY_BACKUPS_KEY, JSON.stringify([entry, ...(Array.isArray(existing) ? existing : []).slice(0, 1)])); state.migrationWarning = ''; return true; }
-      catch (retryError) { state.migrationWarning = 'Резервная копия не поместилась в хранилище. Прогресс не перезаписан; скачай резервную копию и освободи место.'; console.warn(error, retryError); return false; }
+      catch (retryError) { state.migrationWarning = 'Резервная копия не поместилась в хранилище. Прогресс не перезаписан; скачать резервную копию и освободить место.'; console.warn(error, retryError); return false; }
     }
   }
   state.lastSync = localGet(LAST_SYNC_KEY) || '';
@@ -74,7 +74,7 @@
     // Re-rendering unchanged data is not a new edit and must not win a cloud conflict.
     if (options.queue !== false && localGet(key) === raw) return true;
     if (KEYS.includes(key) && state.migrationBlockedKeys.includes(key) && localGet(key) !== null) {
-      state.error = 'Изменение не сохранено: сначала нужна резервная копия старых данных. Освободи место в браузере и обнови страницу.';
+      state.error = 'Изменение не сохранено: сначала нужна резервная копия старых данных. Освободить место в браузере и обнови страницу.';
       emit();
       return false;
     }
@@ -136,7 +136,7 @@
       localStorage.setItem(MIGRATION_KEY, '1');
       state.migrationWarning = invalid.length ? `Некорректный JSON в ${invalid.map(key => FRIENDLY[key]).join(', ')}. Исходный текст сохранён в резервной копии; повреждённые данные автоматически не заменялись.` : '';
     } catch (error) {
-      state.migrationWarning = 'Не удалось создать резервную копию для миграции. Старые данные сохранены без изменений; проверь свободное место браузера.';
+      state.migrationWarning = 'Не удалось создать резервную копию для миграции. Старые данные сохранены без изменений; проверить свободное место браузера.';
       state.migrationBlockedKeys = Object.keys(backup);
       console.warn(error);
     }
@@ -166,7 +166,7 @@
   async function setSession(session) {
     state.session = session?.access_token ? session : null;
     state.startupSyncPending = Boolean(state.session);
-    try { if (state.session) localStorage.setItem(SESSION_KEY, JSON.stringify(state.session)); else localStorage.removeItem(SESSION_KEY); } catch { state.error = 'Сессию не удалось сохранить. Не закрывай страницу до завершения работы.'; }
+    try { if (state.session) localStorage.setItem(SESSION_KEY, JSON.stringify(state.session)); else localStorage.removeItem(SESSION_KEY); } catch { state.error = 'Сессию не удалось сохранить. Для сохранения данных страница должна оставаться открытой до завершения работы.'; }
     emit();
   }
   async function refreshSession() {
@@ -179,7 +179,7 @@
       // Only an explicit invalid-token response ends a session; outages do not.
       if (error.status === 400 || error.status === 401) await setSession(null);
       discardStartupDefaults();
-      setStatus(state.session ? 'Не удалось обновить сессию · повтори синхронизацию' : 'Сессия истекла · войди снова', error.message);
+      setStatus(state.session ? 'Не удалось обновить сессию · повторить синхронизацию' : 'Сессия истекла · войди снова', error.message);
       return false;
     }
   }
@@ -293,7 +293,7 @@
   async function signUp(email, password, displayName) {
     const result = await authRequest('signup', { email, password, data: { display_name: displayName || '' } });
     if (result.access_token) { await setSession(result); await syncWithCloud(); }
-    else setStatus('Проверь почту: отправлена ссылка для подтверждения аккаунта');
+    else setStatus('Проверить почту: отправлена ссылка для подтверждения аккаунта');
     return result;
   }
   async function signIn(email, password) { const result = await authRequest('token?grant_type=password', { email, password }); await setSession(result); await syncWithCloud(); return result; }
@@ -350,7 +350,7 @@
     const entries = KEYS.filter(key => typeof backup.data[key] === 'string');
     if (!entries.length) throw new Error('В копии не найдены данные прогресса.');
     for (const key of entries) { try { JSON.parse(backup.data[key]); } catch { throw new Error(`В копии повреждён раздел «${FRIENDLY[key]}». Ничего не восстановлено.`); } }
-    if (!saveSafetySnapshot('before-manual-restore', currentLocalData(), { backupCreatedAt: backup.createdAt || '' })) throw new Error('Не удалось сохранить текущие данные перед восстановлением. Освободи место и повтори попытку.');
+    if (!saveSafetySnapshot('before-manual-restore', currentLocalData(), { backupCreatedAt: backup.createdAt || '' })) throw new Error('Не удалось сохранить текущие данные перед восстановлением. Освободить место и повторить попытку.');
     const meta = metadata();
     for (const key of entries) {
       setLocal(key, backup.data[key], { queue: false });
