@@ -74,7 +74,7 @@
     // Re-rendering unchanged data is not a new edit and must not win a cloud conflict.
     if (options.queue !== false && localGet(key) === raw) return true;
     if (KEYS.includes(key) && state.migrationBlockedKeys.includes(key) && localGet(key) !== null) {
-      state.error = 'Изменение не сохранено: сначала нужна резервная копия старых данных. Освободить место в браузере и обнови страницу.';
+      state.error = 'Изменение не сохранено: сначала нужна резервная копия старых данных. Освободить место в браузере и обновить страницу.';
       emit();
       return false;
     }
@@ -179,7 +179,7 @@
       // Only an explicit invalid-token response ends a session; outages do not.
       if (error.status === 400 || error.status === 401) await setSession(null);
       discardStartupDefaults();
-      setStatus(state.session ? 'Не удалось обновить сессию · повторить синхронизацию' : 'Сессия истекла · войди снова', error.message);
+      setStatus(state.session ? 'Не удалось обновить сессию · повторить синхронизацию' : 'Сессия истекла · войти снова', error.message);
       return false;
     }
   }
