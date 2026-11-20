@@ -1,0 +1,247 @@
+/* Editorial study theme inspired by the supplied Oath Biome style reference. */
+:root {
+  color-scheme: light;
+  --ink: #301912;
+  --muted: #675b53;
+  --paper: #ffffff;
+  --white: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #f5f4ef;
+  --green: #103228;
+  --green2: #e7ede6;
+  --accent: #103228;
+  --lime: #edf1e9;
+  --purple: #efeae4;
+  --navy: #f5f4ef;
+  --line: #cbbeaf;
+  --shadow: none;
+  --biome-serif: Georgia, 'Times New Roman', serif;
+  --biome-sans: 'Segoe UI', Arial, sans-serif;
+}
+html, body { background: #fff !important; color: var(--ink); color-scheme: light; }
+body { font: 16px/1.6 var(--biome-sans); }
+body, .app, .view, .card, .panel { background-image: none !important; }
+.app { max-width: 1398px; padding: 0 40px 48px !important; }
+.topbar { min-height: 113px !important; margin: 0 !important; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.biome-wordmark { display: block; font: 500 22px/1.2 var(--biome-serif); letter-spacing: -.6px; margin-bottom: 4px; }
+.redesign-header-title { display: grid; grid-template-columns: auto auto; column-gap: 22px; align-items: center; }
+.redesign-header-title .biome-wordmark { grid-column: 1; grid-row: 1 / 3; margin: 0; padding-right: 22px; border-right: 1px solid var(--line); }
+.redesign-header-title h1 { font: 500 30px/1.15 var(--biome-serif); letter-spacing: -1px; }
+.redesign-header-title small { font-size: 13px; color: var(--muted); letter-spacing: 0; }
+.nav { position: static; width: auto; padding: 12px 0 !important; margin: 0 0 28px !important; border: 0 !important; border-bottom: 1px solid var(--line) !important; background: #fff !important; display: flex; flex-direction: row; gap: 10px; }
+.nav button { border: 0; border-radius: 0 !important; width: auto; min-height: 44px; padding: 10px 20px !important; color: var(--ink) !important; font-size: 15px !important; font-weight: 500; }
+.nav button svg { width: 18px; height: 18px; }
+.nav button.active { background: #fff !important; color: #103228 !important; box-shadow: inset 0 -2px #103228 !important; }
+.nav button:hover { background: #f2f4ee !important; }
+.global-storage-status { background: #fff !important; color: #566e5b !important; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; position: static; padding: 8px 0; font-size: 13px; }
+.global-storage-status[data-state=error], .global-storage-status[data-state=conflict] { color: #8d3426 !important; background: #fcf0e8 !important; }
+.global-storage-status[data-state=offline] { color: #725525 !important; background: #faf6e9 !important; }
+#redesign-home { gap: 30px; }
+#biome-media { order: -5; display: grid; grid-template-columns: 2fr 1fr; gap: 22px; }
+.biome-destination { border: 0; background: transparent; color: var(--ink); padding: 0; text-align: left; min-width: 0; border-radius: 0; }
+.biome-destination img { width: 100%; height: 310px; display: block; border-radius: 20px; object-fit: cover; background: #103228; }
+.biome-destination:first-child img { object-position: center 62%; }
+.biome-destination span { display: block; padding: 12px 0 4px; font: 400 27px/1.3 var(--biome-serif); letter-spacing: -.6px; }
+.biome-destination:hover img { filter: brightness(.95); }
+#redesign-home > #design-next { background: #fff; color: var(--ink); box-shadow: none; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; padding: 30px 0; display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 30px; }
+#design-next .hub-chip { display: none; }
+#design-next h2 { font: 500 32px/1.23 var(--biome-sans); letter-spacing: -.4px; margin: 0 0 12px; }
+#design-next p { font: 400 27px/1.34 var(--biome-serif); letter-spacing: -.54px; max-width: 55ch; margin: 0; }
+#design-start { grid-column: 2; grid-row: 1 / 3; align-self: center; min-width: 180px; }
+h1, h2, h3, .hero h1, .redesign-plan h2, .b2-calendar-head h3 { color: var(--ink); }
+.hub-panel h2, .redesign-plan h2, .redesign-section-heading h1, #redesign-progress-heading h1, .hero h1, .b2-calendar-head h3 { font-family: var(--biome-serif); font-weight: 400; letter-spacing: -.9px; line-height: 1.15; }
+.redesign-section-heading h1, #redesign-progress-heading h1 { font-size: 48px; }
+.hub-panel h2, .redesign-plan h2 { font-size: 36px; }
+.b2-calendar-head h3 { font-size: 32px !important; }
+.hub-panel, .redesign-plan, .redesign-resources, .panel, .card, .system-panel,
+.b2-extra, .b2-course-map, .b2-unit-plan, .scorecard, .b2-course-details,
+.b2-course-summary, .b2-week-details, .b2-optional, .b2-day-expand,
+.b2-today-card, .b2-today-book, .b2-rest, .sectioncard, .phase, .vocab,
+.b2-current-task, .account-dialog, .diag-dialog, .modal, .modal-content {
+  background: #fff !important; color: var(--ink); box-shadow: none !important;
+  border-color: var(--line) !important; border-radius: 0 !important;
+}
+.hub-panel, .redesign-plan, .redesign-resources { padding: 28px 0; border-width: 1px 0 0; margin: 0; }
+#b2-calendar-section .b2-calendar { background: #fff !important; box-shadow: none; border: 1px solid var(--line); border-radius: 0; padding: 28px; }
+.b2-calendar-kicker, .b2-calendar-head .b2-kicker, .b2-kicker, .hub-chip { color: #566e5b !important; font-size: 14px; }
+.b2-calendar-grid { gap: 0 !important; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.b2-calendar-day, .b2-calendar-empty { border-radius: 0 !important; border: 0 !important; border-right: 1px solid var(--line) !important; border-bottom: 1px solid var(--line) !important; min-height: 72px !important; background: #fff !important; color: var(--ink) !important; box-shadow: none; }
+.b2-calendar-day:hover { background: #f1f4ed !important; }
+.b2-calendar-day.rest:not(.completed):not(.partial) { border-style: solid !important; background: #f5f4ef !important; }
+.b2-calendar-day.selected, .b2-calendar-day[aria-pressed=true] { outline: 2px solid #103228; outline-offset: -3px; background: #e8eee7 !important; }
+.b2-calendar-day.today { box-shadow: inset 0 3px #566e5b; }
+.b2-calendar-day.completed { background: #103228 !important; color: #fff !important; }
+.b2-calendar-day.partial { background: #f4e8d1 !important; color: #65471c !important; }
+.b2-calendar-day small, .b2-calendar-day>span, .hub-day-state { color: #566e5b !important; }
+.b2-calendar-day.completed small, .b2-calendar-day.completed>span, .b2-calendar-day.completed .hub-day-state { color: #fff !important; }
+.b2-calendar-day.partial .hub-day-state { color: #65471c !important; }
+.legend-selected { background: #103228; }.legend-today { border-color: #566e5b; }
+.design-density button, .mode-btn, .hub-panel button, .sys-btn, .btn, .account-trigger,
+.b2-word-actions a, .b2-daily-word-actions a, .redesign-resource-links a, .account-close,
+.b2-calendar-month-nav button, .b2-calendar-date-tools button {
+  background: #fff !important; color: var(--ink) !important; border: 1px solid var(--line) !important;
+  box-shadow: none !important; border-radius: 100px !important; min-height: 44px; font-size: 14px;
+}
+button.primary, .sys-btn.primary, .hub-panel .primary, #design-start, .mode-btn.active,
+.design-density button[aria-pressed=true] { background: #103228 !important; color: #fff !important; border-color: #103228 !important; }
+button:hover, a.sys-btn:hover, .redesign-resource-links a:hover { border-color: #566e5b !important; }
+input, select, textarea, .exam-input, .fulltextarea, .writefield textarea {
+  color-scheme: light !important; background: #fff !important; color: var(--ink) !important;
+  border: 1px solid #a8998d !important; border-radius: 5px !important; font-size: 16px;
+}
+option { background: #fff; color: var(--ink); }
+input::placeholder, textarea::placeholder { color: #75695e !important; opacity: 1; }
+input[type=checkbox], input[type=radio] { accent-color: #103228; }
+.subtle, .system-sub, .hub-muted, .muted, .help, .meta, .progresscaption,
+.b2-task-body, .hub-work-list span, .hub-panel label, .hub-metrics span,
+.hub-week-title, .design-filters p, .design-density span, .b2-source { color: #675b53 !important; }
+.hub-review-short strong { color: #103228; }
+.b2-current-task { border-width: 1px 0 0 !important; padding: 24px 0 !important; margin: 0 !important; }
+.b2-task-title { font: 400 27px/1.3 var(--biome-serif) !important; color: var(--ink); }
+.b2-task-head input { accent-color: #103228; }
+.b2-sb-assignment, .b2-task-outcome, .b2-task-time, .redesign-count,
+.b2-book-note, .b2-textbook-head>span, .b2-day-badge, .b2-review-count {
+  color: var(--ink) !important; background: #f5f4ef !important; border-color: var(--line) !important; box-shadow: none;
+}
+.redesign-task-details summary { color: #103228; font-size: 15px; }
+#view-vocabulary .hero, .hero { background: #fff !important; box-shadow: none !important; border-radius: 0; border-bottom: 1px solid var(--line); padding: 24px 0 !important; }
+.hero p { color: #675b53 !important; }.hero h1 { font-size: 42px !important; }
+.b2-word-result, .b2-daily-word, .b2-vocab-card, .hub-panel article, .hub-work-list button,
+.b2-stat, .b2-skill-card, .b2-roadmap-row, .account-identity, .account-note,
+.account-metrics>div, .account-conflicts, .account-small, .writefield, .rubric label,
+.callout, .speakprompt, .answer, .typechip, .targetbox, .targetscore, .dot {
+  background: #f5f4ef !important; color: var(--ink) !important; border-color: var(--line) !important;
+  border-radius: 0 !important; box-shadow: none !important;
+}
+.b2-daily-word strong, .b2-word-result strong { color: #103228; }
+.hub-work-list button[aria-pressed=true] { border-color: #103228 !important; background: #e7ede6 !important; }
+.hub-metrics>div { background: #fff; border-left-color: var(--line); }
+.hub-metrics strong { color: #103228; font: 400 48px/1.2 var(--biome-serif); }
+.hub-week-days span, .hub-units span { background: #f5f4ef; color: #675b53; border-radius: 0; }
+.hub-week-days .active, .hub-units .done { background: #103228; color: #fff; }
+#hub-version-preview, .hub-message { background: #e7ede6; color: var(--ink); border-radius: 5px; }
+.redesign-practice-grid { gap: 0; grid-template-columns: repeat(3,minmax(0,1fr)); border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
+.redesign-practice-grid button { border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; background: #fff; color: var(--ink); padding: 30px 26px 60px; }
+.redesign-practice-grid strong { font: 400 36px/1.12 var(--biome-serif); letter-spacing: -1px; }
+.redesign-practice-grid span, .redesign-practice-grid b { color: #566e5b; }
+.redesign-resource-links a { padding: 12px 20px; text-decoration: none; }
+#hub-review-entry { background: #103228 !important; padding: 28px; border: 0; border-radius: 10px !important; color: #fff; }
+#hub-review-entry h2, #hub-review-entry p, #hub-review-entry strong { color: #fff !important; }
+#hub-review-entry button { color: #fff !important; background: transparent !important; border-color: #a5b6a7 !important; }
+.streak { background: #fff !important; color: #566e5b !important; border: 1px solid var(--line) !important; box-shadow: none; }
+.redesign-flame { filter: none; animation: none !important; }.flame-outer { fill: #566e5b !important; }.flame-inner { fill: #cbbeaf !important; }
+.account-backdrop, .modalback { background: #30191277 !important; backdrop-filter: blur(4px); }
+.account-dialog, .diag-dialog { border-radius: 10px !important; }
+.account-dialog h2 { font: 400 38px/1.1 var(--biome-serif); }
+a { color: #103228; }
+.account-dialog a { color: #103228 !important; }
+.answer.correct { background: #e1ede3 !important; border-color: #566e5b !important; }
+.answer.wrong { background: #f8e4df !important; border-color: #a45540 !important; }
+.footer { margin-top: 56px; border-top: 1px solid var(--line); padding: 22px 0; color: #675b53; font-size: 14px; }
+.biome-credits { font-size: 12px; margin-top: 12px; color: #675b53; }
+.biome-credits a { color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 2px solid #566e5b !important; outline-offset: 3px !important; }
+@media(max-width:900px) {
+  .app { padding: 0 20px 105px !important; }
+  .topbar { min-height: 96px !important; margin: 0 0 18px !important; gap: 12px; }
+  .redesign-header-title { column-gap: 12px; }
+  .redesign-header-title .biome-wordmark { font-size: 20px; padding-right: 12px; }
+  .redesign-header-title h1 { font-size: 27px; }.redesign-header-title small { font-size: 12px; }
+  .nav { display: none; }
+  .mobile-nav { background: #fffffffa !important; border-radius: 0 !important; border: 0; border-top: 1px solid var(--line); }
+  .mobile-nav button { color: #675b53; border-radius: 0; }
+  .mobile-nav button.active { background: #e7ede6 !important; color: #103228 !important; }
+  #biome-media { gap: 14px; }.biome-destination img { height: 230px; border-radius: 15px; }
+  .biome-destination span { font-size: 23px; }
+  .hub-panel h2, .redesign-plan h2 { font-size: 30px; }
+  #redesign-home { gap: 24px; }
+  #redesign-home>#design-next { padding: 24px 0; }
+  #design-next h2 { font-size: 28px; }#design-next p { font-size: 24px; }
+  #design-start { min-width: 140px; }
+  .b2-calendar-day, .b2-calendar-empty { min-height: 48px !important; }
+  .redesign-practice-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .redesign-practice-grid strong { font-size: 30px; }
+}
+@media(max-width:560px) {
+  .app { padding-inline: 16px !important; }
+  .topbar { flex-wrap: wrap; }
+  .topbar .brand { flex-basis: 100%; }
+  .topbar .meta { width: 100%; justify-content: space-between; }
+  .redesign-header-title { width: 100%; grid-template-columns: 1fr auto; }
+  .redesign-header-title .biome-wordmark { border: 0; grid-row: 1; padding: 0; font-size: 24px; }
+  .redesign-header-title h1 { grid-row: 1; grid-column: 2; font-size: 26px; }
+  .redesign-header-title small { grid-column: 1 / -1; grid-row: 2; margin-top: 6px; }
+  #biome-media { grid-template-columns: 2fr 1fr; gap: 10px; }
+  .biome-destination img { height: 160px; border-radius: 10px; }
+  .biome-destination span { font-size: 19px; line-height: 1.2; padding-top: 10px; }
+  #redesign-home>#design-next { grid-template-columns: 1fr; gap: 14px; }
+  #design-next h2 { font-size: 28px; margin-bottom: 0; }
+  #design-next p { font-size: 24px; }
+  #design-start { grid-column: 1; grid-row: auto; width: fit-content; min-width: 155px; }
+  #b2-calendar-section .b2-calendar { padding: 14px; }
+  .b2-calendar-head h3 { font-size: 28px !important; }
+  .hub-panel { padding: 22px 0; }
+  .b2-task-title { font-size: 24px !important; }
+  .redesign-practice-grid button { padding: 24px 16px 40px; }
+  .redesign-section-heading h1, #redesign-progress-heading h1 { font-size: 36px; }
+}
+
+
+/* Clear state labels on the white reading surface. */
+.b2-calendar-day b, .b2-calendar-day.today b { color: inherit !important; }
+.mode-row, #study-mode-panel { box-shadow: none !important; border-radius: 0 !important; }
+.streak, .streak *, #streak { color: #566e5b !important; }
+
+
+/* Override older form rules scoped to the vocabulary and account modules. */
+html body .app .view input,
+html body .app .view select,
+html body .app .view textarea {
+  background: #fff !important;
+  color: #301912 !important;
+  border-color: #a8998d !important;
+  color-scheme: light !important;
+}
+html body .app .view .sys-btn,
+html body .app .view .btn,
+html body .app .view .b2-daily-word-actions a,
+html body .app .view #b2-cambridge-lookup {
+  background: #fff !important;
+  color: #301912 !important;
+  border: 1px solid #cbbeaf !important;
+  border-radius: 100px !important;
+  font-size: 14px !important;
+}
+html body .app .view button.primary,
+html body .app .view .sys-btn.primary,
+html body .account-dialog .account-btn.primary {
+  background: #103228 !important;
+  color: #fff !important;
+  border-color: #103228 !important;
+}
+html body .app .view .b2-daily-word,
+html body .app .view .b2-word-result,
+html body .app .view .b2-vocab-card {
+  background: #f5f4ef !important;
+  color: #301912 !important;
+}
+.b2-unit-plan>summary strong { font-size: 16px; }
+.b2-unit-plan>summary span, .b2-unit-plan>summary em,
+.b2-part-fields label, .b2-unit-dates label, .b2-unit-dates>span,
+.b2-roadmap-row, .b2-part-heading, .b2-part-form, .b2-sb-assignment {
+  font-size: 14px;
+}
+.biome-destination { align-self: start; }
+
+
+/* Form controls in the original vocabulary view have extra state selectors. */
+#view-vocabulary input:not([type=checkbox]):not([type=radio]),
+#view-vocabulary select,
+#view-vocabulary textarea {
+  background: #fff !important;
+  color: #301912 !important;
+  color-scheme: light !important;
+  border: 1px solid #a8998d !important;
+}
+.account-dialog button[type=submit] { background: #103228 !important; color: #fff !important; }
+

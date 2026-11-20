@@ -1,4 +1,4 @@
-const CACHE = 'daily-english-design-v1';
+const CACHE = 'daily-english-biome-v1';
 const BASE = new URL('./', self.registration.scope);
 const page = name => new URL(name, BASE).toString();
 const CORE = ['', 'index.html', 'oneui.css', 'redesign.css', 'redesign.js', 'empower-b1-wordlist.js', 'sourced-vocabulary.js', 'github-config.js', 'storage-service.js', 'account-ui.js', 'manifest.webmanifest', 'icon.svg', 'offline.html', 'vendor/pdfjs/pdf.min.mjs', 'vendor/pdfjs/pdf.worker.min.mjs', 'vendor/pdfjs/LICENSE'].map(page);
@@ -6,6 +6,7 @@ const CORE = ['', 'index.html', 'oneui.css', 'redesign.css', 'redesign.js', 'emp
 // URLs avoid mixing new inline code with a previous storage-service API.
 CORE.push(...['storage-service.js', 'account-ui.js', 'redesign.js', 'redesign.css', 'learning-hub.js', 'learning-hub.css'].map(name => page(`${name}?build=2026-11-19.hub3`)));
 CORE.push(...['design-enhancements.js', 'design-enhancements.css'].map(name => page(name + '?build=2026-11-19.design1')));
+CORE.push(page('biome.css?build=2026-11-20.biome1'), page('biome.js?build=2026-11-20.biome1'), page('assets/study.jpg'), page('assets/landscape.jpg'));
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('daily-english-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', event => {
@@ -19,4 +20,5 @@ self.addEventListener('fetch', event => {
   }
   event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => { if (response.ok) caches.open(CACHE).then(cache => cache.put(request, response.clone())); return response; })));
 });
+
 
