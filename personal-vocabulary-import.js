@@ -5,7 +5,7 @@
     if (!document.getElementById('b2-all-personal-words')) {
       const words = JSON.parse(storageService.getItem('dailyEnglishSystemV2') || '{}').b2Foundation?.vocabulary || [];
       const list = document.createElement('details'); list.id = 'b2-all-personal-words'; list.className = 'b2-extra'; list.open = true;
-      const heading = document.createElement('summary'); heading.textContent = `Все мои слова · ${words.length}`; list.append(heading);
+      const heading = document.createElement('summary'); heading.textContent = `Мой словарь — все слова (${words.length})`; list.append(heading);
       const search = document.createElement('input'); search.type = 'search'; search.placeholder = 'Поиск по слову или переводу'; search.setAttribute('aria-label', 'Поиск в личном словаре'); list.append(search);
       const cards = document.createElement('div'); cards.className = 'b2-vocab-list'; list.append(cards);
       function draw() {
@@ -22,7 +22,9 @@
         });
         if (!cards.children.length) cards.textContent = query ? 'Ничего не найдено.' : 'Личный словарь пока пуст.';
       }
-      search.oninput = draw; draw(); form.after(list);
+      search.oninput = draw; draw();
+      const container = form.closest('.b2-vocabulary-mode') || form.parentElement;
+      container.prepend(list);
     }
     if (document.getElementById('b2-personal-import')) return;
     const panel = document.createElement('section');

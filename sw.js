@@ -1,8 +1,8 @@
-const CACHE = 'daily-english-biome-personal-import-2';
+const CACHE = 'daily-english-biome-personal-import-3';
 const BASE = new URL('./', self.registration.scope);
 const page = name => new URL(name, BASE).toString();
 const CORE = ['', 'index.html', 'oneui.css', 'redesign.css', 'redesign.js', 'empower-b1-wordlist.js', 'sourced-vocabulary.js', 'github-config.js', 'storage-service.js', 'account-ui.js', 'manifest.webmanifest', 'icon.svg', 'offline.html', 'vendor/pdfjs/pdf.min.mjs', 'vendor/pdfjs/pdf.worker.min.mjs', 'vendor/pdfjs/LICENSE'].map(page);
-CORE.push(page('personal-vocabulary-import.js?build=2026-11-22.1'));
+CORE.push(page('personal-vocabulary-import.js?build=2026-11-22.2'));
 // The network-first HTML can arrive before the old worker is replaced. These
 // URLs avoid mixing new inline code with a previous storage-service API.
 CORE.push(...['storage-service.js', 'account-ui.js', 'redesign.js', 'redesign.css', 'learning-hub.js', 'learning-hub.css'].map(name => page(`${name}?build=2026-11-20.copy1`)));
