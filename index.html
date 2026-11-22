@@ -1876,6 +1876,26 @@ document.querySelector('#view-listening .hero p').textContent='Стандарт�
       if (box.checked && checkDate === dayKey && window.dailyEnglishRecordActivity) { data.stats = window.dailyEnglishRecordActivity(); save(); }
       render();
     });
+    window.dailyEnglishImportPersonalWords = records => {
+      if (!Array.isArray(records) || !records.length || records.length > 500) throw new Error('Нужно от 1 до 500 карточек.');
+      const prepared = records.map((row, index) => {
+        if (!Array.isArray(row) || row.length !== 4 || !Number.isInteger(row[0]) || row.slice(1).some(v => typeof v !== 'string')) throw new Error(`Неверная карточка №${index + 1}.`);
+        const term = row[1].normalize('NFKC').trim().replace(/\s+/g, ' '), meaning = row[2].trim(), definition = row[3].trim();
+        if (!term || !meaning || !definition || [term,meaning,definition].some(v => v.length > 500)) throw new Error(`Неполная карточка №${index + 1}.`);
+        return { number: row[0], term, meaning, definition };
+      });
+      const seen = new Set(b2.vocabulary.map(w => normalizeTerm(w.term)));
+      let added = 0, skipped = 0;
+      for (const item of prepared) {
+        const key = normalizeTerm(item.term);
+        if (seen.has(key)) { skipped++; continue; }
+        seen.add(key);
+        b2.vocabulary.push({ id: `import-${Date.now()}-${item.number}-${Math.random().toString(36).slice(2,7)}`, term: item.term, meaning: item.meaning, definition: item.definition, sourceRef: `English Empower · карточка ${item.number} · скриншот пользователя`, addedAt: dayKey, nextReview: addDays(dayKey, reviewIntervals[0]), stage: 0 });
+        added++;
+      }
+      if (added) { save(); render(); }
+      return { added, skipped };
+    };
     document.getElementById('b2-vocabulary-form').onsubmit = event => {
       event.preventDefault();
       const fd = new FormData(event.currentTarget);
@@ -1976,6 +1996,7 @@ document.querySelector('#view-listening .hero p').textContent='Стандарт�
 <link rel="stylesheet" href="./learning-hub.css?build=2026-11-20.copy1">
 <script src="./learning-hub.js?build=2026-11-20.copy1"></script>
 <link rel="stylesheet" href="./design-enhancements.css?build=2026-11-20.copy1"><script src="./design-enhancements.js?build=2026-11-20.copy1"></script><link rel="stylesheet" href="./biome.css?build=2026-11-20.copy1"><script src="./biome.js?build=2026-11-20.copy1"></script><link rel="stylesheet" href="./biome-polish.css?build=2026-11-20.copy1"><script src="./biome-background.js?build=2026-11-20.copy1"></script></body>
+<script src="./personal-vocabulary-import.js?build=2026-11-22.1"></script>
 </html>
 
 
